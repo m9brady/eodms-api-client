@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 
 from .auth import create_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
-from .params import convert_cli_params, generate_meta_keys
+from .params import convert_params, generate_meta_keys
 
 
 class Collection(ABC):
@@ -16,7 +16,10 @@ class Collection(ABC):
         self.meta_keys = None
         self.search_url = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi/search?collection={collection}&query={query}&maxResults={maxResults}&format=json'
         self.order_url = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi/order'
-        self.session = create_session()
+        self.session = create_session(
+            kwargs.get('username', None),
+            kwargs.get('password', None)
+        )
     
     @abstractmethod
     def construct_query(self, query_params):
@@ -81,10 +84,10 @@ class Collection(ABC):
         
 
 class RCM(Collection):
-    def __init__(self, cli_params):
-        super().__init__(cli_params)
+    def __init__(self, params):
+        super().__init__(params)
         collection = 'RCMImageProducts'
-        self.query_params = convert_cli_params(cli_params, collection)
+        self.query_params = convert_params(params, collection)
         self.meta_keys = generate_meta_keys(collection)
         self.search_url = self.search_url.format(collection=collection, query='{query}', maxResults=self.maxResults)
     
@@ -108,10 +111,10 @@ class RCM(Collection):
 
 
 class RS2(Collection):
-    def __init__(self, cli_params):
-        super().__init__(cli_params)
+    def __init__(self, params):
+        super().__init__(params)
         collection = 'Radarsat2'
-        self.query_params = convert_cli_params(cli_params, collection)
+        self.query_params = convert_params(params, collection)
         self.meta_keys = generate_meta_keys(collection)
         self.search_url = self.search_url.format(collection=collection, query='{query}', maxResults=self.maxResults)
 
@@ -122,10 +125,10 @@ class RS2(Collection):
     
 
 class RS1(Collection):
-    def __init__(self, cli_params):
-        super().__init__(cli_params)
+    def __init__(self, params):
+        super().__init__(params)
         collection = 'Radarsat'
-        self.query_params = convert_cli_params(cli_params, collection)
+        self.query_params = convert_params(params, collection)
         self.meta_keys = generate_meta_keys(collection)        
         self.search_url = self.search_url.format(collection=collection, query='{query}', maxResults=self.maxResults)
 
@@ -136,10 +139,10 @@ class RS1(Collection):
     
 
 class NAPL(Collection):
-    def __init__(self, cli_params):
-        super().__init__(cli_params)
+    def __init__(self, params):
+        super().__init__(params)
         collection = 'NAPL'
-        self.query_params = convert_cli_params(cli_params, collection)
+        self.query_params = convert_params(params, collection)
         self.meta_keys = generate_meta_keys(collection)        
         self.search_url = self.search_url.format(collection=collection, query='{query}', maxResults=self.maxResults)
 
@@ -150,8 +153,8 @@ class NAPL(Collection):
 
 
 class Planet(Collection):
-    def __init__(self, cli_params):
-        super().__init__(cli_params)
+    def __init__(self, params):
+        super().__init__(params)
         collection = 'PlanetScope'
         self.search_url = self.search_url.format(collection=collection, query='{query}')
 

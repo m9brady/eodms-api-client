@@ -1,4 +1,4 @@
-def convert_cli_params(cli_params, collection):
+def convert_params(params, collection):
     pass
 
 
