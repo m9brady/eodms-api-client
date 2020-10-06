@@ -8,11 +8,13 @@ from . import EodmsAPI
 @click.option(
     '--username',
     '-u',
+    default=None,
     help='EODMS username (leave blank to use .netrc or be prompted)'
 )
 @click.option(
     '--password',
     '-p',
+    default=None,
     help='EODMS password (leave blank to use .netrc or be prompted)'
 )
 @click.option(

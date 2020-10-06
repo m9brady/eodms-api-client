@@ -19,7 +19,7 @@ class EodmsAPI():
         self.session = create_session(username, password)
     
     def query(self, **kwargs):
-        query = validate_query_args(kwargs, self.collection)        
+        query = validate_query_args(kwargs, self.collection)
         self.search_url = EODMS_REST_SEARCH.format(collection=self.collection, query=query)
         search_response = self.submit_search()
         meta_keys = generate_meta_keys(self.collection)
@@ -84,6 +84,8 @@ class EodmsAPI():
         return metadata
 
     def submit_order(self, recordIds):
+        if len(recordIds) < 1:
+            return []            
         data = dumps(
             {
                 'destinations': [],
