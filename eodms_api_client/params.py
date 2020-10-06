@@ -1,5 +1,7 @@
-def convert_params(params, collection):
-    pass
+from urllib.parse import quote
+
+def validate_query_args(args, collection):
+    return quote('CREATE DATE >= 1')
 
 
 def generate_meta_keys(collection):
@@ -31,4 +33,7 @@ def generate_meta_keys(collection):
 
         ]
     else:
-        raise NotImplementedError('%s collection is not implemented or not recognized as a valid collection')
+        raise NotImplementedError(
+            '%s collection is not implemented and/or not recognized as a valid EODMS collection'
+            % collection
+        )

@@ -13,13 +13,14 @@ RETRY_STRAT = Retry(
     backoff_factor=2, # seconds
     status_forcelist=[500, 502, 503, 504] # only retry on these HTTP codes
 )
+EODMS_HOSTNAME = 'data.eodms-sgdot.nrcan-rncan.gc.ca'
 
-def create_session(username=None, password=None, eodms_hostname='data.eodms-sgdot.nrcan-rncan.gc.ca'):
+def create_session(username=None, password=None):
     if username is None and password is None:
-        hosts = netrc(os.path.expanduser('~') + '/.netrc').hosts
         try:
-            username, _, password = hosts.get(eodms_hostname)
-        except TypeError:
+            hosts = netrc(os.path.expanduser('~') + '/.netrc').hosts
+            username, _, password = hosts.get(EODMS_HOSTNAME)
+        except (FileNotFoundError, TypeError):
             username = input('Enter EODMS username: ')
             password = getpass('Enter EODMS password: ')
     elif username is None and password is not None:

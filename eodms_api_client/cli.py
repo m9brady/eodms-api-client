@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
 import click
 
-from . import NAPL, Planet, RS1, RS2, RCM
+from . import EodmsAPI
 
 @click.command(context_settings={
     'help_option_names': ['-h', '--help']
@@ -25,13 +24,13 @@ from . import NAPL, Planet, RS1, RS2, RCM
 @click.option(
     '--start',
     '-s',
-    default=datetime.today() - timedelta(1),
+    default='TODAY-1',
     help='Beginning of acquisition time window (default to 1 day prior to now)'
 )
 @click.option(
     '--end',
     '-e',
-    default=datetime.today(),
+    default='TODAY',
     help='End of acquisition time window (default to now)'
 )
 @click.option(
@@ -73,6 +72,4 @@ def cli(
     password,
 
 ):
-    params = {
-        
-    }
+    pass

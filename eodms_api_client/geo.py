@@ -12,7 +12,10 @@ def transform_metadata_geometry(meta_geom, target_crs=None):
     meta_geom = shape(meta_geom)
     if target_crs is None:
         return meta_geom
-    dst_crs = CRS(target_crs)
+    elif isinstance(target_crs, CRS):
+        dst_crs = target_crs
+    else:
+        dst_crs = CRS(target_crs)
     trans = Transformer.from_crs(
         crs_from=SRC_CRS,
         crs_to=dst_crs,
@@ -23,7 +26,23 @@ def transform_metadata_geometry(meta_geom, target_crs=None):
     return Polygon(zip(xs, ys))
 
 def metadata_to_gdf(metadata, target_crs=None):
-    df = gpd.GeoDataFrame()
+    if target_crs is None:
+        crs = CRS('epsg:4326')
+    elif isinstance(target_crs, CRS):
+        crs = target_crs
+    else:
+        crs = CRS(target_crs)
+    df = gpd.GeoDataFrame(metadata, crs=crs)
+    df.rename(
+        {
+            'recordId': 'EODMS RecordId',
+            'title': 'Granule'
+        },
+        axis=1,
+        inplace=True
+    )
+    df.sort_values(by='EODMS RecordId', inplace=True)
+    return df
 
 def load_search_aoi(geofile):
     pass
