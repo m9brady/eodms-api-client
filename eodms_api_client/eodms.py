@@ -19,8 +19,8 @@ class EodmsAPI():
         self.session = create_session(username, password)
     
     def query(self, **kwargs):
-        query = validate_query_args(kwargs, self.collection)
-        self.search_url = EODMS_REST_SEARCH.format(collection=self.collection, query=query)
+        prepped_query = validate_query_args(kwargs, self.collection)
+        self.search_url = EODMS_REST_SEARCH.format(collection=self.collection, query=prepped_query)
         search_response = self.submit_search()
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
@@ -28,9 +28,9 @@ class EodmsAPI():
 
     def submit_search(self):
         old_maxResults = int(re.search(r'&maxResults=([\d*]+)', self.search_url).group(1))
-        response = self.session.get(self.search_url)
-        if response.ok:
-            data = loads(response.content.decode('utf-8'))
+        r = self.session.get(self.search_url)
+        if r.ok:
+            data = r.json()
             # the data['moreResults'] response is unreliable
             # thus, we submit another query if the number of results 
             # matches our query's maxResults value
@@ -54,7 +54,7 @@ class EodmsAPI():
                         self._fetch_single_record_metadata,
                         meta_urls,
                         [metadata_fields] * n_urls,
-                        [target_crs] * n_urls
+                        [target_crs] * n_urls,
                         [len_timeout] * n_urls
                     ),
                     desc='Fetching result metadata',
@@ -69,7 +69,7 @@ class EodmsAPI():
         metadata = {}
         r = self.session.get(url, timeout=timeout)
         if r.ok:
-            response = loads(r.content.decode('utf-8'))
+            response = r.json()
             for k in keys:
                 try:
                     metadata[k] = response[k]
@@ -84,8 +84,9 @@ class EodmsAPI():
         return metadata
 
     def submit_order(self, recordIds):
+        order_ids = []
         if len(recordIds) < 1:
-            return []            
+            return order_ids
         data = dumps(
             {
                 'destinations': [],
@@ -100,8 +101,6 @@ class EodmsAPI():
         )
         r = self.session.post(EODMS_REST_ORDER, data=data)
         if r.ok:
-            response = loads(r.content.decode('utf-8'))
+            response = r.json()
             order_ids = list(set([item['orderId'] for item in response['items']]))
-        else:
-            order_ids = []
         return order_ids
