@@ -2,6 +2,7 @@ import click
 
 from . import EodmsAPI
 
+
 @click.command(context_settings={
     'help_option_names': ['-h', '--help']
 })

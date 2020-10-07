@@ -16,6 +16,18 @@ RETRY_STRAT = Retry(
 EODMS_HOSTNAME = 'data.eodms-sgdot.nrcan-rncan.gc.ca'
 
 def create_session(username=None, password=None):
+    '''
+    Create a persistent session object for the EODMS REST API using the given username and 
+    password. If neither is provided, attempt to use the .netrc file and fallback to console
+    entry as a last-resort
+
+    Inputs:
+      - username: EODMS username
+      - password: EODMS password
+    
+    Outputs:
+      - session: requests.Session object for the EODMS REST API
+    '''
     if username is None and password is None:
         try:
             hosts = netrc(os.path.expanduser('~') + '/.netrc').hosts

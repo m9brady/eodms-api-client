@@ -32,10 +32,13 @@ def validate_query_args(args, collection):
             query_args.append('RCM.BEAM_MNEMONIC=%s' % mnemonic)
         product_type = args.get('product_type', None)
         if product_type is not None: #TODO: Multi-select
-            query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % product_type)
+            query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % product_type.upper())
+        product_format = args.get('product_format', None)
+        if product_format is not None:
+            query_args.append('PRODUCT_FORMAT.FORMAT_NAME_E=%s' % product_format)
         polarization = args.get('polarization', None)
         if polarization is not None: #TODO: Multi-select
-            query_args.append('RCM.POLARIZATION=%s' % polarization)
+            query_args.append('RCM.POLARIZATION=%s' % polarization.upper())
         incidence_angle = args.get('incidence_angle', None)
         if incidence_angle is not None:
             query_args.append('RCM.INCIDENCE_ANGLE=%f' % float(incidence_angle))
@@ -89,6 +92,6 @@ def generate_meta_keys(collection):
         ]
     else:
         raise NotImplementedError(
-            '%s collection is not implemented and/or not recognized as a valid EODMS collection'
+            '%s is not implemented and/or not recognized as a valid EODMS collection'
             % collection
         )
