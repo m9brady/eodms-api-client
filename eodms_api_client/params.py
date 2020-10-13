@@ -7,6 +7,18 @@ from .geo import load_search_aoi
 
 
 def validate_query_args(args, collection):
+    '''
+    Try to validate as many keyword arguments as possible for the given
+    EODMS collection
+
+    Inputs:
+      - args: dictionary of keyword arguments provided by the user
+      - collection: EODMS collection to validate arguments against
+
+    Outputs:
+      - query: a properly-escaped query string ready to be sent to
+        EODMS API
+    '''
     query_args = []
     # RCM products
     if collection == 'RCMImageProducts':
@@ -37,6 +49,9 @@ def validate_query_args(args, collection):
         if product_format is not None:
             query_args.append('PRODUCT_FORMAT.FORMAT_NAME_E=%s' % product_format)
         polarization = args.get('polarization', None)
+        look_direction = args.get('look_direction', None)
+        if look_direction is not None:
+            query_args.append('RCM.ANTENNA_ORIENTATION=%s' % look_direction)
         if polarization is not None: #TODO: Multi-select
             query_args.append('RCM.POLARIZATION=%s' % polarization.upper())
         incidence_angle = args.get('incidence_angle', None)
@@ -59,8 +74,8 @@ def validate_query_args(args, collection):
     geometry = args.get('geometry', None)
     if geometry is not None:
         query_args.append('CATALOG_IMAGE.THE_GEOM_4326 INTERSECTS %s' % load_search_aoi(geometry))
-    query = ' AND '.join(query_args)
-    return quote(query)
+    query = quote(' AND '.join(query_args))
+    return query
 
 def generate_meta_keys(collection):
     if collection == 'RCMImageProducts':
