@@ -13,8 +13,9 @@ setup(
     name=name,
     version=version,
     description='Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)',
-    packages=find_packages(exclude=['']),
+    packages=find_packages(exclude=['docs']),
     install_requires=requirements,
+    python_requires='~=3.6',
     entry_points='''
     [console_scripts]
     eodmsapi=eodms_api_client.cli:cli
