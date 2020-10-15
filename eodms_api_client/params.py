@@ -28,14 +28,18 @@ def validate_query_args(args, collection):
                 start = datetime.today() - timedelta(1)
             else:
                 start = parse(start)
-            query_args.append('CATALOG_IMAGE.START_DATETIME>=\'%s\'' % start.isoformat())
+        else:
+            start = datetime.today() - timedelta(1)
+        query_args.append('CATALOG_IMAGE.START_DATETIME>=\'%s\'' % start.isoformat())
         end = args.get('end', None)
         if end is not None: #TODO: Multi-select
             if end == 'TODAY':
                 end = datetime.today()
             else:
                 end = parse(end)
-            query_args.append('CATALOG_IMAGE.START_DATETIME<\'%s\'' % end.isoformat())
+        else:
+            end = datetime.today()
+        query_args.append('CATALOG_IMAGE.START_DATETIME<\'%s\'' % end.isoformat())
         beam_mode = args.get('beam_mode', None)
         if beam_mode is not None: #TODO: Multi-select
             query_args.append('RCM.SBEAM=%s' % beam_mode)
@@ -48,10 +52,10 @@ def validate_query_args(args, collection):
         product_format = args.get('product_format', None)
         if product_format is not None:
             query_args.append('PRODUCT_FORMAT.FORMAT_NAME_E=%s' % product_format)
-        polarization = args.get('polarization', None)
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append('RCM.ANTENNA_ORIENTATION=%s' % look_direction)
+        polarization = args.get('polarization', None)
         if polarization is not None: #TODO: Multi-select
             query_args.append('RCM.POLARIZATION=%s' % polarization.upper())
         incidence_angle = args.get('incidence_angle', None)

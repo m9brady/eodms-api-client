@@ -1,5 +1,5 @@
-import re
 import logging
+import re
 from concurrent.futures import ThreadPoolExecutor
 from json import dumps, loads
 
@@ -16,7 +16,7 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '&maxResults=%d&format=json' % EODMS_DEFAULT_MAXRESULTS
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
 
-LOGGER = logging.getLogger('eodmsapi')
+LOGGER = logging.getLogger('eodmsapi.main')
 LOGGER.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s', '%Y-%m-%d %H:%M:%S')
@@ -46,7 +46,7 @@ class EodmsAPI():
             the EODMS collection being queried
 
         Outputs:
-          - self.search_results: A class attribute containing a geodataframe with
+          - self.results: A class attribute containing a geodataframe with
             the returned query results
         '''
         if bool(kwargs.get('debug', False)):
@@ -54,7 +54,7 @@ class EodmsAPI():
         LOGGER.debug('Validate query args')
         prepped_query = validate_query_args(kwargs, self.collection)
         LOGGER.debug('Query args validated')
-        self.search_url = EODMS_REST_SEARCH.format(
+        self._search_url = EODMS_REST_SEARCH.format(
             collection=self.collection, query=prepped_query
         )
         LOGGER.debug('Query sent')
@@ -63,7 +63,7 @@ class EodmsAPI():
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
         LOGGER.debug('Generate result dataframe')
-        self.search_results = self._fetch_metadata(search_response, meta_keys, target_crs)
+        self.results = self._fetch_metadata(search_response, meta_keys, target_crs)
         LOGGER.debug('Result dataframe ready')
 
     def _submit_search(self):
@@ -80,8 +80,8 @@ class EodmsAPI():
         Outputs:
           - data: the search-query response JSON from the EODMS REST API
         '''
-        old_maxResults = int(re.search(r'&maxResults=([\d*]+)', self.search_url).group(1))
-        r = self._session.get(self.search_url)
+        old_maxResults = int(re.search(r'&maxResults=([\d*]+)', self._search_url).group(1))
+        r = self._session.get(self._search_url)
         if r.ok:
             data = r.json()
             # the data['moreResults'] response is unreliable
@@ -182,6 +182,8 @@ class EodmsAPI():
             order statuses
         '''
         order_ids = []
+        if not isinstance(record_ids, (list, tuple)):
+            record_ids = [record_ids]
         if len(record_ids) < 1:
             LOGGER.warning('No records passed to order submission')
             return order_ids
@@ -191,7 +193,7 @@ class EodmsAPI():
                 'destinations': [],
                 'items': [
                     {
-                        'collection': self.collection,
+                        'collectionId': self.collection,
                         'recordId': record_id
                     }
                     for record_id in record_ids
@@ -202,4 +204,6 @@ class EodmsAPI():
         if r.ok:
             response = r.json()
             order_ids = list(set([item['orderId'] for item in response['items']]))
+        else:
+            LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
         return order_ids

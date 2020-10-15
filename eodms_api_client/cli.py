@@ -4,7 +4,7 @@ import click
 
 from . import EodmsAPI
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('eodmsapi.cli')
 LOGGER.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s', '%Y-%m-%d %H:%M:%S')
@@ -92,7 +92,7 @@ LOGGER.addHandler(ch)
     help='Limit SAR collection results to the desired beam mode'
 )
 @click.option(
-    '--radarsat-beam-mnmemonic',
+    '--radarsat-beam-mnemonic',
     '-rm',
     default=None,
     help='Limit SAR collection results to the desired beam mnemonic'
@@ -137,7 +137,7 @@ LOGGER.addHandler(ch)
 @click.option(
     '--dump-query',
     is_flag=True,
-    default=True,
+    default=False,
     help='Whether or not to create a geopackage containing the results of the query'
 )
 @click.option(
@@ -167,6 +167,7 @@ def cli(
     radarsat_beam_mode,
     radarsat_beam_mnemonic,
     radarsat_polarization,
+    radarsat_orbit_direction,
     radarsat_look_direction,
     radarsat_downlink_segment_id,
     rcm_satellite,
@@ -186,17 +187,22 @@ def cli(
         relative_orbit=relative_orbit, incidence_angle=incidence_angle,
         beam_mode=radarsat_beam_mode, mnemonic=radarsat_beam_mnemonic, 
         polarization=radarsat_polarization, downlink_segment=radarsat_downlink_segment_id,
+        orbit_direction=radarsat_orbit_direction,
         look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
     )
-    LOGGER.info('Finished query. %d results' % len(current.search_results))
+    LOGGER.info('Finished query. %d result%s' % (
+        len(current.results),
+        's' if len(current.results) != 1 else ''
+    ))
     if dump_query:
-        out_file = './query_results.gpkg'
+        out_file = './query_results.geojson'
         LOGGER.info('Saving query results to file: %s' % out_file)
-        current.search_results.to_file(out_file, driver='GPKG')
+        current.results.to_file(out_file, driver='GeoJSON')
     if submit_order:
-        if len(current.search_results > 0):
-            record_ids = current.search_results['EODMS RecordId'].tolist()
-            current.order(record_ids)
-            LOGGER.info('Submitted order for %d records' % len(current.search_results))
+        if len(current.results) > 0:
+            LOGGER.info('Submitting order for %d records' % len(current.results))
+            record_ids = current.results['EODMS RecordId'].tolist()
+            order_ids = current.order(record_ids)
+            LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         else:
             LOGGER.warn('No records to order')
