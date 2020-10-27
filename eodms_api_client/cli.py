@@ -135,7 +135,7 @@ LOGGER.addHandler(ch)
     help='Limit RCM collection results to the desired satellite'
 )
 @click.option(
-    '--dump-query',
+    '--dump-results',
     is_flag=True,
     default=False,
     help='Whether or not to create a geopackage containing the results of the query'
@@ -182,7 +182,7 @@ def cli(
     radarsat_look_direction,
     radarsat_downlink_segment_id,
     rcm_satellite,
-    dump_query,
+    dump_results,
     submit_order,
     record_id,
     record_ids,
@@ -214,7 +214,7 @@ def cli(
         n_results,
         's' if n_results != 1 else ''
     ))
-    if dump_query:
+    if dump_results:
         out_file = './query_results.geojson'
         LOGGER.info('Saving query result%s to file: %s' % (
             's' if n_results != 1 else '',
