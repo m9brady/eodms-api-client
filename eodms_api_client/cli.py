@@ -147,6 +147,12 @@ LOGGER.addHandler(ch)
     help='Submit an order to EODMS from the results of the current query parameters'
 )
 @click.option(
+    '--record-ids',
+    nargs=-1,
+    default=None,
+    help='Specific records to order for the desired collection'
+)
+@click.option(
     '--log-verbose',
     is_flag=True,
     default=False,
@@ -173,6 +179,7 @@ def cli(
     rcm_satellite,
     dump_query,
     submit_order,
+    record_ids,
     log_verbose
 ):
     if log_verbose:
@@ -180,6 +187,12 @@ def cli(
     LOGGER.debug('Connecting to EODMS')
     current = EodmsAPI(collection=collection, username=username, password=password)
     LOGGER.debug('Connected to EODMS')
+    # check for presence of supplied record_ids, where we just skip ahead and order
+    if record_ids is not None:
+        LOGGER.info('Fast-ordering for %d records' % len(record_ids))
+        order_ids = current.order(record_ids)
+        LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
+        exit()
     LOGGER.info('Querying EODMS API')
     current.query(
         start=start, end=end, geometry=geometry, product_type=product_type,
@@ -190,19 +203,23 @@ def cli(
         orbit_direction=radarsat_orbit_direction,
         look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
     )
+    n_results = len(current.results)
     LOGGER.info('Finished query. %d result%s' % (
-        len(current.results),
-        's' if len(current.results) != 1 else ''
+        n_results,
+        's' if n_results != 1 else ''
     ))
     if dump_query:
         out_file = './query_results.geojson'
-        LOGGER.info('Saving query results to file: %s' % out_file)
+        LOGGER.info('Saving query result%s to file: %s' % (
+            's' if n_results != 1 else '',
+            out_file
+        ))
         current.results.to_file(out_file, driver='GeoJSON')
     if submit_order:
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
-            record_ids = current.results['EODMS RecordId'].tolist()
-            order_ids = current.order(record_ids)
+            to_order = current.results['EODMS RecordId'].tolist()
+            order_ids = current.order(to_order)
             LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         else:
             LOGGER.warn('No records to order')

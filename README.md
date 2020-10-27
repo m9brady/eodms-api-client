@@ -11,13 +11,13 @@ Heavily influenced by the utterly fantastic `sentinelsat` package: https://githu
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
 ```
-$ eodmsapi -c RCMImageProducts -g query_aoi.geojson --dump-results
+$ eodms -c RCMImageProducts -g query_aoi.geojson --dump-results
 ```
 
 Same query as above, but this time submit an order for all products found by the query instead of saving a result file
 
 ```
-$ eodmsapi -c RCMImageProducts -g query_aoi.geojson --submit-order
+$ eodms -c RCMImageProducts -g query_aoi.geojson --submit-order
 ```
 
 ### Interactive Python
@@ -43,4 +43,5 @@ geopandas.geodataframe.GeoDataFrame
 - [ ] blindly order (no metadata fetching, just order whatever is returned by query)
 - [ ] add support for other collections (RS2, RS1, PlanetScope first)
 - [ ] add multi-select functionality for supported collection arguments
+- [ ] allow for collection switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
 - [ ] readthedocs documentation?

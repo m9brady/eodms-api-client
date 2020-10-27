@@ -18,6 +18,6 @@ setup(
     python_requires='~=3.6',
     entry_points='''
     [console_scripts]
-    eodmsapi=eodms_api_client.cli:cli
+    eodms=eodms_api_client.cli:cli
     '''
 )

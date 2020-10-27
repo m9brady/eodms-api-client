@@ -1,7 +1,7 @@
 import geopandas as gpd
 from pyproj import CRS, Transformer
 from shapely.geometry import Polygon, shape
-from shapely.wkt import dumps
+from shapely.wkt import dumps as to_wkt
 
 SRC_CRS = CRS('epsg:4326')
 
@@ -84,17 +84,15 @@ def load_search_aoi(geofile):
         df = df.to_crs(SRC_CRS)
     geometry = df.unary_union
     if geometry.type == 'MultiPolygon':
-        n_vertices = sum(
-            [
-                len(poly.exterior.coords) - 1
-                for poly in geometry
-            ]
-        )
+        n_vertices = sum([
+            len(poly.exterior.coords) - 1
+            for poly in geometry
+        ])
     elif geometry.type == 'Polygon':
         n_vertices = len(geometry.exterior.coords) - 1
     else:
         raise NotImplementedError('Search geometry must be a polygon/multipolygon')
     if n_vertices > 1000:
         raise Exception('Search geometry is too complex (more than 1000 vertices)')
-    wkt = dumps(geometry)
+    wkt = to_wkt(geometry)
     return wkt
