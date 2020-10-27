@@ -188,18 +188,16 @@ class EodmsAPI():
             LOGGER.warning('No records passed to order submission')
             return order_ids
         LOGGER.info('Submitting order for %d items' % len(record_ids))
-        data = dumps(
-            {
-                'destinations': [],
-                'items': [
-                    {
-                        'collectionId': self.collection,
-                        'recordId': record_id
-                    }
-                    for record_id in record_ids
-                ]
-            }
-        )
+        data = dumps({
+            'destinations': [],
+            'items': [
+                {
+                    'collectionId': self.collection,
+                    'recordId': record_id
+                }
+                for record_id in record_ids
+            ]
+        })
         r = self._session.post(EODMS_REST_ORDER, data=data)
         if r.ok:
             response = r.json()

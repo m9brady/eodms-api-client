@@ -147,10 +147,15 @@ LOGGER.addHandler(ch)
     help='Submit an order to EODMS from the results of the current query parameters'
 )
 @click.option(
-    '--record-ids',
-    nargs=-1,
+    '--record-id',
     default=None,
-    help='Specific records to order for the desired collection'
+    help='Specific record_Id to order from the desired collection'
+)
+@click.option(
+    '--record-ids',
+    type=click.Path(exists=True),
+    default=None,
+    help='File of line-separated record_Ids to order from the desired collection'
 )
 @click.option(
     '--log-verbose',
@@ -179,6 +184,7 @@ def cli(
     rcm_satellite,
     dump_query,
     submit_order,
+    record_id,
     record_ids,
     log_verbose
 ):
@@ -223,3 +229,4 @@ def cli(
             LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         else:
             LOGGER.warn('No records to order')
+
