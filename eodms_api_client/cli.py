@@ -158,6 +158,18 @@ LOGGER.addHandler(ch)
     help='File of line-separated record_Ids to order from the desired collection'
 )
 @click.option(
+    '--download-ids',
+    type=click.Path(exists=True),
+    default=None,
+    help='File of line-separated itemIds to download from EODMS'
+)
+@click.option(
+    '--download-dir',
+    type=click.Path,
+    default='.',
+    help='Directory for downloaded files'
+)
+@click.option(
     '--log-verbose',
     is_flag=True,
     default=False,
@@ -186,6 +198,8 @@ def cli(
     submit_order,
     record_id,
     record_ids,
+    download_ids,
+    download_dir,
     log_verbose
 ):
     if log_verbose:
@@ -199,6 +213,16 @@ def cli(
         order_ids = current.order(record_ids)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         exit()
+    # check for presence of supplied item_ids, where we just skip ahead and try to download
+    if download_ids is not None:
+        with open(download_ids) as f:
+            item_ids = f.read().splitlines()
+        if len(item_ids) == 0:
+            raise IOError('No item_ids detected in file: %s' % download_ids)
+        LOGGER.info('Fast-downloading for %d item_ids' % len(item_ids))
+        current.download(item_ids, download_dir)
+        exit()
+    # otherwise, run a query
     LOGGER.info('Querying EODMS API')
     current.query(
         start=start, end=end, geometry=geometry, product_type=product_type,
@@ -225,8 +249,7 @@ def cli(
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
             to_order = current.results['EODMS RecordId'].tolist()
-            order_ids = current.order(to_order)
-            LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
+            item_ids = current.order(to_order)
+            LOGGER.info('EODMS Item Ids for tracking status and downloading: %s' % item_ids)
         else:
             LOGGER.warn('No records to order')
-

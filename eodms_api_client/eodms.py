@@ -1,6 +1,8 @@
 import logging
 import re
+import os
 from concurrent.futures import ThreadPoolExecutor
+from html.parser import HTMLParser
 from json import dumps, loads
 
 from tqdm.auto import tqdm
@@ -178,8 +180,7 @@ class EodmsAPI():
           - record_ids: list of record ID numbers to order
 
         Outputs:
-          - order_ids: list of EODMS ordering system ID numbers to keep track of
-            order statuses
+          - item_ids: list of EODMS ordering system ID numbers for later downloading
         '''
         order_ids = []
         if not isinstance(record_ids, (list, tuple)):
@@ -187,7 +188,10 @@ class EodmsAPI():
         if len(record_ids) < 1:
             LOGGER.warning('No records passed to order submission')
             return order_ids
-        LOGGER.info('Submitting order for %d items' % len(record_ids))
+        LOGGER.info('Submitting order for %d item%s' % (
+            len(record_ids),
+            's' if len(record_ids) != 1 else ''
+        ))
         data = dumps({
             'destinations': [],
             'items': [
@@ -201,7 +205,215 @@ class EodmsAPI():
         r = self._session.post(EODMS_REST_ORDER, data=data)
         if r.ok:
             response = r.json()
-            order_ids = list(set([item['orderId'] for item in response['items']]))
+            item_ids = list(set([item['itemId'] for item in response['items']]))
         else:
             LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
-        return order_ids
+        return item_ids
+
+    def _extract_download_metadata(self, item):
+        '''
+        Because the download link in the response from EODMS is HTML-encoded, we have to parse out
+        the actual download URL and the filesize
+
+        Inputs:
+          - item: JSON (dict) of item metadata from EODMS
+
+        Outputs:
+          - url: remote file URL
+          - fsize: remote filesize in bytes
+        '''
+        # download url
+        parser = EODMSHTMLFilter()
+        parser.feed(item['destinations'][0]['stringValue'])
+        url = parser.text
+        # remote filesize
+        manifest_key = list(item['manifest'].keys()).pop()
+        fsize = int(item['manifest'][manifest_key])
+        return url, fsize
+
+    # def _download_single_item(self, remote, local):
+    #     '''
+    #     Download a single item
+
+    #     Inputs:
+    #       - item: JSON (dict) of item metadata from EODMS
+
+    #     Outputs:
+    #       - url: remote file URL
+    #       - fsize: remote filesize in bytes
+    #     '''
+    #     if os.path.exists(local):
+    #         LOGGER.warn('File exists: %s' % os.path.basename(local))
+    #         return
+    #     r = self._session.get(remote, stream=True)
+    #     LOGGER.debug('Start Download: %s' % os.path.basename(local))
+    #     with open(local, 'wb') as local_file:
+    #         for chunk in r.iter_content(chunk_size=1024):
+    #             local_file.write(chunk)
+    #     LOGGER.debug('Finish download: %s' % os.path.basename(local))
+    #     return local
+
+    # def _download_items(self, remote_items, local_items, max_workers=4, len_timeout=5):
+    #     n_items = len(remote_items)
+    #     remote_urls = [f[0] for f in remote_items]
+    #     remote_sizes = [f[1] for f in  remote_items]
+    #     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    #         results = list(
+    #             tqdm(
+    #                 executor.map(
+    #                     self._download_single_item,
+    #                     remote_urls,
+    #                     local_items
+    #                 ),
+    #                 desc='Downloading datasets',
+    #                 total=n_items,
+    #                 miniters=1,
+    #                 unit='items'
+    #             )
+    #         )
+    #     return results
+
+    def _download_items(self, remote_items, local_items):
+        '''
+        Given a list of remote and local items, download the remote data if it is not already
+        found locally
+
+        Inputs:
+          - remote_items: list of tuples containing (remote url, remote filesize)
+          - local_items: list of local paths where data will be saved
+
+        Outputs:
+          - local_items: same as input 
+
+        Assumptions:
+          - length of remote_items and local_items must match
+          - filenames in remote_items and local_items must be in sequence
+        '''
+        remote_urls = [f[0] for f in remote_items]
+        remote_sizes = [f[1] for f in  remote_items]
+        for remote, expected_size, local in zip(remote_urls, remote_sizes, local_items):
+            # if we have an existing local file, check the filesize against the manifest
+            if os.path.exists(local):
+                # if all-good, continue to next file
+                if os.stat(local).st_size == expected_size:
+                    LOGGER.info('Local file exists: %s' % local)
+                    continue
+                # otherwise, delete the incomplete/malformed local file and redownload
+                else:
+                    LOGGER.warn(
+                        'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
+                    )
+                    os.remove(local)
+            # use streamed download so we can wrap nicely with tqdm
+            with self._session.get(remote, stream=True) as stream:
+                with open(local, 'wb') as pipe:
+                    with tqdm.wrapattr(
+                        pipe,
+                        method='write',
+                        miniters=1,
+                        total=expected_size,
+                        desc=os.path.basename(local)
+                    ) as file_out:
+                        for chunk in stream.iter_content(chunk_size=1024):
+                            file_out.write(chunk)
+        return local_items
+
+    def download(self, item_ids, output_location='.'):
+        '''
+        Unfortunately, there seems to be no way to query the EODMS API by OrderID, so we have to
+        construct a query including the provided ItemID values
+
+        Appears that the endpoint has a hard limit of 100 results, so need to be fancy if more
+        than 100 ItemIDs are passed
+        '''
+        local_files = []
+        os.makedirs(output_location, exist_ok=True)
+        if not isinstance(item_ids, (list, tuple)):
+            item_ids = [item_ids]
+        n_items = len(item_ids)
+        if n_items < 1:
+            LOGGER.warning('No records passed to order submission')
+            return local_files
+        LOGGER.info('Checking statuses of %d item%s' % (
+            n_items,
+            's' if n_items != 1 else ''
+        ))
+        response = {
+            'items': []
+        }
+        # in the case where we have more than 100 items to download, 
+        # we iterate and submit multiple status requests
+        if n_items > 100:
+            item_count = 0
+            while item_count < n_items:
+                r =  self._session.get(
+                    EODMS_REST_ORDER + '?%s' % '&'.join(
+                        [f'itemId={itemId}' for itemId in item_ids[item_count:item_count+100]]
+                    )
+                )
+                if r.ok:
+                    response['items'].extend(r.json()['items'])
+                else:
+                    LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
+                        r.status_code, r.reason)
+                    )
+                item_count += 100
+        # if we have fewer than 100 items, we submit a single request with all the ItemIds
+        else:
+            r = self._session.get(
+                EODMS_REST_ORDER + '?%s' % '&'.join([f'itemId={itemId}' for itemId in item_ids])
+            )
+            if r.ok:
+                response['items'].extend(r.json()['items'])
+            else:
+                LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
+                    r.status_code, r.reason)
+                )
+        # Get a list of the ready-to-download items with their filesizes
+        available_remote_files = [
+            self._extract_download_metadata(item)
+            for item in response['items'] 
+            if item['status'] == 'AVAILABLE_FOR_DOWNLOAD'
+        ]
+        LOGGER.info('%d/%d items ready for download' % (
+            len(available_remote_files),
+            n_items
+        ))
+        to_download = [
+            os.path.join(output_location, os.path.basename(f[0]))
+            for f in available_remote_files
+        ]
+        # Establish what we already have      
+        already_have = [f for f in to_download if os.path.exists(f)]
+        n_already_have = len(already_have)
+        LOGGER.info('%d/%d items exist locally' % (
+            n_already_have,
+            n_items
+        ))
+        if n_already_have < len(available_remote_files):
+            # Download any available-on-remote-but-missing-from-local
+            n_missing_but_ready = len(available_remote_files) - n_already_have
+            LOGGER.info('Downloading %d remote item%s' % (
+                n_missing_but_ready,
+                's' if n_missing_but_ready != 1 else ''
+            ))
+            local_files = self._download_items(available_remote_files, to_download)
+            LOGGER.info('%d/%d items exist locally after latest download' % (
+                n_missing_but_ready + n_already_have,
+                n_items
+            ))
+        else:
+            # If we already have everything, do nothing
+            local_files = to_download
+            LOGGER.info('No further action taken')
+        return local_files
+
+class EODMSHTMLFilter(HTMLParser):
+    '''
+    Custom HTML parser for EODMS API item status responses
+
+    Stolen from stackoverflow user FrBrGeorge: https://stackoverflow.com/a/55825140
+    '''
+    text = ""
+    def handle_data(self, data):
+        self.text += data

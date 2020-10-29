@@ -82,6 +82,10 @@ def validate_query_args(args, collection):
     return query
 
 def generate_meta_keys(collection):
+    '''
+    For the given collection, return the various keys that will be used to pull image metadata
+    from EODMS
+    '''
     if collection == 'RCMImageProducts':
         return [
             'recordId', 'title', 'Acquisition Start Date', 'Acquisition End Date', 'Satellite ID',

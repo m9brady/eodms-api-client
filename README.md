@@ -38,8 +38,8 @@ geopandas.geodataframe.GeoDataFrame
 
 - [x] query RCM
 - [x] query and order RCM
-- [ ] order with provided record Ids (no query necessary)
-- [ ] download given order Ids (no query or order submission necessary)
+- [x] order with provided record Ids (no query necessary)
+- [x] download given item Ids (no query or order submission necessary)
 - [ ] blindly order (no metadata fetching, just order whatever is returned by query)
 - [ ] add support for other collections (RS2, RS1, PlanetScope first)
 - [ ] add multi-select functionality for supported collection arguments
