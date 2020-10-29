@@ -231,48 +231,6 @@ class EodmsAPI():
         fsize = int(item['manifest'][manifest_key])
         return url, fsize
 
-    # def _download_single_item(self, remote, local):
-    #     '''
-    #     Download a single item
-
-    #     Inputs:
-    #       - item: JSON (dict) of item metadata from EODMS
-
-    #     Outputs:
-    #       - url: remote file URL
-    #       - fsize: remote filesize in bytes
-    #     '''
-    #     if os.path.exists(local):
-    #         LOGGER.warn('File exists: %s' % os.path.basename(local))
-    #         return
-    #     r = self._session.get(remote, stream=True)
-    #     LOGGER.debug('Start Download: %s' % os.path.basename(local))
-    #     with open(local, 'wb') as local_file:
-    #         for chunk in r.iter_content(chunk_size=1024):
-    #             local_file.write(chunk)
-    #     LOGGER.debug('Finish download: %s' % os.path.basename(local))
-    #     return local
-
-    # def _download_items(self, remote_items, local_items, max_workers=4, len_timeout=5):
-    #     n_items = len(remote_items)
-    #     remote_urls = [f[0] for f in remote_items]
-    #     remote_sizes = [f[1] for f in  remote_items]
-    #     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-    #         results = list(
-    #             tqdm(
-    #                 executor.map(
-    #                     self._download_single_item,
-    #                     remote_urls,
-    #                     local_items
-    #                 ),
-    #                 desc='Downloading datasets',
-    #                 total=n_items,
-    #                 miniters=1,
-    #                 unit='items'
-    #             )
-    #         )
-    #     return results
-
     def _download_items(self, remote_items, local_items):
         '''
         Given a list of remote and local items, download the remote data if it is not already
