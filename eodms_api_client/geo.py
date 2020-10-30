@@ -57,8 +57,6 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
     else:
         crs = CRS(target_crs)
     df = gpd.GeoDataFrame(metadata, crs=crs)
-    # define some columns we need to convert to numeric
-    numeric_cols = ['EODMS RecordId', 'Spatial Resolution']
     # standardize some column names
     if collection == 'RCMImageProducts':
         df.rename(
@@ -69,10 +67,7 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             axis=1,
             inplace=True
         )
-        numeric_cols.extend([
-            'Sampled Pixel Spacing', 'Number of Azimuth Looks', 'Number of Range Looks',
-        ])
-        date_cols = ['Acquisition Start Time', 'Acquisition End Time']
+        date_cols = ['Acquisition Start Date', 'Acquisition End Date']
     elif collection == 'Radarsat2':
         df.rename(
             {
@@ -82,12 +77,9 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             axis=1,
             inplace=True
         )
-        numeric_cols.extend([
-            'Absolute Orbit', 'Incidence Angle (Low)', 'Incidence Angle (High)'
-        ])
         date_cols = ['Start Date', 'End Date']
     # convert strings to numeric
-    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, axis=1, downcast='integer')
+    df['EODMS RecordId'] = pd.to_numeric(df['EODMS RecordId'], downcast='integer')
     # convert strings to datetimes
     df[date_cols] = df[date_cols].apply(pd.to_datetime, axis=1)
     # sort by RecordId
