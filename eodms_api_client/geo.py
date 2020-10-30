@@ -1,3 +1,4 @@
+import pandas as pd
 import geopandas as gpd
 from pyproj import CRS, Transformer
 from shapely.geometry import Polygon, shape
@@ -36,13 +37,14 @@ def transform_metadata_geometry(meta_geom, target_crs=None):
     xs, ys = trans.transform(xx=lons, yy=lats)
     return Polygon(zip(xs, ys))
 
-def metadata_to_gdf(metadata, target_crs=None):
+def metadata_to_gdf(metadata, collection, target_crs=None):
     '''
     Instead of a jumbled JSON-looking dictionary, create a geopandas.GeoDataFrame from the 
     EODMS search query response
 
     Inputs:
       - metadata: dictionary of EODMS search query and image metadata response
+      - collection: string of EODMS Collection ID - used for column name standardization
       - target_crs: pyproj.CRS instance or properly-formatted string for the desired projection
 
     Outputs:
@@ -55,14 +57,40 @@ def metadata_to_gdf(metadata, target_crs=None):
     else:
         crs = CRS(target_crs)
     df = gpd.GeoDataFrame(metadata, crs=crs)
-    df.rename(
-        {
-            'recordId': 'EODMS RecordId',
-            'title': 'Granule'
-        },
-        axis=1,
-        inplace=True
-    )
+    # define some columns we need to convert to numeric
+    numeric_cols = ['EODMS RecordId', 'Spatial Resolution']
+    # standardize some column names
+    if collection == 'RCMImageProducts':
+        df.rename(
+            {
+                'recordId': 'EODMS RecordId',
+                'title': 'Granule'
+            },
+            axis=1,
+            inplace=True
+        )
+        numeric_cols.extend([
+            'Sampled Pixel Spacing', 'Number of Azimuth Looks', 'Number of Range Looks',
+        ])
+        date_cols = ['Acquisition Start Time', 'Acquisition End Time']
+    elif collection == 'Radarsat2':
+        df.rename(
+            {
+                'Image Id': 'EODMS RecordId',
+                'Supplier Order Number': 'Granule'
+            },
+            axis=1,
+            inplace=True
+        )
+        numeric_cols.extend([
+            'Absolute Orbit', 'Incidence Angle (Low)', 'Incidence Angle (High)'
+        ])
+        date_cols = ['Start Date', 'End Date']
+    # convert strings to numeric
+    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, axis=1, downcast='integer')
+    # convert strings to datetimes
+    df[date_cols] = df[date_cols].apply(pd.to_datetime, axis=1)
+    # sort by RecordId
     df.sort_values(by='EODMS RecordId', inplace=True)
     df.reset_index(drop=True, inplace=True)
     return df

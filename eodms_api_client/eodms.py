@@ -121,25 +121,30 @@ class EodmsAPI():
         Outputs:
           - geodataframe containing the scraped metadata_fields and polygon geometries
         '''
-        meta_urls = [record['thisRecordUrl'] for record in query_response['results']]
-        n_urls = len(meta_urls)
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            results = list(
-                tqdm(
-                    executor.map(
-                        self._fetch_single_record_metadata,
-                        meta_urls,
-                        [metadata_fields] * n_urls,
-                        [target_crs] * n_urls,
-                        [len_timeout] * n_urls
-                    ),
-                    desc='Fetching result metadata',
-                    total=n_urls,
-                    miniters=1,
-                    unit='item'
+        if len(query_response['results']) == 0:
+            LOGGER.warn('No results found')
+            results = {k: [] for k in metadata_fields}
+            results['geometry'] = []
+        else:
+            meta_urls = [record['thisRecordUrl'] for record in query_response['results']]
+            n_urls = len(meta_urls)
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                results = list(
+                    tqdm(
+                        executor.map(
+                            self._fetch_single_record_metadata,
+                            meta_urls,
+                            [metadata_fields] * n_urls,
+                            [target_crs] * n_urls,
+                            [len_timeout] * n_urls
+                        ),
+                        desc='Fetching result metadata',
+                        total=n_urls,
+                        miniters=1,
+                        unit='item'
+                    )
                 )
-            )
-        return metadata_to_gdf(results, target_crs=target_crs)
+        return metadata_to_gdf(results, self.collection, target_crs=target_crs)
         
     def _fetch_single_record_metadata(self, url, keys, target_crs, timeout):
         '''

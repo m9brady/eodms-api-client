@@ -41,7 +41,10 @@ geopandas.geodataframe.GeoDataFrame
 - [x] order with provided record Ids (no query necessary)
 - [x] download given item Ids (no query or order submission necessary)
 - [ ] blindly order (no metadata fetching, just order whatever is returned by query)
-- [ ] add support for other collections (RS2, RS1, PlanetScope first)
+- [ ] add support for other collections:
+  - [x] Radarsat2
+  - [ ] Radarsat
+  - [ ] PlanetScope
 - [ ] add multi-select functionality for supported collection arguments
 - [ ] allow for collection switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
 - [ ] readthedocs documentation?
