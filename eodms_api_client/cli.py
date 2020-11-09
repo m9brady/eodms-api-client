@@ -165,7 +165,7 @@ LOGGER.addHandler(ch)
 )
 @click.option(
     '--download-dir',
-    type=click.Path,
+    type=click.Path(),
     default='.',
     help='Directory for downloaded files'
 )
