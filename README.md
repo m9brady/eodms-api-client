@@ -1,6 +1,6 @@
 # EODMS API Client
 
-A Python3 package for querying and ordering from Natural Resources Canada's Earth Observation Data Management System (EODMS).
+A Python3 package for querying and ordering from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
@@ -42,9 +42,9 @@ geopandas.geodataframe.GeoDataFrame
 - [x] download given item Ids (no query or order submission necessary)
 - [ ] blindly order (no metadata fetching, just order whatever is returned by query)
 - [ ] add support for other collections:
-  - [x] Radarsat2
+  - [x] Radarsat2 (*WIP*)
   - [ ] Radarsat
   - [ ] PlanetScope
-- [ ] add multi-select functionality for supported collection arguments
-- [ ] allow for collection switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
+- [ ] add multi-select functionality for supported collection parameters
+- [ ] allow for collection-switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
 - [ ] readthedocs documentation?
