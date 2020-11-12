@@ -2,6 +2,8 @@
 
 A Python3 package for querying and ordering from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
+**Currently only works for RCMImageProducts collection**
+
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
 ## Usage:
