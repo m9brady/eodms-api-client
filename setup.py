@@ -16,7 +16,7 @@ setup(
     name=name,
     version=version,
     author="Mike Brady",
-    author_email="mike.brady(at)canada.ca",
+    author_email="mike.brady@canada.ca",
     license="MIT",
     description="Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)",
     long_description=long_description,
