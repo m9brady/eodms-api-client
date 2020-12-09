@@ -20,6 +20,7 @@ setup(
     license="MIT",
     description="Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=find_packages(exclude=['docs']),
     install_requires=requirements,
     url="https://github.com/m9bady/eodms-api-client",
