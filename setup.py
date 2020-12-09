@@ -17,10 +17,16 @@ setup(
     version=version,
     author="Mike Brady",
     author_email="mike.brady(at)canada.ca",
-    description='Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)',
+    license="MIT",
+    description="Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)",
     long_description=long_description,
     packages=find_packages(exclude=['docs']),
     install_requires=requirements,
+    url="https://github.com/m9bady/eodms-api-client",
+    project_urls={
+        "Source": "https://github.com/m9bady/eodms-api-client",
+        "Tracker": "https://github.com/m9bady/eodms-api-client/issues",
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
