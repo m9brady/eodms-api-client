@@ -77,7 +77,7 @@ class EodmsAPI():
         is retrieved
 
         Inputs:
-          - None: this method uses the self.search_url attribute
+          - None: this method uses the self._search_url attribute
 
         Outputs:
           - data: the search-query response JSON from the EODMS REST API
@@ -94,11 +94,11 @@ class EodmsAPI():
                     data['totalResults'], old_maxResults)
                 )
                 new_maxResults = old_maxResults + EODMS_DEFAULT_MAXRESULTS
-                self.search_url = self.search_url.replace(
+                self._search_url = self._search_url.replace(
                     '&maxResults=%d' % old_maxResults,
                     '&maxResults=%d' % new_maxResults
                 )
-                self._submit_search()
+                return self._submit_search()
             else:
                 return data
             return data

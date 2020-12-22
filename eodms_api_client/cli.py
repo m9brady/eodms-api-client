@@ -208,43 +208,50 @@ def cli(
     current = EodmsAPI(collection=collection, username=username, password=password)
     LOGGER.debug('Connected to EODMS')
     # check for presence of supplied record_ids, where we just skip ahead and order
-    if record_ids is not None:
+    if record_id is not None:
+        LOGGER.info('Fast-ordering for single record')
+        order_ids = current.order(record_id)
+        LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
+        exit()
+    elif record_ids is not None:
         LOGGER.info('Fast-ordering for %d records' % len(record_ids))
         order_ids = current.order(record_ids)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
-        exit()
     # check for presence of supplied item_ids, where we just skip ahead and try to download
-    if download_ids is not None:
+    elif download_ids is not None:
         with open(download_ids) as f:
-            item_ids = f.read().splitlines()
+            item_ids = [line for line in f.read().splitlines() if line != '']
         if len(item_ids) == 0:
             raise IOError('No item_ids detected in file: %s' % download_ids)
         LOGGER.info('Fast-downloading for %d item_ids' % len(item_ids))
         current.download(item_ids, download_dir)
-        exit()
-    # otherwise, run a query
-    LOGGER.info('Querying EODMS API')
-    current.query(
-        start=start, end=end, geometry=geometry, product_type=product_type,
-        product_format=product_format, absolute_orbit=absolute_orbit,
-        relative_orbit=relative_orbit, incidence_angle=incidence_angle,
-        beam_mode=radarsat_beam_mode, mnemonic=radarsat_beam_mnemonic, 
-        polarization=radarsat_polarization, downlink_segment=radarsat_downlink_segment_id,
-        orbit_direction=radarsat_orbit_direction,
-        look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
-    )
-    n_results = len(current.results)
-    LOGGER.info('Finished query. %d result%s' % (
-        n_results,
-        's' if n_results != 1 else ''
-    ))
+    else:
+        # otherwise, run a query
+        LOGGER.info('Querying EODMS API')
+        current.query(
+            start=start, end=end, geometry=geometry, product_type=product_type,
+            product_format=product_format, absolute_orbit=absolute_orbit,
+            relative_orbit=relative_orbit, incidence_angle=incidence_angle,
+            beam_mode=radarsat_beam_mode, mnemonic=radarsat_beam_mnemonic, 
+            polarization=radarsat_polarization, downlink_segment=radarsat_downlink_segment_id,
+            orbit_direction=radarsat_orbit_direction,
+            look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
+        )
+        n_results = len(current.results)
+        LOGGER.info('Finished query. %d result%s' % (
+            n_results,
+            's' if n_results != 1 else ''
+        ))
     if dump_results:
         out_file = './query_results.geojson'
         LOGGER.info('Saving query result%s to file: %s' % (
             's' if n_results != 1 else '',
             out_file
         ))
-        current.results.to_file(out_file, driver='GeoJSON')
+        if len(current.results) > 0:
+            current.results.to_file(out_file, driver='GeoJSON')
+        else:
+            LOGGER.warn('No results found')
     if submit_order:
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
