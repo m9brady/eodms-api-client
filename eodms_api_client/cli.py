@@ -149,19 +149,24 @@ LOGGER.addHandler(ch)
 @click.option(
     '--record-id',
     default=None,
-    help='Specific record_Id to order from the desired collection'
+    help='Specific record Id to order from the desired collection'
 )
 @click.option(
     '--record-ids',
     type=click.Path(exists=True),
     default=None,
-    help='File of line-separated record_Ids to order from the desired collection'
+    help='File of line-separated record Ids to order from the desired collection'
+)
+@click.option(
+    '--download-id',
+    default=None,
+    help='Specific Order item Id to download from EODMS'
 )
 @click.option(
     '--download-ids',
     type=click.Path(exists=True),
     default=None,
-    help='File of line-separated itemIds to download from EODMS'
+    help='File of line-separated Order item Ids to download from EODMS'
 )
 @click.option(
     '--download-dir',
@@ -198,6 +203,7 @@ def cli(
     submit_order,
     record_id,
     record_ids,
+    download_id,
     download_ids,
     download_dir,
     log_verbose
@@ -214,16 +220,19 @@ def cli(
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         exit()
     elif record_ids is not None:
-        LOGGER.info('Fast-ordering for %d records' % len(record_ids))
+        LOGGER.info('Fast-ordering for %d record(s)' % len(record_ids))
         order_ids = current.order(record_ids)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
     # check for presence of supplied item_ids, where we just skip ahead and try to download
+    elif download_id is not None:
+        LOGGER.info('Fast-downloading for 1 order')
+        current.download(download_id, download_dir)
     elif download_ids is not None:
         with open(download_ids) as f:
             item_ids = [line for line in f.read().splitlines() if line != '']
         if len(item_ids) == 0:
             raise IOError('No item_ids detected in file: %s' % download_ids)
-        LOGGER.info('Fast-downloading for %d item_ids' % len(item_ids))
+        LOGGER.info('Fast-downloading for %d order(s)' % len(item_ids))
         current.download(item_ids, download_dir)
     else:
         # otherwise, run a query

@@ -26,15 +26,15 @@ ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
 class EodmsAPI():
-    def __init__(self, collection, username=None, password=None):
-        '''
-        Entry-point for accessing the EODMS REST API
+    '''
+    Entry-point for accessing the EODMS REST API
 
-        Inputs:
-          - collection: The EODMS Collection to which queries and orders will be sent
-          - username: EODMS account username, leave blank to use .netrc (if available)
-          - password: EODMS account password, leave blank to use .netrc (if available)
-        '''
+    Inputs:
+        - collection: The EODMS Collection to which queries and orders will be sent
+        - username: EODMS account username, leave blank to use .netrc (if available)
+        - password: EODMS account password, leave blank to use .netrc (if available)
+    '''
+    def __init__(self, collection, username=None, password=None):
         self.collection = collection
         self._session = create_session(username, password)
     
