@@ -18,6 +18,10 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '&maxResults=%d&format=json' % EODMS_DEFAULT_MAXRESULTS
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
 
+EODMS_COLLECTIONS = [
+    'Radarsat', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
+]
+
 LOGGER = logging.getLogger('eodmsapi.main')
 LOGGER.setLevel(logging.INFO)
 ch = logging.StreamHandler()
@@ -35,9 +39,23 @@ class EodmsAPI():
         - password: EODMS account password, leave blank to use .netrc (if available)
     '''
     def __init__(self, collection, username=None, password=None):
-        self.collection = collection
+        self.__collection = collection
         self._session = create_session(username, password)
     
+    @property
+    def collection(self):
+        return self.__collection
+
+    @collection.setter
+    def collection(self, collection, *args, **kwargs):
+        if collection not in EODMS_COLLECTIONS:
+            raise ValueError('Unrecognized EODMS collection: "%s" - Must be one of [%s]' % (
+                collection, ', '.join(EODMS_COLLECTIONS)
+            ))
+        else:
+            self.__collection = collection
+        return
+
     def query(self, **kwargs):
         '''
         Submit a query to EODMS and save the results as a geodataframe in a class 

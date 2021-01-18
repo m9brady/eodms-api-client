@@ -11,6 +11,10 @@ Heavily influenced by the utterly fantastic `sentinelsat` package: https://githu
 
 ## Usage:
 
+Full documenation and real-world example on [ReadTheDocs](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)!
+
+## Quickstart:
+
 ### CLI
 
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
@@ -115,5 +119,5 @@ Options:
   - [ ] Radarsat
   - [ ] PlanetScope
 - [ ] add multi-select functionality for supported collection parameters
-- [ ] allow for collection-switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
+- [x] allow for collection-switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
 - [x] readthedocs documentation

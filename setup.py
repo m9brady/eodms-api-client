@@ -23,10 +23,10 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(exclude=['docs']),
     install_requires=requirements,
-    url="https://github.com/m9bady/eodms-api-client",
+    url="https://eodms-api-client.readthedocs.io/en/latest",
     project_urls={
-        "Source": "https://github.com/m9bady/eodms-api-client",
-        "Tracker": "https://github.com/m9bady/eodms-api-client/issues",
+        "Source": "https://github.com/m9brady/eodms-api-client",
+        "Tracker": "https://github.com/m9brady/eodms-api-client/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
