@@ -1,8 +1,13 @@
+import fiona
 import pandas as pd
 import geopandas as gpd
 from pyproj import CRS, Transformer
 from shapely.geometry import Polygon, shape
 from shapely.wkt import dumps as to_wkt
+from os.path import splitext
+
+# add 'read' support for KML/KMZ - disabled by default
+fiona.drvsupport.supported_drivers['KML'] = 'r'
 
 SRC_CRS = CRS('epsg:4326')
 
@@ -99,7 +104,11 @@ def load_search_aoi(geofile):
     Outputs:
       - wkt: The Well-Known Text representation of the features within <geofile>
     '''
-    df = gpd.read_file(geofile)
+    # use vsizip for KMZ/Zipped shapefile
+    if splitext(geofile)[-1] in ['kmz', 'zip']:
+        df = gpd.read_file(f'/vsizip/{geofile}')
+    else:
+        df = gpd.read_file(geofile)
     if df.crs != SRC_CRS:
         df = df.to_crs(SRC_CRS)
     geometry = df.unary_union
@@ -114,5 +123,5 @@ def load_search_aoi(geofile):
         raise NotImplementedError('Search geometry must be a polygon/multipolygon')
     if n_vertices > 1000:
         raise Exception('Search geometry is too complex (more than 1000 vertices)')
-    wkt = to_wkt(geometry)
+    wkt = to_wkt(geometry, output_dimension=2) # drop Z dimension if it exists - causes 500-errors with EODMS
     return wkt
