@@ -4,8 +4,10 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from json import dumps, loads
+from time import sleep
 
 from tqdm.auto import tqdm
+from requests.exceptions import ConnectionError
 
 from .auth import create_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
@@ -101,7 +103,15 @@ class EodmsAPI():
           - data: the search-query response JSON from the EODMS REST API
         '''
         old_maxResults = int(re.search(r'&maxResults=([\d*]+)', self._search_url).group(1))
-        r = self._session.get(self._search_url)
+        try:
+            r = self._session.get(self._search_url)
+        # some GETs are returning 104 ECONNRESET
+        # - possibly due to geometry vertex count (failed with 734 but 73 was fine)
+        except ConnectionError:
+            LOGGER.warning('ConnectionError - HTTP %d: %s' % (r.status_code, r.reason))
+            LOGGER.warning('Retrying in 3 seconds...')
+            sleep(3)
+            return self._submit_search()
         if r.ok:
             data = r.json()
             # the data['moreResults'] response is unreliable

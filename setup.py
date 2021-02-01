@@ -21,8 +21,6 @@ setup(
     description="Tool for querying and submitting image orders to Natural Resources Canada\'s Earth Observation Data Management System (EODMS)",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=find_packages(exclude=['docs']),
-    install_requires=requirements,
     url="https://eodms-api-client.readthedocs.io/en/latest",
     project_urls={
         "Source": "https://github.com/m9brady/eodms-api-client",
@@ -33,6 +31,15 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    packages=find_packages(exclude=['docs', 'tests']),
+    install_requires=requirements,
+    extras_require={
+        'dev': [
+            'pytest',
+            'requests-mock',
+            'rstcheck'
+        ],
+    }
     python_requires='~=3.6',
     entry_points='''
     [console_scripts]

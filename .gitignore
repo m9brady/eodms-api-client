@@ -153,4 +153,5 @@ cython_debug/
 *.prj
 *.dbf
 *.kml
+*.kmz
 *.gml
