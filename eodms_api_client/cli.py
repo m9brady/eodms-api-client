@@ -241,8 +241,10 @@ def cli(
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         exit()
     elif record_ids is not None:
-        LOGGER.info('Fast-ordering for %d record(s)' % len(record_ids))
-        order_ids = current.order(record_ids)
+        with open(record_ids) as f:
+            records_to_order = [int(line.strip()) for line in f.readlines() if line.strip() != '']
+        LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
+        order_ids = current.order(records_to_order)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
     # check for presence of supplied item_ids, where we just skip ahead and try to download
     elif download_id is not None:

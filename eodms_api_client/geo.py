@@ -106,7 +106,7 @@ def load_search_aoi(geofile):
       - wkt: The Well-Known Text representation of the features within <geofile>
     '''
     # use vsizip for KMZ/Zipped shapefile
-    if splitext(geofile)[-1] in ['kmz', 'zip']:
+    if splitext(geofile)[-1] in ['.kmz', '.zip']:
         df = gpd.read_file(f'/vsizip/{geofile}')
     else:
         df = gpd.read_file(geofile)

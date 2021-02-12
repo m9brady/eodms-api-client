@@ -14,6 +14,7 @@ from .geo import metadata_to_gdf, transform_metadata_geometry
 from .params import generate_meta_keys, validate_query_args
 
 EODMS_DEFAULT_MAXRESULTS = 150
+EODMS_SUBMIT_HARDLIMIT = 100
 EODMS_REST_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi'
 EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '/search?collection={collection}&query={query}' + \
@@ -221,26 +222,33 @@ class EodmsAPI():
         if len(record_ids) < 1:
             LOGGER.warning('No records passed to order submission')
             return order_ids
+        if len(record_ids) > EODMS_SUBMIT_HARDLIMIT:
+            LOGGER.warning('Number of requested images exceeds limit (%d)' % EODMS_SUBMIT_HARDLIMIT)
         LOGGER.info('Submitting order for %d item%s' % (
             len(record_ids),
             's' if len(record_ids) != 1 else ''
         ))
-        data = dumps({
-            'destinations': [],
-            'items': [
-                {
-                    'collectionId': self.collection,
-                    'recordId': record_id
-                }
-                for record_id in record_ids
-            ]
-        })
-        r = self._session.post(EODMS_REST_ORDER, data=data)
-        if r.ok:
-            response = r.json()
-            item_ids = list(set([item['itemId'] for item in response['items']]))
-        else:
-            LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
+        item_ids = []
+        idx = 0
+        while idx < len(record_ids):
+            data = dumps({
+                'destinations': [],
+                'items': [
+                    {
+                        'collectionId': self.collection,
+                        'recordId': record_id
+                    }
+                    for record_id in record_ids[idx:idx+EODMS_SUBMIT_HARDLIMIT]
+                ]
+            })
+            r = self._session.post(EODMS_REST_ORDER, data=data)
+            if r.ok:
+                response = r.json()
+                item_ids.extend(list(set([int(item['itemId']) for item in response['items']])))
+            else:
+                LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
+                exit()
+            idx += EODMS_SUBMIT_HARDLIMIT
         return item_ids
 
     def _extract_download_metadata(self, item):
