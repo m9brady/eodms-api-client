@@ -1,4 +1,5 @@
 import logging
+import os
 
 import click
 
@@ -135,10 +136,25 @@ LOGGER.addHandler(ch)
     help='Limit RCM collection results to the desired satellite'
 )
 @click.option(
+    '--output-dir',
+    '-o',
+    type=click.Path(exists=True),
+    default='.',
+    help='Directory where query results will be saved'
+)
+@click.option(
     '--dump-results',
+    '-d',
     is_flag=True,
     default=False,
-    help='Whether or not to create a geopackage containing the results of the query'
+    help='Whether or not to create a geojson dump containing the results of the query'
+)
+@click.option(
+    '--dump-filename',
+    '-dfn',
+    type=str,
+    default='query_results',
+    help='Filename for query results geojson'
 )
 @click.option(
     '--submit-order',
@@ -199,7 +215,9 @@ def cli(
     radarsat_look_direction,
     radarsat_downlink_segment_id,
     rcm_satellite,
+    output_dir,
     dump_results,
+    dump_filename,
     submit_order,
     record_id,
     record_ids,
@@ -252,7 +270,7 @@ def cli(
             's' if n_results != 1 else ''
         ))
     if dump_results:
-        out_file = './query_results.geojson'
+        out_file = os.path.join(output_dir, f'{dump_filename}.geojson')
         LOGGER.info('Saving query result%s to file: %s' % (
             's' if n_results != 1 else '',
             out_file

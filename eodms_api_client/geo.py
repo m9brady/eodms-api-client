@@ -1,10 +1,11 @@
+from os.path import splitext
+
 import fiona
-import pandas as pd
 import geopandas as gpd
+import pandas as pd
 from pyproj import CRS, Transformer
 from shapely.geometry import Polygon, shape
 from shapely.wkt import dumps as to_wkt
-from os.path import splitext
 
 # add 'read' support for KML/KMZ - disabled by default
 fiona.drvsupport.supported_drivers['KML'] = 'r'

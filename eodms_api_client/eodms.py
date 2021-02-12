@@ -1,13 +1,13 @@
 import logging
-import re
 import os
+import re
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from json import dumps, loads
 from time import sleep
 
-from tqdm.auto import tqdm
 from requests.exceptions import ConnectionError
+from tqdm.auto import tqdm
 
 from .auth import create_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
