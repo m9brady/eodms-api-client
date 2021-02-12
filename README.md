@@ -35,7 +35,7 @@ Repeating the same query as the CLI example above in a Python REPL allows you to
 
 For example, one may wish to inspect the image metadata to check approximate download sizes. One may also want to inspect the image footprints to ensure that they are ordering only the images which have most-optimal coverage of their `query_aoi.geojson` polygon.
 
-```
+```python
 >>> from eodms_api_client import EodmsAPI
 >>> x = EodmsAPI(collection='RCMImageProducts')
 >>> x.query(geometry='query_aoi.geojson')
@@ -52,57 +52,87 @@ Usage: eodms [OPTIONS]
 Options:
   -u, --username TEXT             EODMS username (leave blank to use .netrc or
                                   be prompted)
+
   -p, --password TEXT             EODMS password (leave blank to use .netrc or
                                   be prompted)
+
   -c, --collection [Radarsat|Radarsat2|RCMImageProducts|NAPL|PlanetScope]
                                   EODMS collection to search  [required]
   -s, --start TEXT                Beginning of acquisition time window
                                   (default to 1 day prior to now)
+
   -e, --end TEXT                  End of acquisition time window (default to
                                   now)
+
   -g, --geometry PATH             File containing polygon used to constrain
                                   the query results to a spatial region
+
   -pt, --product-type TEXT        Limit results to a certain image product
                                   type
+
   -pf, --product-format [GeoTIFF|NITF21]
                                   Limit results to a certain image product
                                   format
+
   -rel, --relative-orbit TEXT     Limit results to the desired relative orbit
                                   Id
+
   -abs, --absolute-orbit TEXT     Limit results to the desired absolute orbit
                                   Id
+
   -ia, --incidence-angle TEXT     Limit results to the desired incidence angle
   -rb, --radarsat-beam-mode TEXT  Limit SAR collection results to the desired
                                   beam mode
+
   -rm, --radarsat-beam-mnemonic TEXT
                                   Limit SAR collection results to the desired
                                   beam mnemonic
+
   -rp, --radarsat-polarization [CH+CV|HH|HH+HV|HH+HV+VH+VV|HH+VV|HV|VH|VH+VV|VV]
                                   Limit SAR collection results to the desired
                                   polarization
+
   -ro, --radarsat-orbit-direction [Ascending|Descending]
                                   Limit SAR collection results to the desired
                                   orbit type
+
   -rl, --radarsat-look-direction [Left|Right]
                                   Limit SAR collection results to the desired
                                   antenna look direction
+
   -rd, --radarsat-downlink-segment-id TEXT
                                   Limit SAR collection results to the desired
                                   downlink segment Id
+
   -rs, --rcm-satellite [RCM1|RCM2|RCM3]
                                   Limit RCM collection results to the desired
                                   satellite
-  --dump-results                  Whether or not to create a geopackage
+
+  -o, --output-dir PATH           Directory where query results will be saved
+                                  [default: .]
+
+  -d, --dump-results              Whether or not to create a geojson dump
                                   containing the results of the query
+
+  -dfn, --dump-filename TEXT      Filename for query results geojson
+                                  [default: query_results]
+
   --submit-order                  Submit an order to EODMS from the results of
                                   the current query parameters
-  --record-id TEXT                Specific record_Id to order from the desired
+
+  --record-id TEXT                Specific record Id to order from the desired
                                   collection
-  --record-ids PATH               File of line-separated record_Ids to order
+
+  --record-ids PATH               File of line-separated record Ids to order
                                   from the desired collection
-  --download-ids PATH             File of line-separated itemIds to download
-                                  from EODMS
-  --download-dir PATH             Directory for downloaded files
+
+  --download-id TEXT              Specific Order item Id to download from
+                                  EODMS
+
+  --download-ids PATH             File of line-separated Order item Ids to
+                                  download from EODMS
+
+  --download-dir PATH             Directory for downloaded files  [default: .]
   --log-verbose                   Use debug-level logging
   -h, --help                      Show this message and exit.
 ```
