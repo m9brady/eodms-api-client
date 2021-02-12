@@ -140,7 +140,8 @@ LOGGER.addHandler(ch)
     '-o',
     type=click.Path(exists=True),
     default='.',
-    help='Directory where query results will be saved'
+    help='Directory where query results will be saved',
+    show_default=True
 )
 @click.option(
     '--dump-results',
@@ -154,7 +155,8 @@ LOGGER.addHandler(ch)
     '-dfn',
     type=str,
     default='query_results',
-    help='Filename for query results geojson'
+    help='Filename for query results geojson',
+    show_default=True
 )
 @click.option(
     '--submit-order',
@@ -188,7 +190,8 @@ LOGGER.addHandler(ch)
     '--download-dir',
     type=click.Path(),
     default='.',
-    help='Directory for downloaded files'
+    help='Directory for downloaded files',
+    show_default=True
 )
 @click.option(
     '--log-verbose',
