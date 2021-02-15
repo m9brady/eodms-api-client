@@ -69,12 +69,15 @@ Since we are already in Python, we can do some exploration of the results in ord
     Medium Resolution 50m    23
     Quad-Polarization         1
     Name: Granule, dtype: int64
+
     # we like the sound of the 30m and quad-pol products. Let's subset to just those
     >>> subset = client.results.loc[client.results['Beam Mode Type'] != 'Medium Resolution 50m']
     >>> len(subset)
     3
+
     # let's make sure that the 3 scenes left have decent overlap with our area-of-interest (AOI)
     >>> import geopandas as gpd
+
     # project to meters (UTM 14N WGS84) for area calculations
     >>> aoi = gpd.read_file('lakewinnipegnorth.geojson').to_crs('epsg:32614') 
     >>> subset = subset.to_crs(aoi.crs)
@@ -85,9 +88,11 @@ Since we are already in Python, we can do some exploration of the results in ord
     8     0.015402
     18    0.962696
     Name: overlap_pct, dtype: float64
+
     # there is 1 scene that has less than 2% of its area overlapping with our AOI
     # so let's remove it!
     >>> subset = subset.loc[subset['overlap_pct'] > 0.1]
+    
     # now we extract the EODMS record Ids for our 2 scenes and submit our order
     >>> record_ids = subset['EODMS RecordId'].tolist()
     >>> order_ids = client.order(record_ids)

@@ -20,13 +20,13 @@ Full documenation and real-world example on [ReadTheDocs](https://eodms-api-clie
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
 ```
-$ eodms -c RCMImageProducts -g query_aoi.geojson --dump-results
+$ eodms -c RCM -g query_aoi.geojson --dump-results
 ```
 
 Same query as above, but this time submit an order for all products found by the query instead of saving a result file
 
 ```
-$ eodms -c RCMImageProducts -g query_aoi.geojson --submit-order
+$ eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
 ### Interactive Python
@@ -37,7 +37,7 @@ For example, one may wish to inspect the image metadata to check approximate dow
 
 ```python
 >>> from eodms_api_client import EodmsAPI
->>> x = EodmsAPI(collection='RCMImageProducts')
+>>> x = EodmsAPI(collection='RCM')
 >>> x.query(geometry='query_aoi.geojson')
 >>> type(x.results)
 geopandas.geodataframe.GeoDataFrame

@@ -7,15 +7,15 @@ This package provides a command-line interface for querying, ordering, and downl
 
 .. code-block:: console
 
-    eodms -c RCMImageProducts -g aoi_polygon.geojson --dump-results
+    eodms -c RCM -g aoi_polygon.geojson --dump-results
 
 .. code-block:: python
 
     >>> from eodms_api_client import EodmsAPI
-    >>> client = EodmsAPI(collection='RCMImageProducts')
+    >>> client = EodmsAPI(collection='RCM')
     >>> client.query(geometry='aoi_polygon.geojson')
 
-Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ by default (GeoJSON, Esri Shapefile, OGC GeoPackage, etc.)
+Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ by default (GeoJSON, Esri Shapefile, OGC GeoPackage, KML/KMZ, etc.)
 
 .. toctree::
    :maxdepth: 2
