@@ -97,6 +97,23 @@ def validate_query_args(args, collection):
         relative_orbit = args.get('relative_orbit', None)
         if relative_orbit is not None: #TODO: Multi-select
             query_args.append('RSAT2.ORBIT_REL=%f' % int(relative_orbit))
+    # Radarsat1 Products
+    elif collection == 'Radarsat1':
+        mnemonic = args.get('mnemonic', None)
+        if mnemonic is not None: #TODO: Multi-select
+            query_args.append('RSAT1.BEAM_MNEMONIC=%s' % mnemonic)
+        look_direction = args.get('look_direction', None)
+        if look_direction is not None:
+            query_args.append('RSAT1.ANTENNA_ORIENTATION=%s' % look_direction)
+        incidence_angle = args.get('incidence_angle', None)
+        if incidence_angle is not None:
+            query_args.append('RSAT1.INCIDENCE_ANGLE=%f' % float(incidence_angle))
+        orbit_direction = args.get('orbit_direction', None)
+        if orbit_direction is not None:
+            query_args.append('RSAT1.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())            
+        absolute_orbit = args.get('absolute_orbit', None)
+        if absolute_orbit is not None: #TODO: Multi-select
+            query_args.append('RSAT1.ORBIT_ABS=%f' % float(absolute_orbit))        
     else:
         raise NotImplementedError(
             '%s is not implemented and/or not recognized as a valid EODMS collection'
@@ -123,11 +140,18 @@ def generate_meta_keys(collection):
         ]
     elif collection == 'Radarsat2':
         return [
-            'Image Id', 'Supplier Order Number', 'Start Date', 'End Date', 'Position', 'Sensor', 'Sensor Mode',
+            'Sequence Id', 'Supplier Order Number', 'Start Date', 'End Date', 'Position', 'Sensor', 'Sensor Mode',
             'Beam', 'Polarization', 'Look Orientation', 'Incidence Angle (Low)',
             'Incidence Angle (High)', 'Orbit Direction', 'Absolute Orbit', 'LUT Applied',
             'Product Format', 'Product Type', 'Spatial Resolution',
         ]
+    elif collection == 'Radarsat1':
+        return [
+            'Sequence Id', 'Product Id', 'Start Date', 'End Date', 'Position', 'Sensor', 'Sensor Mode',
+            'Beam', 'Polarization', 'Look Orientation', 'Incidence Angle (Low)',
+            'Incidence Angle (High)', 'Orbit Direction', 'Absolute Orbit', 'LUT Applied',
+            'Product Format', 'Product Type', 'Spatial Resolution',
+        ]        
     else:
         raise NotImplementedError(
             '%s is not implemented and/or not recognized as a valid EODMS collection'

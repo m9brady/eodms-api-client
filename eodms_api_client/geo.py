@@ -77,12 +77,32 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
     elif collection == 'Radarsat2':
         df.rename(
             {
-                'Image Id': 'EODMS RecordId',
+                'Sequence Id': 'EODMS RecordId',
                 'Supplier Order Number': 'Granule'
             },
             axis=1,
             inplace=True
         )
+        date_cols = ['Start Date', 'End Date']
+    elif collection == 'Radarsat1':
+        df.rename(
+            {
+                'Sequence Id': 'EODMS RecordId',
+                'Product Id': 'Granule',
+                'Start Date': 'End Date', # TODO: Check that this is indeed necessary!
+                'End Date': 'Start Date'  # TODO: Check that this is indeed necessary!
+            },
+            axis=1,
+            inplace=True
+        )
+        # fix column ordering for RS1
+        df = df[[
+            'EODMS RecordId', 'Granule', 'Start Date', 'End Date', 'Position',
+            'Sensor', 'Sensor Mode', 'Beam', 'Polarization', 'Look Orientation',
+            'Incidence Angle (Low)', 'Incidence Angle (High)', 'Orbit Direction',
+            'Absolute Orbit', 'LUT Applied', 'Product Format', 'Product Type',
+            'Spatial Resolution', 'geometry'
+        ]]
         date_cols = ['Start Date', 'End Date']
     # convert strings to numeric
     df['EODMS RecordId'] = pd.to_numeric(df['EODMS RecordId'], downcast='integer')

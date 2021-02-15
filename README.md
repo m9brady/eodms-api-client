@@ -56,7 +56,7 @@ Options:
   -p, --password TEXT             EODMS password (leave blank to use .netrc or
                                   be prompted)
 
-  -c, --collection [Radarsat|Radarsat2|RCMImageProducts|NAPL|PlanetScope]
+  -c, --collection [Radarsat1|Radarsat2|RCMImageProducts|NAPL|PlanetScope]
                                   EODMS collection to search  [required]
   -s, --start TEXT                Beginning of acquisition time window
                                   (default to 1 day prior to now)
@@ -146,7 +146,7 @@ Options:
 - [ ] blindly order (skip extra metadata fetching, just order whatever is returned by query)
 - [ ] add support for other collections:
   - [x] Radarsat2 (*WIP*)
-  - [ ] Radarsat
+  - [x] Radarsat1 (*WIP*)
   - [ ] PlanetScope
 - [ ] add multi-select functionality for supported collection parameters
 - [x] allow for collection-switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)

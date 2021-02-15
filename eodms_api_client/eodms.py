@@ -22,7 +22,7 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
 
 EODMS_COLLECTIONS = [
-    'Radarsat', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
+    'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
 ]
 
 LOGGER = logging.getLogger('eodmsapi.main')

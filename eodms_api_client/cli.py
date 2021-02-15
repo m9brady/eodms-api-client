@@ -31,7 +31,7 @@ LOGGER.addHandler(ch)
     '--collection',
     '-c',
     type=click.Choice([
-        'Radarsat', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
+        'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
     ], case_sensitive=False),
     required=True,
     help='EODMS collection to search'
