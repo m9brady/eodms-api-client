@@ -56,8 +56,7 @@ Options:
   -p, --password TEXT             EODMS password (leave blank to use .netrc or
                                   be prompted)
 
-  -c, --collection [Radarsat1|Radarsat2|RCMImageProducts|NAPL|PlanetScope]
-                                  EODMS collection to search  [required]
+  -c, --collection TEXT           EODMS collection to search  [required]
   -s, --start TEXT                Beginning of acquisition time window
                                   (default to 1 day prior to now)
 
@@ -134,6 +133,7 @@ Options:
 
   --download-dir PATH             Directory for downloaded files  [default: .]
   --log-verbose                   Use debug-level logging
+  --version                       Show the package version
   -h, --help                      Show this message and exit.
 ```
 

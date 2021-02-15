@@ -4,6 +4,7 @@ import os
 import click
 
 from . import EodmsAPI
+from . import __version__ as eodms_version
 
 LOGGER = logging.getLogger('eodmsapi.cli')
 LOGGER.setLevel(logging.INFO)
@@ -11,6 +12,13 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s', '%Y-%m-%d %H:%M:%S')
 ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
+
+def print_version(ctx, param, value):
+    '''stolen from Click documentation: https://click.palletsprojects.com/en/7.x/options/#callbacks-and-eager-options'''
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(f'eodms-api-client {eodms_version}')
+    ctx.exit()
 
 @click.command(context_settings={
     'help_option_names': ['-h', '--help']
@@ -30,9 +38,7 @@ LOGGER.addHandler(ch)
 @click.option(
     '--collection',
     '-c',
-    type=click.Choice([
-        'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
-    ], case_sensitive=False),
+    type=str,
     required=True,
     help='EODMS collection to search'
 )
@@ -198,6 +204,14 @@ LOGGER.addHandler(ch)
     is_flag=True,
     default=False,
     help='Use debug-level logging'
+)
+@click.option(
+    '--version',
+    is_flag=True,
+    callback=print_version,
+    expose_value=False,
+    is_eager=True,
+    help='Show the package version'
 )
 def cli(
     username,

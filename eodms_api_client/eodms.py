@@ -42,7 +42,7 @@ class EodmsAPI():
         - password: EODMS account password, leave blank to use .netrc (if available)
     '''
     def __init__(self, collection, username=None, password=None):
-        self.__collection = collection
+        self.collection = collection
         self._session = create_session(username, password)
     
     @property
@@ -52,9 +52,19 @@ class EodmsAPI():
     @collection.setter
     def collection(self, collection, *args, **kwargs):
         if collection not in EODMS_COLLECTIONS:
-            raise ValueError('Unrecognized EODMS collection: "%s" - Must be one of [%s]' % (
-                collection, ', '.join(EODMS_COLLECTIONS)
-            ))
+            # try to be a bit more flexible
+            if collection.upper() in ['RCM']:
+                self.__collection = 'RCMImageProducts'
+            elif collection.upper() in ['RS1', 'RADARSAT', 'RADARSAT-1']:
+                self.__collection = 'Radarsat1'
+            elif collection.upper() in ['RS2', 'RADARSAT-2']:
+                self.__collection = 'Radarsat2'
+            elif collection.upper() in ['PLANET']:
+                self.__collection = 'PlanetScope'
+            else:
+                raise ValueError('Unrecognized EODMS collection: "%s" - Must be one of [%s]' % (
+                    collection, ', '.join(EODMS_COLLECTIONS)
+                ))
         else:
             self.__collection = collection
         return

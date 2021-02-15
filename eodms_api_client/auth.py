@@ -29,9 +29,22 @@ def create_session(username=None, password=None):
       - session: requests.Session object for the EODMS REST API
     '''
     if username is None and password is None:
+        if os.name == 'posix':
+            netrc_file = os.path.join(os.path.expanduser('~'), '.netrc')
+        elif os.name == 'nt':
+            netrc_file = os.path.join(os.path.expanduser('~'), '_netrc')
+            if not os.path.exists(netrc_file):
+                netrc_file = os.path.join(os.path.expanduser('~'), '.netrc')
+                if not os.path.exists(netrc_file):
+                    raise FileNotFoundError('Cannot locate netrc file in expected location: %s' % os.path.expanduser('~'))
+        else:
+            raise NotImplementedError('Unsupported OS: %s' % os.name)
         try:
-            hosts = netrc(os.path.expanduser('~') + '/.netrc').hosts
-            username, _, password = hosts.get(EODMS_HOSTNAME)
+            hosts = netrc(netrc_file).hosts
+            try:
+                username, _, password = hosts.get(EODMS_HOSTNAME)
+            except TypeError:
+                raise ValueError('Cannot locate credentials for EODMS server. Check your netrc file') from TypeError
         except (FileNotFoundError, TypeError):
             username = input('Enter EODMS username: ')
             password = getpass('Enter EODMS password: ')
