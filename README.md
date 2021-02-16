@@ -5,7 +5,9 @@
 
 A Python3 package for querying and ordering from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
-**Currently only works for RCMImageProducts collection**
+### Currently only works for RCMImageProducts/Radarsat2\*/Radarsat1\* collections
+#### (\*) Work-in-progress
+
 
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
@@ -107,10 +109,10 @@ Options:
                                   Limit RCM collection results to the desired
                                   satellite
 
-  -o, --output-dir PATH           Directory where query results will be saved
-                                  [default: .]
+  -o, --output-dir PATH           Directory where query results and downloaded
+                                  imagery will be saved  [default: .]
 
-  -d, --dump-results              Whether or not to create a geojson dump
+  -dr, --dump-results              Whether or not to create a geojson dump
                                   containing the results of the query
 
   -dfn, --dump-filename TEXT      Filename for query results geojson
@@ -131,10 +133,10 @@ Options:
   --download-ids PATH             File of line-separated Order item Ids to
                                   download from EODMS
 
-  --download-dir PATH             Directory for downloaded files  [default: .]
   --log-verbose                   Use debug-level logging
   --version                       Show the package version
   -h, --help                      Show this message and exit.
+
 ```
 
 ## ToDo:

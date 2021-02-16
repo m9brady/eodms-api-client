@@ -146,12 +146,12 @@ def print_version(ctx, param, value):
     '-o',
     type=click.Path(exists=True),
     default='.',
-    help='Directory where query results will be saved',
+    help='Directory where query results and downloaded imagery will be saved',
     show_default=True
 )
 @click.option(
     '--dump-results',
-    '-d',
+    '-dr',
     is_flag=True,
     default=False,
     help='Whether or not to create a geojson dump containing the results of the query'
@@ -191,13 +191,6 @@ def print_version(ctx, param, value):
     type=click.Path(exists=True),
     default=None,
     help='File of line-separated Order item Ids to download from EODMS'
-)
-@click.option(
-    '--download-dir',
-    type=click.Path(),
-    default='.',
-    help='Directory for downloaded files',
-    show_default=True
 )
 @click.option(
     '--log-verbose',
@@ -240,7 +233,6 @@ def cli(
     record_ids,
     download_id,
     download_ids,
-    download_dir,
     log_verbose
 ):
     if log_verbose:
@@ -263,14 +255,14 @@ def cli(
     # check for presence of supplied item_ids, where we just skip ahead and try to download
     elif download_id is not None:
         LOGGER.info('Fast-downloading for 1 order')
-        current.download(download_id, download_dir)
+        current.download(download_id, output_dir)
     elif download_ids is not None:
         with open(download_ids) as f:
             item_ids = [line for line in f.read().splitlines() if line != '']
         if len(item_ids) == 0:
             raise IOError('No item_ids detected in file: %s' % download_ids)
         LOGGER.info('Fast-downloading for %d order(s)' % len(item_ids))
-        current.download(item_ids, download_dir)
+        current.download(item_ids, output_dir)
     else:
         # otherwise, run a query
         LOGGER.info('Querying EODMS API')

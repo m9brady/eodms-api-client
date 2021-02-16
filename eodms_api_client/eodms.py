@@ -350,49 +350,19 @@ class EodmsAPI():
         response = {
             'items': []
         }
-        # API has different behaviour depending on the collection being queried...
-        if self.collection == 'RCMImageProducts':
-            # in the case where we have more than 100 items to download, 
-            # we iterate and submit multiple status requests
-            if n_items > 100:
-                item_count = 0
-                while item_count < n_items:
-                    r =  self._session.get(
-                        EODMS_REST_ORDER + '?%s' % '&'.join(
-                            [f'itemId={itemId}' for itemId in item_ids[item_count:item_count+100]]
-                        )
-                    )
-                    if r.ok:
-                        response['items'].extend(r.json()['items'])
-                    else:
-                        LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
-                            r.status_code, r.reason)
-                        )
-                    item_count += 100
-            # if we have fewer than 100 items, we submit a single request with all the ItemIds
+        # need to submit 1 API request per imageId to check downloadable status
+        status_updates = [
+            EODMS_REST_ORDER + '?itemId=%s' % itemId for itemId
+            in item_ids
+        ]
+        for update_request in status_updates:
+            r = self._session.get(update_request)
+            if r.ok:
+                response['items'].extend(r.json()['items'])
             else:
-                r = self._session.get(
-                    EODMS_REST_ORDER + '?%s' % '&'.join([f'itemId={itemId}' for itemId in item_ids])
+                LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
+                    r.status_code, r.reason)
                 )
-                if r.ok:
-                    response['items'].extend(r.json()['items'])
-                else:
-                    LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
-                        r.status_code, r.reason)
-                    )
-        elif self.collection == 'Radarsat2':
-            status_updates = [
-                EODMS_REST_ORDER + '?itemId=%s' % itemId for itemId
-                in item_ids
-            ]
-            for update_request in status_updates:
-                r = self._session.get(update_request)
-                if r.ok:
-                    response['items'].extend(r.json()['items'])
-                else:
-                    LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
-                        r.status_code, r.reason)
-                    )
         # Get a list of the ready-to-download items with their filesizes
         available_remote_files = [
             self._extract_download_metadata(item)
