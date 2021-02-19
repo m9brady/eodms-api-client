@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'eodms-api-client'
-copyright = '2020, Mike Brady'
+copyright = '2021, Mike Brady'
 author = 'Mike Brady'
 
 # The full version, including alpha/beta/rc tags

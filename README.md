@@ -3,11 +3,10 @@
 [![PyPI](https://img.shields.io/pypi/v/eodms-api-client)](https://pypi.org/project/eodms-api-client)
 [![ReadTheDocs](https://readthedocs.org/projects/eodms-api-client/badge/?version=latest)](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)
 
-A Python3 package for querying and ordering from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
+A Python3 package for querying, ordering and downloading from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
 ### Currently only works for RCMImageProducts/Radarsat2\*/Radarsat1\* collections
 #### (\*) Work-in-progress
-
 
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
