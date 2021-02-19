@@ -39,9 +39,9 @@ about:
   license_file: LICENSE
   summary: 'REST API client package for EODMS'
   description: |
-    A Python3 package for querying and ordering from the REST API provided 
-    by Natural Resources Canada's Earth Observation Data Management System
-    (EODMS).
+    A Python3 package for querying, ordering and downloading from the REST API
+    provided by Natural Resources Canada's Earth Observation Data Management
+    System (EODMS).
   doc_url: https://eodms-api-client.readthedocs.io/en/latest/
   dev_url: https://github.com/m9brady/eodms-api-client
 
