@@ -13,24 +13,28 @@ build:
   number: 0
   noarch: python
   script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - eodms = eodms_api_client.cli:cli
 
 requirements:
   host:
     - pip
-    - python>=3.6
+    - python >=3.6
   run:
-    - python>=3.6
+    - python >=3.6
     - requests
     - click
     - python-dateutil
     - tqdm
-    - pandas>=1.0.0
-    - geopandas>=0.8
+    - pandas >=1.0.0
+    - geopandas >=0.8
     - pyproj
 
 test:
   imports:
     - eodms_api_client
+  commands:
+    - eodms -h
 
 about:
   home: https://github.com/m9brady/eodms-api-client
