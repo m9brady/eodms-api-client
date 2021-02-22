@@ -1,5 +1,6 @@
 # EODMS API Client
 
+[![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/eodms-api-client)](https://anaconda.org/conda-forge/eodms-api-client)
 [![PyPI](https://img.shields.io/pypi/v/eodms-api-client)](https://pypi.org/project/eodms-api-client)
 [![ReadTheDocs](https://readthedocs.org/projects/eodms-api-client/badge/?version=latest)](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)
 
