@@ -6,9 +6,6 @@
 
 A Python3 package for querying, ordering and downloading from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
-### Currently only works for RCMImageProducts/Radarsat2\*/Radarsat1\* collections
-#### (\*) Work-in-progress
-
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
 ## Usage:
@@ -23,7 +20,6 @@ Create a new environment with conda
 $ conda create -n eodms-env python=3 eodms-api-client -c conda-forge
 $ conda activate eodms-env
 ```
-
 
 ### Use the CLI
 
@@ -90,6 +86,14 @@ Options:
                                   Id
 
   -ia, --incidence-angle TEXT     Limit results to the desired incidence angle
+  -ial, --incidence-angle-low TEXT
+                                  Limit results to scenes that have incidence
+                                  angles greater than this value (degrees)
+
+  -iah, --incidence-angle-high TEXT
+                                  Limit results to scenes that have incidence
+                                  angles less than this value (degrees)
+
   -rb, --radarsat-beam-mode TEXT  Limit SAR collection results to the desired
                                   beam mode
 
@@ -117,10 +121,13 @@ Options:
                                   Limit RCM collection results to the desired
                                   satellite
 
+  -cc, --cloud-cover TEXT         Limit optical results to have less than this
+                                  amount of cloud cover [0-100]
+
   -o, --output-dir PATH           Directory where query results and downloaded
                                   imagery will be saved  [default: .]
 
-  -dr, --dump-results              Whether or not to create a geojson dump
+  -dr, --dump-results             Whether or not to create a geojson dump
                                   containing the results of the query
 
   -dfn, --dump-filename TEXT      Filename for query results geojson
@@ -154,10 +161,10 @@ Options:
 - [x] order with provided record Ids (no query necessary)
 - [x] download given item Ids (no query or order submission necessary)
 - [ ] blindly order (skip extra metadata fetching, just order whatever is returned by query)
-- [ ] add support for other collections:
+- [*] add support for other collections:
   - [x] Radarsat2 (*WIP*)
   - [x] Radarsat1 (*WIP*)
-  - [ ] PlanetScope
+  - [x] PlanetScope (*WIP*)
 - [ ] add multi-select functionality for supported collection parameters
 - [x] allow for collection-switching for an existing EodmsAPI instance (must re-evaluate params and rebuild search_url)
 - [x] readthedocs documentation

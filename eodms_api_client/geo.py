@@ -104,6 +104,16 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             'Spatial Resolution', 'geometry'
         ]]
         date_cols = ['Start Date', 'End Date']
+    elif collection == 'PlanetScope':
+        df.rename(
+            {
+                'Sequence Id': 'EODMS RecordId',
+                'Title': 'Granule'
+            },
+            axis=1,
+            inplace=True
+        )
+        date_cols = ['Start Date', 'End Date']
     # convert strings to numeric
     df['EODMS RecordId'] = pd.to_numeric(df['EODMS RecordId'], downcast='integer')
     # convert strings to datetimes

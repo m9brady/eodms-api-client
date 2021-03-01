@@ -93,6 +93,18 @@ def print_version(ctx, param, value):
     help='Limit results to the desired incidence angle' # TODO: why is this not a range in API docs?
 )
 @click.option(
+    '--incidence-angle-low',
+    '-ial',
+    default=None,
+    help='Limit results to scenes that have incidence angles greater than this value (degrees)'
+)
+@click.option(
+    '--incidence-angle-high',
+    '-iah',
+    default=None,
+    help='Limit results to scenes that have incidence angles less than this value (degrees)'
+)
+@click.option(
     '--radarsat-beam-mode',
     '-rb',
     default=None,
@@ -140,6 +152,12 @@ def print_version(ctx, param, value):
     type=click.Choice(['RCM1', 'RCM2', 'RCM3']),
     default=None,
     help='Limit RCM collection results to the desired satellite'
+)
+@click.option(
+    '--cloud-cover',
+    '-cc',
+    default=None,
+    help='Limit optical results to have less than this amount of cloud cover [0-100]'
 )
 @click.option(
     '--output-dir',
@@ -218,6 +236,8 @@ def cli(
     relative_orbit,
     absolute_orbit,
     incidence_angle,
+    incidence_angle_low,
+    incidence_angle_high,
     radarsat_beam_mode,
     radarsat_beam_mnemonic,
     radarsat_polarization,
@@ -225,6 +245,7 @@ def cli(
     radarsat_look_direction,
     radarsat_downlink_segment_id,
     rcm_satellite,
+    cloud_cover,
     output_dir,
     dump_results,
     dump_filename,
@@ -270,10 +291,12 @@ def cli(
             start=start, end=end, geometry=geometry, product_type=product_type,
             product_format=product_format, absolute_orbit=absolute_orbit,
             relative_orbit=relative_orbit, incidence_angle=incidence_angle,
+            incidence_angle_low=incidence_angle_low, incidence_angle_high=incidence_angle_high,
             beam_mode=radarsat_beam_mode, mnemonic=radarsat_beam_mnemonic, 
             polarization=radarsat_polarization, downlink_segment=radarsat_downlink_segment_id,
             orbit_direction=radarsat_orbit_direction,
             look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
+            cloud_cover=cloud_cover
         )
         n_results = len(current.results)
         LOGGER.info('Finished query. %d result%s' % (

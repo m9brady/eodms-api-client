@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from math import floor, ceil
 
 from dateutil.parser import parse
 
@@ -38,7 +39,7 @@ def validate_query_args(args, collection):
             end = parse(end)
     else:
         end = datetime.today()
-    query_args.append('CATALOG_IMAGE.START_DATETIME<\'%s\'' % end.isoformat())
+    query_args.append('CATALOG_IMAGE.STOP_DATETIME<=\'%s\'' % (end + timedelta(days=1)).isoformat())
     geometry = args.get('geometry', None)
     if geometry is not None:
         query_args.append('CATALOG_IMAGE.THE_GEOM_4326 INTERSECTS %s' % load_search_aoi(geometry))
@@ -73,7 +74,7 @@ def validate_query_args(args, collection):
             query_args.append('RCM.ORBIT_ABS=%f' % float(absolute_orbit))
         relative_orbit = args.get('relative_orbit', None)
         if relative_orbit is not None: #TODO: Multi-select
-            query_args.append('RCM.ORBIT_REL=%f' % int(relative_orbit))
+            query_args.append('RCM.ORBIT_REL=%d' % int(relative_orbit))
         downlink_segment = args.get('downlink_segment', None)
         if downlink_segment is not None:
             query_args.append('RCM.DOWNLINK_SEGMENT_ID=%s' % downlink_segment)
@@ -96,7 +97,7 @@ def validate_query_args(args, collection):
             query_args.append('RSAT2.ORBIT_ABS=%f' % float(absolute_orbit))
         relative_orbit = args.get('relative_orbit', None)
         if relative_orbit is not None: #TODO: Multi-select
-            query_args.append('RSAT2.ORBIT_REL=%f' % int(relative_orbit))
+            query_args.append('RSAT2.ORBIT_REL=%d' % int(relative_orbit))
     # Radarsat1 Products
     elif collection == 'Radarsat1':
         mnemonic = args.get('mnemonic', None)
@@ -110,10 +111,21 @@ def validate_query_args(args, collection):
             query_args.append('RSAT1.INCIDENCE_ANGLE=%f' % float(incidence_angle))
         orbit_direction = args.get('orbit_direction', None)
         if orbit_direction is not None:
-            query_args.append('RSAT1.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())            
+            query_args.append('RSAT1.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())
         absolute_orbit = args.get('absolute_orbit', None)
         if absolute_orbit is not None: #TODO: Multi-select
-            query_args.append('RSAT1.ORBIT_ABS=%f' % float(absolute_orbit))        
+            query_args.append('RSAT1.ORBIT_ABS=%f' % float(absolute_orbit))
+    # PlanetScope products
+    elif collection == 'PlanetScope':
+        cloud_cover = args.get('cloud_cover', None)
+        if cloud_cover is not None:
+            query_args.append('SATOPT.CLOUD_PERCENT=%d' % cloud_cover)
+        incidence_angle_low = args.get('incidence_angle_low', None)
+        if incidence_angle_low is not None:
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_LOW=%d' % floor(float(incidence_angle_low)))
+        incidence_angle_high = args.get('incidence_angle_high', None)
+        if incidence_angle_high is not None:
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_HIGH=%d' % ceil(float(incidence_angle_high)))            
     else:
         raise NotImplementedError(
             '%s is not implemented and/or not recognized as a valid EODMS collection'
@@ -151,7 +163,12 @@ def generate_meta_keys(collection):
             'Beam', 'Polarization', 'Look Orientation', 'Incidence Angle (Low)',
             'Incidence Angle (High)', 'Orbit Direction', 'Absolute Orbit', 'LUT Applied',
             'Product Format', 'Product Type', 'Spatial Resolution',
-        ]        
+        ]
+    elif collection == 'PlanetScope':
+        return [
+            'Sequence Id', 'Title', 'Start Date', 'End Date', 'Beam', 'Cloud Cover', 'Product Format',
+            'Product Type', 'Sun Azimuth Angle', 'Sun Elevation Angle', 'SIP Size (MB)'
+        ]
     else:
         raise NotImplementedError(
             '%s is not implemented and/or not recognized as a valid EODMS collection'
