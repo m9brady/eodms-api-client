@@ -161,7 +161,7 @@ Options:
 - [x] order with provided record Ids (no query necessary)
 - [x] download given item Ids (no query or order submission necessary)
 - [ ] blindly order (skip extra metadata fetching, just order whatever is returned by query)
-- [*] add support for other collections:
+- [x] add support for other collections:
   - [x] Radarsat2 (*WIP*)
   - [x] Radarsat1 (*WIP*)
   - [x] PlanetScope (*WIP*)
