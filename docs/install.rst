@@ -1,18 +1,26 @@
-.. _install
+.. _install:
 .. currentmodule:: eodms_api_client
 
 How to Install
 ==============
 
-Use the package listed on the Python Package Index (`PyPI`_):
+There are 3 main ways to install :code:`eodms-api-client`
 
-.. code-block:: console
+1. If you're using conda, download from `conda-forge`_:
+
+.. code-block::
+
+    conda install -n <name-of-conda-env> eodms-api-client -c conda-forge
+
+2. No access to conda or not a fan? It's also on `PyPI`_:
+
+.. code-block::
 
     pip install eodms-api-client
 
-Install the latest version directly from github (potentially unstable):
+3. If you like playing with potentially-unstable code, install the source from `github`_:
 
-.. code-block:: console
+.. code-block::
 
     pip install https://github.com/m9brady/eodms-api-client/archive/main.zip
 
@@ -23,7 +31,7 @@ In order to not be bugged to enter your username/password every time, you may wi
 
 For Linux/Mac users:
 
-.. code-block:: console
+.. code-block::
 
     echo "machine data.eodms-sgdot.nrcan-rncan.gc.ca login <username> password <password>" >> ~/.netrc
     # set permissions to user-readwrite-only
@@ -31,7 +39,7 @@ For Linux/Mac users:
 
 For Windows users:
 
-.. code-block:: console
+.. code-block::
 
     cd %USERPROFILE%
     type nul >> _netrc
@@ -41,3 +49,5 @@ For Windows users:
     # save and quit notepad
 
 .. _PyPI: https://pypi.org/project/eodms-api-client/
+.. _conda-forge: https://anaconda.org/conda-forge/eodms-api-client
+.. _github: https://github.com/m9brady/eodms-api-client

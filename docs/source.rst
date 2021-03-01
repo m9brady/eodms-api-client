@@ -5,12 +5,7 @@ Main Client
 -----------
 .. automodule:: eodms_api_client.eodms
     :members:
-
-Command-Line Interface
-----------------------
-.. automodule:: eodms_api_client.cli
-    :members:
-
+   
 EODMS Collection Parameter Validation
 -------------------------------------
 .. automodule:: eodms_api_client.params

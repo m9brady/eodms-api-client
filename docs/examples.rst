@@ -19,9 +19,9 @@ Command-Line Interface (CLI)
 
 First we run a query to see what's available
 
-.. code-block:: console
+.. code-block::
 
-    eodms -c RCMImageProducts -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --dump-results
+    eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --dump-results
     2020-12-23 10:34:09 | eodmsapi.cli | INFO | Querying EODMS API
     Fetching result metadata: 100%|████████████████████████████████| 26/26 [00:04<00:00,  5.30item/s]
     2020-12-23 10:34:18 | eodmsapi.cli | INFO | Finished query. 26 results
@@ -29,9 +29,9 @@ First we run a query to see what's available
 
 We can then inspect the ``query_results.geojson`` in Python or GIS software (like `QGIS`_) to see if it satisfies our needs. If there are no modifications to be made, we can submit the order as-is
 
-.. code-block:: console
+.. code-block::
 
-    eodms -c RCMImageProducts -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --submit-order
+    eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --submit-order
 
 After order submission, you will receive emails from EODMS on the status of your order. Once your order status has changed to "Complete", take note of the ``Order Item ID`` in the Delivery Notification and supply it to the CLI
 
@@ -40,9 +40,9 @@ After order submission, you will receive emails from EODMS on the status of your
     from the EODMS delivery system emailer. When in doubt, always use the ``Order Item Id`` provided in the Delivery Notification
     email from EODMS.
 
-.. code-block:: console
+.. code-block::
 
-    eodms -c RCMImageProducts --download-id <order_item_id>
+    eodms -c RCM --download-id <order_item_id>
 
 Interactive Python
 ------------------
@@ -52,7 +52,7 @@ Just like in the command-line example, we first run a query to see what's availa
 .. code-block:: python
 
     >>> from eodms_api_client import EodmsAPI
-    >>> client = EodmsAPI(collection='RCMImageProducts')
+    >>> client = EodmsAPI(collection='RCM')
     >>> client.query(start='2020-08-15', end='2020-08-22', geometry='lakewinnipegnorth.geojson')
     Fetching result metadata: 100%|████████████████████████████████| 26/26 [00:09<00:00,  2.70item/s]
     >>> len(client.results)

@@ -1,11 +1,11 @@
-eodms-api-client Documentation
-==============================
+eodms-api-client
+================
 
-eodms-api-client was created as a tool for myself for interacting with RCM data archived on the `Earth Observation Data Management System <https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp>`__ (EODMS) operated by `Natural Resources Canada <https://www.nrcan.gc.ca/home>`__. 
+This package was created as a tool for myself for interacting with RCM data archived on the `Earth Observation Data Management System <https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp>`__ (EODMS) operated by `Natural Resources Canada <https://www.nrcan.gc.ca/home>`__. 
 
-This package provides a command-line interface for querying, ordering, and downloading data from EODMS as well as a Python client class ``EodmsAPI`` for doing the same operations from within a Python session.
+It provides a command-line interface for querying, ordering, and downloading data from EODMS as well as a Python client class ``EodmsAPI`` for doing the same operations from within a Python session.
 
-.. code-block:: console
+.. code-block::
 
     eodms -c RCM -g aoi_polygon.geojson --dump-results
 

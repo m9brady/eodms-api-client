@@ -13,11 +13,19 @@ Heavily influenced by the utterly fantastic `sentinelsat` package: https://githu
 
 ## Usage:
 
-Full documenation and real-world example on [ReadTheDocs](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)!
+Full documentation and real-world example on [ReadTheDocs](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)!
 
 ## Quickstart:
 
-### CLI
+Create a new environment with conda
+
+```
+$ conda create -n eodms-env python=3 eodms-api-client -c conda-forge
+$ conda activate eodms-env
+```
+
+
+### Use the CLI
 
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
@@ -31,7 +39,7 @@ Same query as above, but this time submit an order for all products found by the
 $ eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
-### Interactive Python
+### Use eodms-api-client interactively in Python REPL
 
 Repeating the same query as the CLI example above in a Python REPL allows you to manually inspect the results and do all sorts of interesting things with the query result geodataframe. 
 
