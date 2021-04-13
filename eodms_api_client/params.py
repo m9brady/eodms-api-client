@@ -80,6 +80,9 @@ def validate_query_args(args, collection):
             query_args.append('RCM.DOWNLINK_SEGMENT_ID=%s' % downlink_segment)
     # Radarsat2 Products
     elif collection == 'Radarsat2':
+        beam_mode = args.get('beam_mode', None)
+        if beam_mode is not None: #TODO: Multi-select
+            query_args.append('RSAT2.SBEAM=%s' % beam_mode)
         mnemonic = args.get('mnemonic', None)
         if mnemonic is not None: #TODO: Multi-select
             query_args.append('RSAT2.BEAM_MNEMONIC=%s' % mnemonic)
@@ -125,7 +128,20 @@ def validate_query_args(args, collection):
             query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_LOW=%d' % floor(float(incidence_angle_low)))
         incidence_angle_high = args.get('incidence_angle_high', None)
         if incidence_angle_high is not None:
-            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_HIGH=%d' % ceil(float(incidence_angle_high)))            
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_HIGH=%d' % ceil(float(incidence_angle_high)))
+    # National Air Photo Library products
+    elif collection == 'NAPL':
+        roll_num = args.get('roll_number', None)
+        #TODO: if roll_num or photo_num is given, remove the temporal search filter as only 1 result will be found
+        if roll_num is not None:
+            query_args.append('ROLL.ROLL_NUMBER=%s' % roll_num)
+        photo_num = args.get('photo_number', None)
+        if photo_num is not None:
+            query_args.append('PHOTO.PHOTO_NUMBER=%s' % photo_num)
+        napl_nocost = args.get('napl_nocost', None)
+        if napl_nocost is not None:
+            is_free = 't' if napl_nocost else 'f'
+            query_args.append('CATALOG_IMAGE.OPEN_DATA=%f' % is_free)
     else:
         raise NotImplementedError(
             '%s is not implemented and/or not recognized as a valid EODMS collection'
@@ -168,6 +184,11 @@ def generate_meta_keys(collection):
         return [
             'Sequence Id', 'Title', 'Start Date', 'End Date', 'Beam', 'Cloud Cover', 'Product Format',
             'Product Type', 'Sun Azimuth Angle', 'Sun Elevation Angle', 'SIP Size (MB)'
+        ]
+    elif collection == 'NAPL':
+        return [
+            'Sequence Id', 'Title', 'Start Date', 'End Date', 'Altitude', 'Viewing Angle', 'Scale', 
+            'SIP Size (MB)',
         ]
     else:
         raise NotImplementedError(

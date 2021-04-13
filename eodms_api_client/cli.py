@@ -160,6 +160,25 @@ def print_version(ctx, param, value):
     help='Limit optical results to have less than this amount of cloud cover [0-100]'
 )
 @click.option(
+    '--roll-number',
+    '-rn',
+    default=None,
+    help='Limit NAPL results to the given roll number'
+)
+@click.option(
+    '--photo-number',
+    '-pn',
+    default=None,
+    help='Limit NAPL results to the given photo number'
+)
+#@click.option(
+#    '--napl-nocost',
+#    '-nnc',
+#    default=None,
+#    type=click.Choice([True, False]),
+#    help='Limit NAPL results to free [True] or cost-associated [False] images'
+#)
+@click.option(
     '--output-dir',
     '-o',
     type=click.Path(exists=True),
@@ -246,6 +265,9 @@ def cli(
     radarsat_downlink_segment_id,
     rcm_satellite,
     cloud_cover,
+    roll_number,
+    photo_number,
+    #napl_nocost,
     output_dir,
     dump_results,
     dump_filename,
@@ -296,7 +318,8 @@ def cli(
             polarization=radarsat_polarization, downlink_segment=radarsat_downlink_segment_id,
             orbit_direction=radarsat_orbit_direction,
             look_direction=radarsat_look_direction, rcm_satellite=rcm_satellite,
-            cloud_cover=cloud_cover
+            cloud_cover=cloud_cover, roll_number=roll_number, photo_number=photo_number,
+            #napl_nocost=napl_nocost
         )
         n_results = len(current.results)
         LOGGER.info('Finished query. %d result%s' % (

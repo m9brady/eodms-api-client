@@ -104,7 +104,7 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             'Spatial Resolution', 'geometry'
         ]]
         date_cols = ['Start Date', 'End Date']
-    elif collection == 'PlanetScope':
+    elif collection in ['PlanetScope', 'NAPL']:
         df.rename(
             {
                 'Sequence Id': 'EODMS RecordId',
