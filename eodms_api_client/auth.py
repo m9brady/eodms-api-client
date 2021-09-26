@@ -43,8 +43,8 @@ def create_session(username=None, password=None):
             hosts = netrc(netrc_file).hosts
             try:
                 username, _, password = hosts.get(EODMS_HOSTNAME)
-            except TypeError:
-                raise ValueError('Cannot locate credentials for EODMS server. Check your netrc file') from TypeError
+            except TypeError as no_eodms_host_defined:
+                raise ValueError('Cannot locate credentials for EODMS server. Check your netrc file') from no_eodms_host_defined
         except (FileNotFoundError, TypeError):
             username = input('Enter EODMS username: ')
             password = getpass('Enter EODMS password: ')
