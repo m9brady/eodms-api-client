@@ -46,7 +46,7 @@ def validate_query_args(args, collection):
     product_type = args.get('product_type', [None])
     if not isinstance(product_type, (list, tuple)): # single
         query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % product_type.upper())
-    elif (len(product_type) == 1 and product_type[0] is None): # multi
+    elif not (len(product_type) == 1 and product_type[0] is None): # multi
         query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % ','.join([
             prod_type.upper() for prod_type in product_type
         ]))
