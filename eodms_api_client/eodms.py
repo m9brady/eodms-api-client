@@ -3,13 +3,9 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
-from io import BytesIO
 from json import dumps
 from time import sleep
 
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
 from requests.exceptions import ConnectionError
 from tqdm.auto import tqdm
 
@@ -404,28 +400,6 @@ class EodmsAPI():
             local_files = to_download
             LOGGER.info('No further action taken')
         return local_files
-
-    def view_thumbnail(self, eodms_recordid):
-        '''
-        Given an EODMS RecordId for an item in the current client's results dataframe, fetch and
-        display the image thumbnail RGB preview
-        '''
-        try:
-            item = self.results.loc[self.results['EODMS RecordId'] == eodms_recordid].iloc[0]
-        except AttributeError:
-            LOGGER.error('No queries have been submitted yet!')
-            return
-        except IndexError:
-            LOGGER.error('No such RecordId in query results: %d' % eodms_recordid)
-            return
-        im = np.array(Image.open(BytesIO(self._session.get(item['thumbnailUrl']).content)))
-        fig, ax = plt.subplots()
-        ax.imshow(im, cmap='gist_gray')
-        ax.set_title(item['Granule'])
-        fig.tight_layout()
-        plt.show()
-        return
-
 
 class EODMSHTMLFilter(HTMLParser):
     '''
