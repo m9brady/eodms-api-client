@@ -64,7 +64,8 @@ def print_version(ctx, param, value):
 @click.option(
     '--product-type',
     '-pt',
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit results to a certain image product type'
 )
 @click.option(
@@ -77,13 +78,15 @@ def print_version(ctx, param, value):
 @click.option(
     '--relative-orbit',
     '-rel',
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit results to the desired relative orbit Id'
 )
 @click.option(
     '--absolute-orbit',
     '-abs',
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit results to the desired absolute orbit Id'
 )
 @click.option(
@@ -107,13 +110,15 @@ def print_version(ctx, param, value):
 @click.option(
     '--radarsat-beam-mode',
     '-rb',
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit SAR collection results to the desired beam mode'
 )
 @click.option(
     '--radarsat-beam-mnemonic',
     '-rm',
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit SAR collection results to the desired beam mnemonic'
 )
 @click.option(
@@ -123,7 +128,8 @@ def print_version(ctx, param, value):
         'CH+CV', 'HH', 'HH+HV', 'HH+HV+VH+VV', 'HH+VV', 'HV', 'VH',
         'VH+VV', 'VV'
     ]),
-    default=None,
+    default=[None],
+    multiple=True,
     help='Limit SAR collection results to the desired polarization'
 )
 @click.option(

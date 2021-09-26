@@ -43,49 +43,79 @@ def validate_query_args(args, collection):
     geometry = args.get('geometry', None)
     if geometry is not None:
         query_args.append('CATALOG_IMAGE.THE_GEOM_4326 INTERSECTS %s' % load_search_aoi(geometry))
-    product_type = args.get('product_type', None)
-    if product_type is not None: #TODO: Multi-select
+    product_type = args.get('product_type', [None])
+    if not isinstance(product_type, (list, tuple)): # single
         query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % product_type.upper())
+    elif (len(product_type) == 1 and product_type[0] is None): # multi
+        query_args.append('ARCHIVE_IMAGE.PRODUCT_TYPE=%s' % ','.join([
+            prod_type.upper() for prod_type in product_type
+        ]))
     # RCM products
     if collection == 'RCMImageProducts':
-        beam_mode = args.get('beam_mode', None)
-        if beam_mode is not None: #TODO: Multi-select
+        beam_mode = args.get('beam_mode', [None])
+        if not isinstance(beam_mode, (list, tuple)): # single
             query_args.append('RCM.SBEAM=%s' % beam_mode)
-        mnemonic = args.get('mnemonic', None)
-        if mnemonic is not None: #TODO: Multi-select
-            query_args.append('RCM.BEAM_MNEMONIC=%s' % mnemonic)
+        elif not (len(beam_mode) == 1 and beam_mode[0] is None): # multi
+            query_args.append('RCM.SBEAM=%s' % ','.join(beam_mode))
+        mnemonic = args.get('mnemonic', [None])
+        if not isinstance(mnemonic, (list, tuple)): # single
+             query_args.append('RCM.BEAM_MNEMONIC=%s' % mnemonic)
+        elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
+            query_args.append('RCM.BEAM_MNEMONIC=%s' % ','.join(mnemonic))
         product_format = args.get('product_format', None)
         if product_format is not None:
             query_args.append('PRODUCT_FORMAT.FORMAT_NAME_E=%s' % product_format)
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append('RCM.ANTENNA_ORIENTATION=%s' % look_direction)
-        polarization = args.get('polarization', None)
-        if polarization is not None: #TODO: Multi-select
+        polarization = args.get('polarization', [None])
+        if not isinstance(polarization, (list, tuple)): # single
             query_args.append('RCM.POLARIZATION=%s' % polarization.upper())
+        elif not (len(polarization) == 1 and polarization[0] is None): # multi
+            query_args.append('RCM.POLARIZATION=%s' % ','.join([
+                pol.upper() for pol in polarization
+            ]))
         incidence_angle = args.get('incidence_angle', None)
         if incidence_angle is not None:
             query_args.append('RCM.INCIDENCE_ANGLE=%f' % float(incidence_angle))
+        incidence_angle_low = args.get('incidence_angle_low', None)
+        if incidence_angle_low is not None: #TODO: multi-select
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_LOW>=%.1f' % float(incidence_angle_low))
+        incidence_angle_high = args.get('incidence_angle_high', None)
+        if incidence_angle_high is not None: #TODO: multi-select
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_HIGH<=%.1f' % float(incidence_angle_high))
         orbit_direction = args.get('orbit_direction', None)
         if orbit_direction is not None:
             query_args.append('RCM.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())
-        absolute_orbit = args.get('absolute_orbit', None)
-        if absolute_orbit is not None: #TODO: Multi-select
-            query_args.append('RCM.ORBIT_ABS=%f' % float(absolute_orbit))
-        relative_orbit = args.get('relative_orbit', None)
-        if relative_orbit is not None: #TODO: Multi-select
-            query_args.append('RCM.ORBIT_REL=%d' % int(relative_orbit))
+        absolute_orbit = args.get('absolute_orbit', [None])
+        if not isinstance(absolute_orbit, (list, tuple)): # single
+            query_args.append('RCM.ORBIT_ABS=%.1f' % absolute_orbit)
+        elif not (len(absolute_orbit) == 1 and absolute_orbit[0] is None): # multi
+            query_args.append('RCM.ORBIT_ABS=%s' % ','.join([
+                '%.1f' % orbit for orbit in absolute_orbit
+            ]))
+        relative_orbit = args.get('relative_orbit', [None])
+        if not isinstance(relative_orbit, (list, tuple)): # single
+            query_args.append('RCM.ORBIT_REL=%d' % relative_orbit)
+        elif not (len(relative_orbit) == 1 and relative_orbit[0] is None): # multi
+            query_args.append('RCM.ORBIT_REL=%s' % ','.join([
+                '%d' % orbit for orbit in relative_orbit
+            ]))
         downlink_segment = args.get('downlink_segment', None)
         if downlink_segment is not None:
             query_args.append('RCM.DOWNLINK_SEGMENT_ID=%s' % downlink_segment)
     # Radarsat2 Products
     elif collection == 'Radarsat2':
-        beam_mode = args.get('beam_mode', None)
-        if beam_mode is not None: #TODO: Multi-select
+        beam_mode = args.get('beam_mode', [None])
+        if not isinstance(beam_mode, (list, tuple)): # single
             query_args.append('RSAT2.SBEAM=%s' % beam_mode)
-        mnemonic = args.get('mnemonic', None)
-        if mnemonic is not None: #TODO: Multi-select
+        elif not (len(beam_mode) == 1 and beam_mode[0] is None): # multi
+            query_args.append('RSAT2.SBEAM=%s' % ','.join(beam_mode))
+        mnemonic = args.get('mnemonic', [None])
+        if not isinstance(mnemonic, (list, tuple)): # single
             query_args.append('RSAT2.BEAM_MNEMONIC=%s' % mnemonic)
+        elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
+            query_args.append('RSAT2.BEAM_MNEMONIC=%s' % ','.join(mnemonic))
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append('RSAT2.ANTENNA_ORIENTATION=%s' % look_direction)
@@ -95,17 +125,27 @@ def validate_query_args(args, collection):
         orbit_direction = args.get('orbit_direction', None)
         if orbit_direction is not None:
             query_args.append('RSAT2.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())
-        absolute_orbit = args.get('absolute_orbit', None)
-        if absolute_orbit is not None: #TODO: Multi-select
-            query_args.append('RSAT2.ORBIT_ABS=%f' % float(absolute_orbit))
-        relative_orbit = args.get('relative_orbit', None)
-        if relative_orbit is not None: #TODO: Multi-select
-            query_args.append('RSAT2.ORBIT_REL=%d' % int(relative_orbit))
+        absolute_orbit = args.get('absolute_orbit', [None])
+        if not isinstance(absolute_orbit, (list, tuple)): # single
+            query_args.append('RSAT2.ORBIT_ABS=%.1f' % absolute_orbit)
+        elif not (len(absolute_orbit) == 1 and absolute_orbit[0] is None): # multi
+            query_args.append('RSAT2.ORBIT_ABS=%s' % ','.join([
+                '%.1f' % orbit for orbit in absolute_orbit
+            ]))
+        relative_orbit = args.get('relative_orbit', [None])
+        if not isinstance(relative_orbit, (list, tuple)): # single
+            query_args.append('RSAT2.ORBIT_REL=%d' % relative_orbit)
+        elif not (len(relative_orbit) == 1 and relative_orbit[0] is None): # multi
+            query_args.append('RSAT2.ORBIT_REL=%s' % ','.join([
+                '%d' % orbit for orbit in relative_orbit
+            ]))
     # Radarsat1 Products
     elif collection == 'Radarsat1':
-        mnemonic = args.get('mnemonic', None)
-        if mnemonic is not None: #TODO: Multi-select
+        mnemonic = args.get('mnemonic', [None])
+        if not isinstance(mnemonic, (list, tuple)): # single
             query_args.append('RSAT1.BEAM_MNEMONIC=%s' % mnemonic)
+        elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
+            query_args.append('RSAT1.BEAM_MNEMONIC=%s' % ','.join(mnemonic))
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append('RSAT1.ANTENNA_ORIENTATION=%s' % look_direction)
@@ -115,9 +155,13 @@ def validate_query_args(args, collection):
         orbit_direction = args.get('orbit_direction', None)
         if orbit_direction is not None:
             query_args.append('RSAT1.ORBIT_DIRECTION=%s' % orbit_direction.capitalize())
-        absolute_orbit = args.get('absolute_orbit', None)
-        if absolute_orbit is not None: #TODO: Multi-select
-            query_args.append('RSAT1.ORBIT_ABS=%f' % float(absolute_orbit))
+        absolute_orbit = args.get('absolute_orbit', [None])
+        if not isinstance(absolute_orbit, (list, tuple)): # single
+            query_args.append('RSAT1.ORBIT_ABS=%.1f' % absolute_orbit)
+        elif not (len(absolute_orbit) == 1 and absolute_orbit[0] is None): # multi
+            query_args.append('RSAT1.ORBIT_ABS=%s' % ','.join([
+                '%.1f' % orbit for orbit in absolute_orbit
+            ]))
     # PlanetScope products
     elif collection == 'PlanetScope':
         cloud_cover = args.get('cloud_cover', None)
