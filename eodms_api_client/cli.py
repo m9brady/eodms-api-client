@@ -9,7 +9,11 @@ from . import __version__ as eodms_version
 LOGGER = logging.getLogger('eodmsapi.cli')
 LOGGER.setLevel(logging.INFO)
 ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s', '%Y-%m-%d %H:%M:%S')
+formatter = logging.Formatter(
+    '{asctime} | {name:<15s} | {levelname:<8s} | {message}',
+    '%Y-%m-%d %H:%M:%S',
+    style='{'
+)
 ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
@@ -301,17 +305,17 @@ def cli(
         LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
         order_ids = current.order(records_to_order)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
-    # check for presence of supplied item_ids, where we just skip ahead and try to download
+    # check for presence of supplied order_ids, where we just skip ahead and try to download
     elif download_id is not None:
         LOGGER.info('Fast-downloading for 1 order')
         current.download(download_id, output_dir)
     elif download_ids is not None:
         with open(download_ids) as f:
-            item_ids = [line for line in f.read().splitlines() if line != '']
-        if len(item_ids) == 0:
-            raise IOError('No item_ids detected in file: %s' % download_ids)
-        LOGGER.info('Fast-downloading for %d order(s)' % len(item_ids))
-        current.download(item_ids, output_dir)
+            order_ids = [line for line in f.read().splitlines() if line != '']
+        if len(order_ids) == 0:
+            raise IOError('No order_ids detected in file: %s' % download_ids)
+        LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))
+        current.download(order_ids, output_dir)
     else:
         # otherwise, run a query
         LOGGER.info('Querying EODMS API')
@@ -346,7 +350,7 @@ def cli(
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
             to_order = current.results['EODMS RecordId'].tolist()
-            item_ids = current.order(to_order)
-            LOGGER.info('EODMS Item Ids for tracking status and downloading: %s' % item_ids)
+            order_ids = current.order(to_order)
+            LOGGER.info('EODMS Order Ids for tracking status and downloading: %s' % order_ids)
         else:
             LOGGER.warn('No records to order')

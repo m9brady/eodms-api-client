@@ -9,6 +9,7 @@ from shapely.wkt import dumps as to_wkt
 
 # add 'read' support for KML/KMZ - disabled by default
 fiona.drvsupport.supported_drivers['KML'] = 'r'
+fiona.drvsupport.supported_drivers['LIBKML'] = 'r'
 
 SRC_CRS = CRS('epsg:4326')
 

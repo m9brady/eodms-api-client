@@ -33,12 +33,7 @@ We can then inspect the ``query_results.geojson`` in Python or GIS software (lik
 
     eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --submit-order
 
-After order submission, you will receive emails from EODMS on the status of your order. Once your order status has changed to "Complete", take note of the ``Order Item ID`` in the Delivery Notification and supply it to the CLI
-
-.. warning::
-    The ``Order Item Id`` returned by the order submission endpoint is *not guaranteed* to be the same as the ``Order Item Id`` 
-    from the EODMS delivery system emailer. When in doubt, always use the ``Order Item Id`` provided in the Delivery Notification
-    email from EODMS.
+After order submission, you will receive emails from EODMS on the status of your order. Once your order status has changed to "Complete", take note of the ``Order ID`` in the Delivery Notification email and supply it to the CLI
 
 .. code-block::
 
@@ -97,16 +92,11 @@ Since we are already in Python, we can do some exploration of the results in ord
     >>> record_ids = subset['EODMS RecordId'].tolist()
     >>> order_ids = client.order(record_ids)
 
-.. warning::
-    The ``Order Item Id`` returned by the order submission endpoint is *not guaranteed* to be the same as the ``Order Item Id`` 
-    from the EODMS delivery system emailer. When in doubt, always use the ``Order Item Id`` provided in the Delivery Notification
-    email from EODMS.
-
-Same as with the CLI example, we wait for the "Order Complete" email and provide the ``Order Item Id`` to our client.
+Same as with the CLI example, we wait for the "Order Complete" email and provide the ``Order Id`` to our client.
 
 .. code-block:: python
 
-    >>> client.download(order_item_id)
+    >>> client.download(order_id)
 
 .. _geojson.io: https://geojson.io
 .. _Mapbox: https://mapbox.com

@@ -28,7 +28,11 @@ EODMS_COLLECTIONS = [
 LOGGER = logging.getLogger('eodmsapi.main')
 LOGGER.setLevel(logging.INFO)
 ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s', '%Y-%m-%d %H:%M:%S')
+formatter = logging.Formatter(
+    '{asctime} | {name:<15s} | {levelname:<8s} | {message}',
+    '%Y-%m-%d %H:%M:%S',
+    style='{'
+)
 ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
@@ -223,7 +227,7 @@ class EodmsAPI():
           - record_ids: list of record ID numbers to order
 
         Outputs:
-          - item_ids: list of EODMS ordering system ID numbers for later downloading
+          - order_ids: list of EODMS ordering system ID numbers for later downloading
         '''
         order_ids = []
         if not isinstance(record_ids, (list, tuple)):
@@ -237,7 +241,7 @@ class EodmsAPI():
             len(record_ids),
             's' if len(record_ids) != 1 else ''
         ))
-        item_ids = []
+        order_ids = []
         idx = 0
         while idx < len(record_ids):
             data = dumps({
@@ -253,12 +257,12 @@ class EodmsAPI():
             r = self._session.post(EODMS_REST_ORDER, data=data)
             if r.ok:
                 response = r.json()
-                item_ids.extend(list(set([int(item['itemId']) for item in response['items']])))
+                order_ids.extend(list(set([int(item['orderId']) for item in response['items']])))
             else:
                 LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
                 exit()
             idx += EODMS_SUBMIT_HARDLIMIT
-        return item_ids
+        return order_ids
 
     def _extract_download_metadata(self, item):
         '''
@@ -326,33 +330,30 @@ class EodmsAPI():
                             file_out.write(chunk)
         return local_items
 
-    def download(self, item_ids, output_location='.'):
+    def download(self, order_ids, output_location='.'):
         '''
-        Unfortunately, there seems to be no way to query the EODMS API by OrderID, so we have to
-        construct a query including the provided ItemID values
-
         Appears that the endpoint has a hard limit of 100 results, so need to be fancy if more
-        than 100 ItemIDs are passed
+        than 100 items are given for an orderId
         '''
         local_files = []
         os.makedirs(output_location, exist_ok=True)
-        if not isinstance(item_ids, (list, tuple)):
-            item_ids = [item_ids]
-        n_items = len(item_ids)
-        if n_items < 1:
-            LOGGER.warning('No records passed to order submission')
+        if not isinstance(order_ids, (list, tuple)):
+            order_ids = [order_ids]
+        n_orders = len(order_ids)
+        if n_orders < 1:
+            n_orders.warning('No IDs passed to download')
             return local_files
-        LOGGER.info('Checking statuses of %d item%s' % (
-            n_items,
-            's' if n_items != 1 else ''
+        LOGGER.info('Checking statuses of %d order%s' % (
+            n_orders,
+            's' if n_orders != 1 else ''
         ))
         response = {
             'items': []
         }
-        # need to submit 1 API request per imageId to check downloadable status
+        # need to submit 1 API request per orderId to check downloadable status
         status_updates = [
-            EODMS_REST_ORDER + '?itemId=%s' % itemId for itemId
-            in item_ids
+            EODMS_REST_ORDER + '?orderId=%s' % orderId for orderId
+            in order_ids
         ]
         for update_request in status_updates:
             r = self._session.get(update_request)
@@ -363,6 +364,7 @@ class EodmsAPI():
                     r.status_code, r.reason)
                 )
         # Get a list of the ready-to-download items with their filesizes
+        n_items = len(response['items'])
         available_remote_files = [
             self._extract_download_metadata(item)
             for item in response['items'] 
@@ -399,6 +401,7 @@ class EodmsAPI():
             # If we already have everything, do nothing
             local_files = to_download
             LOGGER.info('No further action taken')
+            return
         return local_files
 
 class EODMSHTMLFilter(HTMLParser):

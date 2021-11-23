@@ -15,7 +15,7 @@ It provides a command-line interface for querying, ordering, and downloading dat
     >>> client = EodmsAPI(collection='RCM')
     >>> client.query(geometry='aoi_polygon.geojson')
 
-Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ by default (GeoJSON, Esri Shapefile, OGC GeoPackage, KML/KMZ, etc.)
+Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ (GeoJSON, Esri Shapefile, OGC GeoPackage, KML/KMZ, etc.)
 
 .. toctree::
    :maxdepth: 2
