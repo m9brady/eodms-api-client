@@ -220,24 +220,24 @@ def print_version(ctx, param, value):
 @click.option(
     '--record-id',
     default=None,
-    help='Specific record Id to order from the desired collection'
+    help='Specific Record Id to order from the desired collection'
 )
 @click.option(
     '--record-ids',
     type=click.Path(exists=True),
     default=None,
-    help='File of line-separated record Ids to order from the desired collection'
+    help='File of line-separated Record Ids to order from the desired collection'
 )
 @click.option(
-    '--download-id',
+    '--order-id',
     default=None,
-    help='Specific Order item Id to download from EODMS'
+    help='Specific Order Id to download from EODMS'
 )
 @click.option(
-    '--download-ids',
+    '--order-ids',
     type=click.Path(exists=True),
     default=None,
-    help='File of line-separated Order item Ids to download from EODMS'
+    help='File of line-separated Order Ids to download from EODMS'
 )
 @click.option(
     '--log-verbose',

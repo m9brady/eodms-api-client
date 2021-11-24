@@ -37,7 +37,7 @@ After order submission, you will receive emails from EODMS on the status of your
 
 .. code-block::
 
-    eodms -c RCM --download-id <order_item_id>
+    eodms -c RCM --order-id <order_id>
 
 Interactive Python
 ------------------
