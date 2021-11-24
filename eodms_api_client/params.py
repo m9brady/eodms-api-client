@@ -207,7 +207,7 @@ def generate_meta_keys(collection):
             'Polarization in Product', 'Number of Azimuth Looks', 'Number of Range Looks',
             'Incidence Angle (Low)', 'Incidence Angle (High)', 'Orbit Direction', 'LUT Applied',
             'Product Format', 'Product Type', 'Product Ellipsoid', 'Sample Type',
-            'Sampled Pixel Spacing', 'Data Type', 'Relative Orbit', 'Absolute Orbit',
+            'Sampled Pixel Spacing', 'Data Type', 'SIP Size (MB)', 'Relative Orbit', 'Absolute Orbit',
             'Orbit Data Source'
         ]
     elif collection == 'Radarsat2':
@@ -215,14 +215,14 @@ def generate_meta_keys(collection):
             'Sequence Id', 'Supplier Order Number', 'Start Date', 'End Date', 'Position', 'Sensor', 'Sensor Mode',
             'Beam', 'Polarization', 'Look Orientation', 'Incidence Angle (Low)',
             'Incidence Angle (High)', 'Orbit Direction', 'Absolute Orbit', 'LUT Applied',
-            'Product Format', 'Product Type', 'Spatial Resolution',
+            'Product Format', 'Product Type', 'Spatial Resolution', 'SIP Size (MB)'
         ]
     elif collection == 'Radarsat1':
         return [
             'Sequence Id', 'Product Id', 'Start Date', 'End Date', 'Position', 'Sensor', 'Sensor Mode',
             'Beam', 'Polarization', 'Look Orientation', 'Incidence Angle (Low)',
             'Incidence Angle (High)', 'Orbit Direction', 'Absolute Orbit', 'LUT Applied',
-            'Product Format', 'Product Type', 'Spatial Resolution',
+            'Product Format', 'Product Type', 'Spatial Resolution', 'SIP Size (MB)'
         ]
     elif collection == 'PlanetScope':
         return [

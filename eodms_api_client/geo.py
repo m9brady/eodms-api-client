@@ -75,6 +75,14 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             inplace=True
         )
         date_cols = ['Acquisition Start Date', 'Acquisition End Date']
+        int_cols = [
+            'EODMS RecordId', 'Number of Azimuth Looks', 'Number of Range Looks',
+            'SIP Size (MB)', 'Relative Orbit', 'Absolute Orbit', 'Beam Mode Version'
+        ]
+        float_cols = [
+            'Incidence Angle (Low)', 'Incidence Angle (High)', 'Sampled Pixel Spacing', 
+            'Spatial Resolution'
+        ]
     elif collection == 'Radarsat2':
         df.rename(
             {
@@ -85,6 +93,12 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             inplace=True
         )
         date_cols = ['Start Date', 'End Date']
+        int_cols = [
+            'EODMS RecordId', 'SIP Size (MB)', 'Absolute Orbit'
+        ]
+        float_cols = [
+            'Incidence Angle (Low)', 'Incidence Angle (High)', 'Spatial Resolution'
+        ]        
     elif collection == 'Radarsat1':
         df.rename(
             {
@@ -102,9 +116,15 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             'Sensor', 'Sensor Mode', 'Beam', 'Polarization', 'Look Orientation',
             'Incidence Angle (Low)', 'Incidence Angle (High)', 'Orbit Direction',
             'Absolute Orbit', 'LUT Applied', 'Product Format', 'Product Type',
-            'Spatial Resolution', 'geometry'
+            'Spatial Resolution', 'SIP Size (MB)', 'geometry'
         ]]
         date_cols = ['Start Date', 'End Date']
+        int_cols = [
+            'EODMS RecordId', 'SIP Size (MB)', 'Absolute Orbit'
+        ]
+        float_cols = [
+            'Incidence Angle (Low)', 'Incidence Angle (High)', 'Spatial Resolution'
+        ]         
     elif collection in ['PlanetScope', 'NAPL']:
         df.rename(
             {
@@ -115,8 +135,16 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             inplace=True
         )
         date_cols = ['Start Date', 'End Date']
-    # convert strings to numeric
-    df['EODMS RecordId'] = pd.to_numeric(df['EODMS RecordId'], downcast='integer')
+        int_cols = [
+            'EODMS RecordId', 'SIP Size (MB)',
+        ]
+        float_cols = [
+            'Incidence Angle (Low)', 'Incidence Angle (High)'
+        ]    
+    # convert strings to unsigned integer
+    df[int_cols] = df[int_cols].apply(pd.to_numeric, downcast='unsigned', axis=1)
+    # convert strings to floats
+    df[float_cols] = df[float_cols].apply(pd.to_numeric, downcast='float', axis=1)
     # convert strings to datetimes
     df[date_cols] = df[date_cols].apply(pd.to_datetime, axis=1)
     # sort by RecordId

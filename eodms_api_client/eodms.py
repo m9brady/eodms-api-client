@@ -136,6 +136,7 @@ class EodmsAPI():
                     data['totalResults'], old_maxResults)
                 )
                 new_maxResults = old_maxResults + EODMS_DEFAULT_MAXRESULTS
+                LOGGER.info('Increasing query limit to %d and requerying...' % new_maxResults)
                 self._search_url = self._search_url.replace(
                     '&maxResults=%d' % old_maxResults,
                     '&maxResults=%d' % new_maxResults
