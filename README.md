@@ -16,22 +16,28 @@ Full documentation and real-world example on [ReadTheDocs](https://eodms-api-cli
 
 Create a new environment with conda
 
-```
-$ conda create -n eodms-env python=3 eodms-api-client -c conda-forge
+```shell
+$ conda create -n eodms-env eodms-api-client -c conda-forge
 $ conda activate eodms-env
+```
+
+Install with pip (may be problematic with Windows+GDAL
+
+```shell
+$ pip install eodms-api-client
 ```
 
 ### Use the CLI
 
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
-```
+```shell
 $ eodms -c RCM -g query_aoi.geojson --dump-results
 ```
 
 Same query as above, but this time submit an order for all products found by the query instead of saving a result file
 
-```
+```shell
 $ eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
@@ -51,7 +57,7 @@ geopandas.geodataframe.GeoDataFrame
 
 ### List of possible CLI arguments
 
-```
+```shell
 $ eodms --help
 Usage: eodms [OPTIONS]
 
@@ -124,6 +130,8 @@ Options:
   -cc, --cloud-cover TEXT         Limit optical results to have less than this
                                   amount of cloud cover [0-100]
 
+  -rn, --roll-number TEXT         Limit NAPL results to the given roll number
+  -pn, --photo-number TEXT        Limit NAPL results to the given photo number
   -o, --output-dir PATH           Directory where query results and downloaded
                                   imagery will be saved  [default: .]
 
@@ -136,17 +144,15 @@ Options:
   --submit-order                  Submit an order to EODMS from the results of
                                   the current query parameters
 
-  --record-id TEXT                Specific record Id to order from the desired
+  --record-id TEXT                Specific Record Id to order from the desired
                                   collection
 
-  --record-ids PATH               File of line-separated record Ids to order
+  --record-ids PATH               File of line-separated Record Ids to order
                                   from the desired collection
 
-  --download-id TEXT              Specific Order item Id to download from
-                                  EODMS
-
-  --download-ids PATH             File of line-separated Order item Ids to
-                                  download from EODMS
+  --order-id TEXT                 Specific Order Id to download from EODMS
+  --order-ids PATH                File of line-separated Order Ids to download
+                                  from EODMS
 
   --log-verbose                   Use debug-level logging
   --version                       Show the package version
