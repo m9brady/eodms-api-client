@@ -13,18 +13,21 @@
 import os
 import re
 import sys
+from datetime import datetime
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'eodms-api-client'
-copyright = '2021, Mike Brady'
+current_year = datetime.now().year
+copyright = f'2020 - {current_year}, Mike Brady'
 author = 'Mike Brady'
 
 # The full version, including alpha/beta/rc tags
 with open(os.path.join('..', 'eodms_api_client', '__init__.py'), 'r') as f:
     init_txt = f.read()
 release = re.search(r"__version__ = \s*'([\d.*]+)'", init_txt).group(1)
+version = release.split('+')[0]
 
 # -- General configuration ---------------------------------------------------
 
@@ -36,7 +39,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_copybutton',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,14 +54,21 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # Order of documentation by the code source
 autodoc_member_order = 'bysource'
 
+# sphinx-copybutton configurations
+copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '
+copybutton_prompt_is_regexp = True
+
 # -- Options for HTML output -------------------------------------------------
 
 pygments_theme = 'sphinx'
 
+html_title = 'eodms-api-client'
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
+html_theme_options = dict()
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -8,6 +8,7 @@ Our study area is Northern Lake Winnipeg and we have constructed a geojson polyg
 
 .. image:: _static/lakewinnipegnorth.jpg
   :width: 600
+  :align: center
   :alt: Lake Winnipeg North
 
 The geojson file that the above image displays can be found `here <_static/lakewinnipegnorth.geojson>`_
@@ -19,9 +20,9 @@ Command-Line Interface (CLI)
 
 First we run a query to see what's available
 
-.. code-block::
+.. code-block:: console
 
-    eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --dump-results
+    $ eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --dump-results
     2020-12-23 10:34:09 | eodmsapi.cli | INFO | Querying EODMS API
     Fetching result metadata: 100%|████████████████████████████████| 26/26 [00:04<00:00,  5.30item/s]
     2020-12-23 10:34:18 | eodmsapi.cli | INFO | Finished query. 26 results
@@ -29,15 +30,15 @@ First we run a query to see what's available
 
 We can then inspect the ``query_results.geojson`` in Python or GIS software (like `QGIS`_) to see if it satisfies our needs. If there are no modifications to be made, we can submit the order as-is
 
-.. code-block::
+.. code-block:: console
 
-    eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --submit-order
+    $ eodms -c RCM -s 2020-08-15 -e 2020-08-22 -g lakewinnipegnorth.geojson --submit-order
 
 After order submission, you will receive emails from EODMS on the status of your order. Once your order status has changed to "Complete", take note of the ``Order ID`` in the Delivery Notification email and supply it to the CLI
 
-.. code-block::
+.. code-block:: console
 
-    eodms -c RCM --order-id <order_id>
+    $ eodms -c RCM --order-id <order_id>
 
 Interactive Python
 ------------------

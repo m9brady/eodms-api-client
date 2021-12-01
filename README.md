@@ -14,16 +14,16 @@ Full documentation and real-world example on [ReadTheDocs](https://eodms-api-cli
 
 ## Quickstart:
 
-Create a new environment with conda
+Create a new environment with [conda](https://docs.conda.io/en/latest/miniconda.html)
 
-```shell
+```console
 $ conda create -n eodms-env eodms-api-client -c conda-forge
 $ conda activate eodms-env
 ```
 
 Install with pip (may be problematic with Windows+GDAL
 
-```shell
+```console
 $ pip install eodms-api-client
 ```
 
@@ -31,13 +31,13 @@ $ pip install eodms-api-client
 
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
-```shell
+```console
 $ eodms -c RCM -g query_aoi.geojson --dump-results
 ```
 
 Same query as above, but this time submit an order for all products found by the query instead of saving a result file
 
-```shell
+```console
 $ eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
@@ -57,7 +57,7 @@ geopandas.geodataframe.GeoDataFrame
 
 ### List of possible CLI arguments
 
-```shell
+```console
 $ eodms --help
 Usage: eodms [OPTIONS]
 

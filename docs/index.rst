@@ -5,9 +5,9 @@ This package was created as a tool for myself for interacting with RCM data arch
 
 It provides a command-line interface for querying, ordering, and downloading data from EODMS as well as a Python client class ``EodmsAPI`` for doing the same operations from within a Python session.
 
-.. code-block::
+.. code-block:: console
 
-    eodms -c RCM -g aoi_polygon.geojson --dump-results
+    $ eodms -c RCM -g aoi_polygon.geojson --dump-results
 
 .. code-block:: python
 
@@ -18,12 +18,17 @@ It provides a command-line interface for querying, ordering, and downloading dat
 Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ (GeoJSON, Esri Shapefile, OGC GeoPackage, KML/KMZ, etc.)
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    install
    examples
    source
+
+.. toctree::   
+   :caption: Development:
+
+   Github Repository <https://github.com/m9brady/eodms-api-client>
 
 Indices and tables
 ==================
