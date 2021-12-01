@@ -21,7 +21,7 @@ $ conda create -n eodms-env eodms-api-client -c conda-forge
 $ conda activate eodms-env
 ```
 
-Install with pip (may be problematic with Windows+GDAL
+... or install with pip (not recommended: may clobber your Python installation, may be problematic with Windows+GDAL)
 
 ```console
 $ pip install eodms-api-client
@@ -41,7 +41,7 @@ Same query as above, but this time submit an order for all products found by the
 $ eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
-### Use eodms-api-client interactively in Python REPL
+### Use interactively in a Python REPL
 
 Repeating the same query as the CLI example above in a Python REPL allows you to manually inspect the results and do all sorts of interesting things with the query result geodataframe. 
 
