@@ -142,9 +142,13 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             'Incidence Angle (Low)', 'Incidence Angle (High)'
         ]    
     # convert strings to unsigned integer
-    df[int_cols] = df[int_cols].apply(pd.to_numeric, downcast='unsigned', axis=1)
+    # necessary to do one-by-one because if we apply to dataframe, any "failure" fields 
+    # will cause all "valid" fields to not be converted
+    for int_col in int_cols:
+        df[int_col] = pd.to_numeric(df[int_col], downcast='unsigned', errors='ignore')
     # convert strings to floats
-    df[float_cols] = df[float_cols].apply(pd.to_numeric, downcast='float', axis=1)
+    for float_col in float_cols:
+        df[float_col] = pd.to_numeric(df[float_col], downcast='float', errors='ignore')
     # convert strings to datetimes
     df[date_cols] = df[date_cols].apply(pd.to_datetime, axis=1)
     # sort by RecordId
