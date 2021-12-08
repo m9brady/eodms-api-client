@@ -26,15 +26,6 @@ EODMS_COLLECTIONS = [
 ]
 
 LOGGER = logging.getLogger('eodmsapi.main')
-LOGGER.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-formatter = logging.Formatter(
-    '{asctime} | {name:<15s} | {levelname:<8s} | {message}',
-    '%Y-%m-%d %H:%M:%S',
-    style='{'
-)
-ch.setFormatter(formatter)
-LOGGER.addHandler(ch)
 
 class EodmsAPI():
     '''

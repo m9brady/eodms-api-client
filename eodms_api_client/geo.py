@@ -163,7 +163,7 @@ def load_search_aoi(geofile):
     are transformed by this function.
 
     Inputs:
-      - geofile: A file containig vector data (SHP, GEOJSON, GPKG, etc.)
+      - geofile: A file containing vector data (SHP, GEOJSON, GPKG, etc.)
 
     Outputs:
       - wkt: The Well-Known Text representation of the features within <geofile>

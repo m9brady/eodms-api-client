@@ -7,15 +7,6 @@ from . import EodmsAPI
 from . import __version__ as eodms_version
 
 LOGGER = logging.getLogger('eodmsapi.cli')
-LOGGER.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-formatter = logging.Formatter(
-    '{asctime} | {name:<15s} | {levelname:<8s} | {message}',
-    '%Y-%m-%d %H:%M:%S',
-    style='{'
-)
-ch.setFormatter(formatter)
-LOGGER.addHandler(ch)
 
 def print_version(ctx, param, value):
     '''stolen from Click documentation: https://click.palletsprojects.com/en/7.x/options/#callbacks-and-eager-options'''

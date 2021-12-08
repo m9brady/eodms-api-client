@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
+from math import ceil, floor
 from urllib.parse import quote
-from math import floor, ceil
 
 from dateutil.parser import parse
 
