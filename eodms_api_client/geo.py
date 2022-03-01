@@ -1,3 +1,4 @@
+import logging
 from os.path import splitext
 
 import fiona
@@ -10,6 +11,8 @@ from shapely.wkt import dumps as to_wkt
 # add 'read' support for KML/KMZ - disabled by default
 fiona.drvsupport.supported_drivers['KML'] = 'r'
 fiona.drvsupport.supported_drivers['LIBKML'] = 'r'
+
+LOGGER = logging.getLogger('eodmsapi.geo')
 
 SRC_CRS = CRS('epsg:4326')
 
@@ -179,13 +182,19 @@ def load_search_aoi(geofile):
     if geometry.type == 'MultiPolygon':
         n_vertices = sum([
             len(poly.exterior.coords) - 1
-            for poly in geometry
+            for poly in geometry.geoms
         ])
     elif geometry.type == 'Polygon':
         n_vertices = len(geometry.exterior.coords) - 1
     else:
         raise NotImplementedError('Search geometry must be a polygon/multipolygon')
-    if n_vertices > 1000:
-        raise Exception('Search geometry is too complex (more than 1000 vertices)')
-    wkt = to_wkt(geometry, output_dimension=2) # drop Z dimension if it exists - causes 500-errors with EODMS
+    if n_vertices > 100:
+        LOGGER.warn('Search geometry is too complex (more than 100 vertices) - Simplifying with 0.01° tolerance')
+        geometry = geometry.simplify(tolerance=0.01)
+        # use 3-decimal precision (tens to hundreds of meters)
+        # drop Z dimension if it exists - causes 500-errors with EODMS
+        wkt = to_wkt(geometry, rounding_precision=3, output_dimension=2) 
+    else:
+        # drop Z dimension if it exists - causes 500-errors with EODMS
+        wkt = to_wkt(geometry, output_dimension=2)
     return wkt
