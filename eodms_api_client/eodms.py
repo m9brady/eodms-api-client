@@ -194,7 +194,7 @@ class EodmsAPI():
             image
         '''
         metadata = {}
-        r = self._session.get(url, timeout=timeout)
+        r = self._session.get(url, params={'format': 'json'}, timeout=timeout)
         if r.ok:
             response = r.json()
             for k in keys:
