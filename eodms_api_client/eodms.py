@@ -13,7 +13,7 @@ from .auth import create_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
 from .params import generate_meta_keys, validate_query_args
 
-EODMS_DEFAULT_MAXRESULTS = 150
+EODMS_DEFAULT_MAXRESULTS = 1000
 EODMS_SUBMIT_HARDLIMIT = 100
 EODMS_REST_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi'
 EODMS_REST_SEARCH = EODMS_REST_BASE + \
@@ -137,7 +137,7 @@ class EodmsAPI():
                 return data
 
     def _fetch_metadata(self, query_response, metadata_fields,
-                        target_crs=None, max_workers=4, len_timeout=5):
+                        target_crs=None, max_workers=4, len_timeout=20):
         '''
         Since the search-query response from the EODMS REST API does not return
         much useful metadata about imagery, we have to submit some more requests
@@ -149,7 +149,7 @@ class EodmsAPI():
           - target_crs: the desired projection of the image footprint polygons (default: WGS84)
           - max_workers: the number of threads to use in the metadata fetching method (default: 4)
           - len_timeout: how long each metadata fetch should wait before timing out 
-            (default: 5 seconds)
+            (default: 20 seconds)
 
         Outputs:
           - geodataframe containing the scraped metadata_fields and polygon geometries
@@ -211,19 +211,21 @@ class EodmsAPI():
             )
         return metadata
 
-    def order(self, record_ids):
+    def order(self, record_ids, priority='Medium'):
         '''
         Submit an order to EODMS using record ID numbers retrieved from a search query
 
         Inputs:
           - record_ids: list of record ID numbers to order
+          - priority: one of ['Low', 'Medium', 'High', 'Urgent'] Default: 'Medium'
 
         Outputs:
           - order_ids: list of EODMS ordering system ID numbers for later downloading
         '''
-        order_ids = []
         if not isinstance(record_ids, (list, tuple)):
             record_ids = [record_ids]
+        if not priority.capitalize() in ['Low', 'Medium', 'High', 'Urgent']:
+            raise ValueError('Unrecognized priority: %s' % priority)
         if len(record_ids) < 1:
             LOGGER.warning('No records passed to order submission')
             return order_ids
@@ -241,7 +243,13 @@ class EodmsAPI():
                 'items': [
                     {
                         'collectionId': self.collection,
-                        'recordId': record_id
+                        'recordId': str(record_id),
+                        'priority': priority.capitalize(),
+                        'parameters': {
+                            'NOTIFICATION_EMAIL_ADDRESS': self._session.auth.username,
+                            'packagingFormat': 'ZIP',
+
+                        }
                     }
                     for record_id in record_ids[idx:idx+EODMS_SUBMIT_HARDLIMIT]
                 ]
@@ -252,7 +260,7 @@ class EodmsAPI():
                 order_ids.extend(list(set([int(item['orderId']) for item in response['items']])))
             else:
                 LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
-                exit()
+                raise ConnectionError('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
             idx += EODMS_SUBMIT_HARDLIMIT
         return order_ids
 
@@ -335,7 +343,8 @@ class EodmsAPI():
         if n_orders < 1:
             n_orders.warning('No IDs passed to download')
             return local_files
-        LOGGER.info('Checking statuses of %d order%s' % (
+        LOGGER.info('Checking status%s of %d order%s' % (
+            'es' if n_orders != 1 else '',
             n_orders,
             's' if n_orders != 1 else ''
         ))
