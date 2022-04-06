@@ -47,8 +47,8 @@ def validate_query_args(args, collection):
     if not isinstance(product_type, (list, tuple)): # single
         query_args.append("ARCHIVE_IMAGE.PRODUCT_TYPE='%s'" % product_type.upper())
     elif not (len(product_type) == 1 and product_type[0] is None): # multi
-        query_args.append("ARCHIVE_IMAGE.PRODUCT_TYPE='%s'" % ','.join([
-            prod_type.upper() for prod_type in product_type
+        query_args.append("ARCHIVE_IMAGE.PRODUCT_TYPE=%s" % ','.join([
+            f'{prod_type.upper()!r}' for prod_type in product_type
         ]))
     # RCM products
     if collection == 'RCMImageProducts':
@@ -56,12 +56,16 @@ def validate_query_args(args, collection):
         if not isinstance(beam_mode, (list, tuple)): # single
             query_args.append("RCM.SBEAM='%s'" % beam_mode)
         elif not (len(beam_mode) == 1 and beam_mode[0] is None): # multi
-            query_args.append("RCM.SBEAM='%s'" % ','.join(beam_mode))
+            query_args.append("RCM.SBEAM=%s" % ','.join(
+                [f'{bm!r}' for bm in beam_mode]
+            ))
         mnemonic = args.get('mnemonic', [None])
         if not isinstance(mnemonic, (list, tuple)): # single
              query_args.append("RCM.BEAM_MNEMONIC='%s'" % mnemonic)
         elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
-            query_args.append("RCM.BEAM_MNEMONIC='%s'" % ','.join(mnemonic))
+            query_args.append("RCM.BEAM_MNEMONIC=%s" % ','.join(
+                [f'{m!r}' for m in mnemonic]
+            ))
         product_format = args.get('product_format', None)
         if product_format is not None:
             query_args.append("PRODUCT_FORMAT.FORMAT_NAME_E='%s'" % product_format)
@@ -72,8 +76,8 @@ def validate_query_args(args, collection):
         if not isinstance(polarization, (list, tuple)): # single
             query_args.append("RCM.POLARIZATION='%s'" % polarization.upper())
         elif not (len(polarization) == 1 and polarization[0] is None): # multi
-            query_args.append("RCM.POLARIZATION='%s'" % ','.join([
-                pol.upper() for pol in polarization
+            query_args.append("RCM.POLARIZATION=%s" % ','.join([
+                f'{pol.upper()!r}' for pol in polarization
             ]))
         incidence_angle = args.get('incidence_angle', None)
         if incidence_angle is not None:
@@ -110,12 +114,16 @@ def validate_query_args(args, collection):
         if not isinstance(beam_mode, (list, tuple)): # single
             query_args.append("RSAT2.SBEAM='%s'" % beam_mode)
         elif not (len(beam_mode) == 1 and beam_mode[0] is None): # multi
-            query_args.append("RSAT2.SBEAM='%s'" % ','.join(beam_mode))
+            query_args.append("RSAT2.SBEAM=%s" % ','.join(
+                [f'{bm!r}' for bm in beam_mode]
+            ))
         mnemonic = args.get('mnemonic', [None])
         if not isinstance(mnemonic, (list, tuple)): # single
             query_args.append("RSAT2.BEAM_MNEMONIC='%s'" % mnemonic)
         elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
-            query_args.append("RSAT2.BEAM_MNEMONIC='%s'" % ','.join(mnemonic))
+            query_args.append("RSAT2.BEAM_MNEMONIC=%s" % ','.join(
+                [f'{m!r}' for m in mnemonic]
+            ))
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append("RSAT2.ANTENNA_ORIENTATION='%s'" % look_direction)
@@ -151,13 +159,21 @@ def validate_query_args(args, collection):
         if not isinstance(mnemonic, (list, tuple)): # single
             query_args.append("RSAT1.BEAM_MNEMONIC='%s'" % mnemonic)
         elif not (len(mnemonic) == 1 and mnemonic[0] is None): # multi
-            query_args.append("RSAT1.BEAM_MNEMONIC='%s'" % ','.join(mnemonic))
+            query_args.append("RSAT1.BEAM_MNEMONIC=%s" % ','.join(
+                [f'{m!r}' for m in mnemonic]
+            ))
         look_direction = args.get('look_direction', None)
         if look_direction is not None:
             query_args.append("RSAT1.ANTENNA_ORIENTATION='%s'" % look_direction)
         incidence_angle = args.get('incidence_angle', None)
         if incidence_angle is not None:
             query_args.append('RSAT1.INCIDENCE_ANGLE=%f' % float(incidence_angle))
+        incidence_angle_low = args.get('incidence_angle_low', None)
+        if incidence_angle_low is not None: #TODO: multi-select
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_LOW>=%.1f' % float(incidence_angle_low))
+        incidence_angle_high = args.get('incidence_angle_high', None)
+        if incidence_angle_high is not None: #TODO: multi-select
+            query_args.append('SENSOR_BEAM_CONFIG.INCIDENCE_HIGH<=%.1f' % float(incidence_angle_high))            
         orbit_direction = args.get('orbit_direction', None)
         if orbit_direction is not None:
             query_args.append("RSAT1.ORBIT_DIRECTION='%s'" % orbit_direction.capitalize())
