@@ -280,6 +280,9 @@ class EodmsAPI():
         parser = EODMSHTMLFilter()
         parser.feed(item['destinations'][0]['stringValue'])
         url = parser.text
+        # strip &file= from end of url
+        # TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER
+        url = url.split('&file=')[0]
         # remote filesize
         manifest_key = list(item['manifest'].keys()).pop()
         fsize = int(item['manifest'][manifest_key])
@@ -359,7 +362,11 @@ class EodmsAPI():
         for update_request in status_updates:
             r = self._session.get(update_request)
             if r.ok:
-                response['items'].extend(r.json()['items'])
+                # only retain items that belong to the wanted orderIds
+                # NB: THIS IS NOT A FIX IF YOUR ORDER HAS >100 IMAGES IN IT
+                # TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER
+                items = [item for item in r.json()['items'] if item['orderId'] in order_ids]
+                response['items'].extend(items)
             else:
                 LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
                     r.status_code, r.reason)
