@@ -210,6 +210,7 @@ def print_version(ctx, param, value):
 )
 @click.option(
     '--record-id',
+    type=click.INT,
     default=None,
     help='Specific Record Id to order from the desired collection'
 )
@@ -221,6 +222,7 @@ def print_version(ctx, param, value):
 )
 @click.option(
     '--order-id',
+    type=click.INT,
     default=None,
     help='Specific Order Id to download from EODMS'
 )
@@ -292,7 +294,7 @@ def cli(
         exit()
     elif record_ids is not None:
         with open(record_ids) as f:
-            records_to_order = [int(line.strip()) for line in f.readlines() if line.strip() != '']
+            records_to_order = [int(line) for line in f.read().splitlines() if line != '']
         LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
         order_ids = current.order(records_to_order)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
@@ -302,7 +304,7 @@ def cli(
         current.download(order_id, output_dir)
     elif order_ids is not None:
         with open(order_ids) as f:
-            order_ids = [line for line in f.read().splitlines() if line != '']
+            order_ids = [int(line) for line in f.read().splitlines() if line != '']
         if len(order_ids) == 0:
             raise IOError('No order_ids detected in file: %s' % order_ids)
         LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))

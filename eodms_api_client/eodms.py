@@ -356,7 +356,7 @@ class EodmsAPI():
         }
         # need to submit 1 API request per orderId to check downloadable status
         status_updates = [
-            EODMS_REST_ORDER + '?orderId=%s' % orderId for orderId
+            EODMS_REST_ORDER + '?orderId=%d' % orderId for orderId
             in order_ids
         ]
         for update_request in status_updates:
