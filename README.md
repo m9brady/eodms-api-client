@@ -144,17 +144,17 @@ Options:
   --submit-order                  Submit an order to EODMS from the results of
                                   the current query parameters
 
-  --record-id TEXT                Specific Record Id to order from the desired
+  --record-id INTEGER             Specific Record Id to order from the desired
                                   collection
 
   --record-ids PATH               File of line-separated Record Ids to order
                                   from the desired collection
 
-  --order-id TEXT                 Specific Order Id to download from EODMS
+  --order-id INTEGER              Specific Order Id to download from EODMS
   --order-ids PATH                File of line-separated Order Ids to download
                                   from EODMS
 
-  --log-verbose                   Use debug-level logging
+  --verbose                       Use debug-level logging
   --version                       Show the package version
   -h, --help                      Show this message and exit.
 

@@ -233,7 +233,7 @@ def print_version(ctx, param, value):
     help='File of line-separated Order Ids to download from EODMS'
 )
 @click.option(
-    '--log-verbose',
+    '--verbose',
     is_flag=True,
     default=False,
     help='Use debug-level logging'
@@ -279,9 +279,9 @@ def cli(
     record_ids,
     order_id,
     order_ids,
-    log_verbose
+    verbose
 ):
-    if log_verbose:
+    if verbose:
         LOGGER.setLevel(logging.DEBUG)
     LOGGER.debug('Connecting to EODMS')
     current = EodmsAPI(collection=collection, username=username, password=password)
