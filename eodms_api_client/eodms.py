@@ -2,6 +2,7 @@ import logging
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
 from html.parser import HTMLParser
 from json import dumps
 from time import sleep
@@ -333,10 +334,14 @@ class EodmsAPI():
                             file_out.write(chunk)
         return local_items
 
-    def download(self, order_ids, output_location='.'):
+    def download(self, order_ids, output_location='.', days_to_look_back=7):
         '''
         Appears that the endpoint has a hard limit of 100 results, so need to be fancy if more
         than 100 items are given for an orderId
+
+        order_ids: list of integer order numbers
+        output_location: where the downloaded products will be saved to (will be created if doesn't exist yet)
+        days_to_look_back: nasty bandaid solution for missing query-by-orderid parameter. How many days should the API look in the past to find your wanted order?
         '''
         local_files = []
         os.makedirs(output_location, exist_ok=True)
@@ -354,18 +359,30 @@ class EodmsAPI():
         response = {
             'items': []
         }
+        #NB: new undocumented API parameters dtstart, dtend and maxOrders (same as maxResults?)
+        #TODO: probably remove this extra stuff once check-by-orderid is reimplemented
+        dtend = dtend = datetime.utcnow()
+        extra_stuff = {
+            'dtstart': (dtend - timedelta(days=days_to_look_back)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'dtend': dtend.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'maxOrders': EODMS_DEFAULT_MAXRESULTS,
+            'format': 'json'
+        }
         # need to submit 1 API request per orderId to check downloadable status
         status_updates = [
             EODMS_REST_ORDER + '?orderId=%d' % orderId for orderId
             in order_ids
         ]
         for update_request in status_updates:
-            r = self._session.get(update_request)
+            r = self._session.get(update_request, params=extra_stuff)
             if r.ok:
                 # only retain items that belong to the wanted orderIds
-                # NB: THIS IS NOT A FIX IF YOUR ORDER HAS >100 IMAGES IN IT
                 # TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER
-                items = [item for item in r.json()['items'] if item['orderId'] in order_ids]
+                items = [
+                    item for item in r.json()['items'] 
+                    if item['orderId'] in order_ids and 
+                    item not in response['items']
+                ]
                 response['items'].extend(items)
             else:
                 LOGGER.error('Problem getting item statuses - HTTP-%s: %s' % (
