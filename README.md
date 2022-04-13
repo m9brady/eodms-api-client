@@ -69,6 +69,7 @@ Options:
                                   be prompted)
 
   -c, --collection TEXT           EODMS collection to search  [required]
+  
   -s, --start TEXT                Beginning of acquisition time window
                                   (default to 1 day prior to now)
 
@@ -92,6 +93,7 @@ Options:
                                   Id
 
   -ia, --incidence-angle TEXT     Limit results to the desired incidence angle
+
   -ial, --incidence-angle-low TEXT
                                   Limit results to scenes that have incidence
                                   angles greater than this value (degrees)
@@ -131,7 +133,13 @@ Options:
                                   amount of cloud cover [0-100]
 
   -rn, --roll-number TEXT         Limit NAPL results to the given roll number
+
   -pn, --photo-number TEXT        Limit NAPL results to the given photo number
+
+  --priority [Low|Medium|High|Urgent]
+                                  What priority to use when submitting orders
+                                  [default: Medium]
+
   -o, --output-dir PATH           Directory where query results and downloaded
                                   imagery will be saved  [default: .]
 
@@ -151,6 +159,7 @@ Options:
                                   from the desired collection
 
   --order-id INTEGER              Specific Order Id to download from EODMS
+
   --order-ids PATH                File of line-separated Order Ids to download
                                   from EODMS
 

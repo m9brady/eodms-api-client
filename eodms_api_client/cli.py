@@ -180,6 +180,13 @@ def print_version(ctx, param, value):
 #    help='Limit NAPL results to free [True] or cost-associated [False] images'
 #)
 @click.option(
+    '--priority',
+    type=click.Choice(['Low', 'Medium', 'High', 'Urgent'], case_sensitive=False),
+    default='Medium',
+    help='What priority to use when submitting orders',
+    show_default=True
+)
+@click.option(
     '--output-dir',
     '-o',
     type=click.Path(exists=True),
@@ -271,6 +278,7 @@ def cli(
     roll_number,
     photo_number,
     #napl_nocost,
+    priority,
     output_dir,
     dump_results,
     dump_filename,
@@ -289,14 +297,14 @@ def cli(
     # check for presence of supplied record_ids, where we just skip ahead and order
     if record_id is not None:
         LOGGER.info('Fast-ordering for single record')
-        order_ids = current.order(record_id)
+        order_ids = current.order(record_id, priority=priority)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         exit()
     elif record_ids is not None:
         with open(record_ids) as f:
             records_to_order = [int(line) for line in f.read().splitlines() if line != '']
         LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
-        order_ids = current.order(records_to_order)
+        order_ids = current.order(records_to_order, priority=priority)
         LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
     # check for presence of supplied order_ids, where we just skip ahead and try to download
     elif order_id is not None:
@@ -343,7 +351,7 @@ def cli(
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
             to_order = current.results['EODMS RecordId'].tolist()
-            order_ids = current.order(to_order)
+            order_ids = current.order(to_order, priority=priority)
             LOGGER.info('EODMS Order Ids for tracking status and downloading: %s' % order_ids)
         else:
             LOGGER.warn('No records to order')

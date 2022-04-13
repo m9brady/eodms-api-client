@@ -361,7 +361,7 @@ class EodmsAPI():
         }
         #NB: new undocumented API parameters dtstart, dtend and maxOrders (same as maxResults?)
         #TODO: probably remove this extra stuff once check-by-orderid is reimplemented
-        dtend = dtend = datetime.utcnow()
+        dtend = datetime.utcnow()
         extra_stuff = {
             'dtstart': (dtend - timedelta(days=days_to_look_back)).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'dtend': dtend.strftime('%Y-%m-%dT%H:%M:%SZ'),
