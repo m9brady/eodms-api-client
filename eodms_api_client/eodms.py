@@ -4,6 +4,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from json import dumps
+from math import ceil
 from time import sleep
 
 from requests.exceptions import ConnectionError
@@ -217,7 +218,7 @@ class EodmsAPI():
 
         Inputs:
           - record_ids: list of record ID numbers to order
-          - priority: one of ['Low', 'Medium', 'High', 'Urgent'] Default: 'Medium'
+          - priority: Order submission priority. Must be one of ['Low', 'Medium', 'High', 'Urgent'] Default: 'Medium'
 
         Outputs:
           - order_ids: list of EODMS ordering system ID numbers for later downloading
@@ -226,18 +227,25 @@ class EodmsAPI():
             record_ids = [record_ids]
         if not priority.capitalize() in ['Low', 'Medium', 'High', 'Urgent']:
             raise ValueError('Unrecognized priority: %s' % priority)
-        if len(record_ids) < 1:
+        n_records = len(record_ids)
+        if n_records < 1:
             LOGGER.warning('No records passed to order submission')
             return order_ids
-        if len(record_ids) > EODMS_SUBMIT_HARDLIMIT:
-            LOGGER.warning('Number of requested images exceeds limit (%d)' % EODMS_SUBMIT_HARDLIMIT)
-        LOGGER.info('Submitting order for %d item%s' % (
-            len(record_ids),
-            's' if len(record_ids) != 1 else ''
-        ))
+        if n_records > EODMS_SUBMIT_HARDLIMIT:
+            LOGGER.warning('Number of requested images exceeds per-order limit (%d)' % EODMS_SUBMIT_HARDLIMIT)
+            LOGGER.info('Submitting %d orders to accomodate %d items' % (
+                ceil(n_records / EODMS_SUBMIT_HARDLIMIT), n_records
+            ))
+        else:
+            LOGGER.info('Submitting order for %d item%s' % (
+                n_records,
+                's' if n_records != 1 else ''
+            ))
         order_ids = []
         idx = 0
-        while idx < len(record_ids):
+        while idx < n_records:
+            # only submit 100 items per order
+            record_subset = record_ids[idx:idx+EODMS_SUBMIT_HARDLIMIT]
             data = dumps({
                 'destinations': [],
                 'items': [
@@ -251,13 +259,13 @@ class EodmsAPI():
 
                         }
                     }
-                    for record_id in record_ids[idx:idx+EODMS_SUBMIT_HARDLIMIT]
+                    for record_id in record_subset
                 ]
             })
             r = self._session.post(EODMS_REST_ORDER, data=data)
             if r.ok:
                 LOGGER.debug('%s priority order accepted by EODMS for %d item%s' % (
-                    priority, len(record_ids), 's' if len(record_ids) != 1 else '')
+                    priority, len(record_subset), 's' if len(record_subset) != 1 else '')
                 )
                 response = r.json()
                 order_ids.extend(list(set([int(item['orderId']) for item in response['items']])))
@@ -314,7 +322,7 @@ class EodmsAPI():
             if os.path.exists(local):
                 # if all-good, continue to next file
                 if os.stat(local).st_size == expected_size:
-                    LOGGER.info('Local file exists: %s' % local)
+                    LOGGER.debug('Local file exists: %s' % local)
                     continue
                 # otherwise, delete the incomplete/malformed local file and redownload
                 else:
@@ -345,6 +353,7 @@ class EodmsAPI():
         output_location: where the downloaded products will be saved to (will be created if doesn't exist yet)
         '''
         local_files = []
+        LOGGER.debug('Saving to %r' % output_location)
         os.makedirs(output_location, exist_ok=True)
         if not isinstance(order_ids, (list, tuple)):
             order_ids = [order_ids]
