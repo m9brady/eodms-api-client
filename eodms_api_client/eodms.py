@@ -12,7 +12,8 @@ from tqdm.auto import tqdm
 
 from .auth import create_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
-from .params import generate_meta_keys, validate_query_args
+from .params import (available_query_args, generate_meta_keys,
+                     validate_query_args)
 
 EODMS_DEFAULT_MAXRESULTS = 1000
 EODMS_SUBMIT_HARDLIMIT = 100
@@ -39,6 +40,7 @@ class EodmsAPI():
     '''
     def __init__(self, collection, username=None, password=None):
         self.collection = collection
+        self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
     
     @property
@@ -63,6 +65,8 @@ class EodmsAPI():
                 ))
         else:
             self.__collection = collection
+        # reset the available params based on new collection
+        self.available_params = available_query_args(self.__collection)
         return
 
     def query(self, **kwargs):
@@ -382,7 +386,6 @@ class EodmsAPI():
             r = self._session.get(update_request, params=extra_stuff)
             if r.ok:
                 # only retain items that belong to the wanted orderIds
-                # I HAVE HEREBY DECIDED THAT IT SHALL STAY
                 items = [
                     item for item in r.json()['items'] 
                     if item['orderId'] in order_ids and 
