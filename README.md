@@ -109,7 +109,7 @@ Options:
                                   Limit SAR collection results to the desired
                                   beam mnemonic
 
-  -rp, --radarsat-polarization [CH+CV|HH|HH+HV|HH+HV+VH+VV|HH+VV|HV|VH|VH+VV|VV]
+  -rp, --radarsat-polarization [CH CV|HH|HH HV|HH HV VH VV|HH VV|HV|VH|VH VV|VV]
                                   Limit SAR collection results to the desired
                                   polarization
 

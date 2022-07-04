@@ -120,8 +120,8 @@ def print_version(ctx, param, value):
     '--radarsat-polarization',
     '-rp',
     type=click.Choice([
-        'CH+CV', 'HH', 'HH+HV', 'HH+HV+VH+VV', 'HH+VV', 'HV', 'VH',
-        'VH+VV', 'VV'
+        'CH CV', 'HH', 'HH HV', 'HH HV VH VV', 'HH VV', 'HV', 'VH',
+        'VH VV', 'VV'
     ]),
     default=[None],
     multiple=True,
@@ -338,7 +338,7 @@ def cli(
             's' if n_results != 1 else ''
         ))
     if dump_results:
-        out_file = os.path.join(output_dir, f'{dump_filename}.geojson')
+        out_file = os.path.normpath(os.path.join(output_dir, f'{dump_filename}.geojson'))
         LOGGER.info('Saving query result%s to file: %s' % (
             's' if n_results != 1 else '',
             out_file
