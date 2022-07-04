@@ -7,7 +7,7 @@ from json import dumps
 from math import ceil
 from time import sleep
 
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, JSONDecodeError
 from tqdm.auto import tqdm
 
 from .auth import create_session
@@ -16,7 +16,7 @@ from .params import (available_query_args, generate_meta_keys,
                      validate_query_args)
 
 EODMS_DEFAULT_MAXRESULTS = 1000
-EODMS_SUBMIT_HARDLIMIT = 100
+EODMS_SUBMIT_HARDLIMIT = 50
 EODMS_REST_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi'
 EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '/search?collection={collection}&query={query}' + \
@@ -248,7 +248,7 @@ class EodmsAPI():
         order_ids = []
         idx = 0
         while idx < n_records:
-            # only submit 100 items per order
+            # only submit 50 items per order
             record_subset = record_ids[idx:idx+EODMS_SUBMIT_HARDLIMIT]
             data = dumps({
                 'destinations': [],
@@ -271,8 +271,12 @@ class EodmsAPI():
                 LOGGER.debug('%s priority order accepted by EODMS for %d item%s' % (
                     priority, len(record_subset), 's' if len(record_subset) != 1 else '')
                 )
-                response = r.json()
-                order_ids.extend(list(set([int(item['orderId']) for item in response['items']])))
+                try:
+                    response = r.json()
+                    order_ids.extend(list(set([int(item['orderId']) for item in response['items']])))
+                except JSONDecodeError:
+                    LOGGER.error('An unexpected response has been received from EODMS API - double-check that your order has been submitted via the web interface')
+                    LOGGER.error('You will likely need to get your Order ID from the EODMS Web Interface or the order-completion email')
             else:
                 LOGGER.error('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
                 raise ConnectionError('Problem submitting order - HTTP-%s: %s' % (r.status_code, r.reason))
