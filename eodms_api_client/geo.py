@@ -191,10 +191,7 @@ def load_search_aoi(geofile):
     if n_vertices > 100:
         LOGGER.warn('Search geometry is too complex (more than 100 vertices) - Simplifying with 0.01° tolerance')
         geometry = geometry.simplify(tolerance=0.01)
-        # use 3-decimal precision (tens to hundreds of meters)
-        # drop Z dimension if it exists - causes 500-errors with EODMS
-        wkt = to_wkt(geometry, rounding_precision=3, output_dimension=2) 
-    else:
-        # drop Z dimension if it exists - causes 500-errors with EODMS
-        wkt = to_wkt(geometry, output_dimension=2)
+    # force 6-decimal precision (sub-meter at equator)
+    # drop Z dimension if it exists - causes 500-errors with EODMS
+    wkt = to_wkt(geometry, rounding_precision=6, output_dimension=2) 
     return wkt
