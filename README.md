@@ -17,14 +17,18 @@ Full documentation and real-world example on [ReadTheDocs](https://eodms-api-cli
 Create a new environment with [conda](https://docs.conda.io/en/latest/miniconda.html)
 
 ```console
-$ conda create -n eodms-env eodms-api-client -c conda-forge
-$ conda activate eodms-env
+conda create -n eodms-env eodms-api-client -c conda-forge
+conda activate eodms-env
 ```
 
-... or install with pip (not recommended: may clobber your Python installation, may be problematic with Windows+GDAL)
+... or install with pip
+> **Warning**
+> Pip is not recommended
+> - may clobber your existing Python environment
+> - may be problematic with Windows+GDAL
 
 ```console
-$ pip install eodms-api-client
+pip install eodms-api-client
 ```
 
 ### Use the CLI
@@ -32,13 +36,13 @@ $ pip install eodms-api-client
 Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
 ```console
-$ eodms -c RCM -g query_aoi.geojson --dump-results
+eodms -c RCM -g query_aoi.geojson --dump-results
 ```
 
 Same query as above, but this time submit an order for all products found by the query instead of saving a result file
 
 ```console
-$ eodms -c RCM -g query_aoi.geojson --submit-order
+eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
 ### Use interactively in a Python REPL
@@ -58,7 +62,7 @@ geopandas.geodataframe.GeoDataFrame
 ### List of possible CLI arguments
 
 ```console
-$ eodms --help
+eodms --help
 Usage: eodms [OPTIONS]
 
 Options:
