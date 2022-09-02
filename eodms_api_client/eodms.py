@@ -28,6 +28,8 @@ EODMS_COLLECTIONS = [
 ]
 
 LOGGER = logging.getLogger('eodmsapi.main')
+# suppress urllib3 warnings
+logging.getLogger('urllib3').setLevel(logging.ERROR)
 
 class EodmsAPI():
     '''
@@ -42,6 +44,10 @@ class EodmsAPI():
         self.collection = collection
         self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
+        # test the credentials
+        r = self._session.get(f'{EODMS_REST_BASE}/collections/{self.collection}')
+        if r.status_code == 401:
+            raise ValueError('Insufficient access privileges or incorrect username and/or password')
     
     @property
     def collection(self):
@@ -160,7 +166,7 @@ class EodmsAPI():
           - geodataframe containing the scraped metadata_fields and polygon geometries
         '''
         if len(query_response['results']) == 0:
-            LOGGER.warn('No results found')
+            LOGGER.warning('No results found')
             results = {k: [] for k in metadata_fields}
             results['geometry'] = []
         else:
@@ -334,7 +340,7 @@ class EodmsAPI():
                     continue
                 # otherwise, delete the incomplete/malformed local file and redownload
                 else:
-                    LOGGER.warn(
+                    LOGGER.warning(
                         'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
                     )
                     os.remove(local)

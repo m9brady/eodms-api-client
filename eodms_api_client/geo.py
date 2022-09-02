@@ -180,6 +180,7 @@ def load_search_aoi(geofile):
         df = df.to_crs(SRC_CRS)
     geometry = df.unary_union
     if geometry.type == 'MultiPolygon':
+        LOGGER.warning('Input geometry is a multipolygon - may have adverse effect on query')
         n_vertices = sum([
             len(poly.exterior.coords) - 1
             for poly in geometry.geoms
@@ -189,7 +190,7 @@ def load_search_aoi(geofile):
     else:
         raise NotImplementedError('Search geometry must be a polygon/multipolygon')
     if n_vertices > 100:
-        LOGGER.warn('Search geometry is too complex (more than 100 vertices) - Simplifying with 0.01° tolerance')
+        LOGGER.warning('Search geometry is too complex (more than 100 vertices) - Simplifying with 0.01° tolerance')
         geometry = geometry.simplify(tolerance=0.01)
     # force 6-decimal precision (sub-meter at equator)
     # drop Z dimension if it exists - causes 500-errors with EODMS

@@ -346,7 +346,7 @@ def cli(
         if len(current.results) > 0:
             current.results.to_file(out_file, driver='GeoJSON')
         else:
-            LOGGER.warn('No results found')
+            LOGGER.warning('No results found')
     if submit_order:
         if len(current.results) > 0:
             LOGGER.info('Submitting order for %d records' % len(current.results))
@@ -354,4 +354,4 @@ def cli(
             order_ids = current.order(to_order, priority=priority)
             LOGGER.info('EODMS Order Ids for tracking status and downloading: %s' % order_ids)
         else:
-            LOGGER.warn('No records to order')
+            LOGGER.warning('No records to order')
