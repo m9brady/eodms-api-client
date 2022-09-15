@@ -253,8 +253,10 @@ def generate_meta_keys(collection):
         ]
     elif collection == 'NAPL':
         return [
-            'Sequence Id', 'Title', 'Start Date', 'End Date', 'Altitude', 'Viewing Angle', 'Scale', 
-            'SIP Size (MB)',
+            'Sequence Id', 'Start Date', 'End Date', 'Roll Number', 'Line Number', 'Photo Number', 'Area', 'Scale', 
+            'NTS Map', 'Altitude', 'Viewing Angle', 'Incidence Angle (Low)', 'Incidence Angle (High)', 'Overlap',
+            'Sensor Mode', 'Frame Start', 'Frame End', 'Camera Name/Number', 'Lens Name/Number', 'Film Size', 
+            'Focal Length (mm)', 'SIP Size (MB)'
         ]
     else:
         raise NotImplementedError(

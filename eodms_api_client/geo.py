@@ -128,7 +128,7 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
         float_cols = [
             'Incidence Angle (Low)', 'Incidence Angle (High)', 'Spatial Resolution'
         ]         
-    elif collection in ['PlanetScope', 'NAPL']:
+    elif collection == 'PlanetScope':
         df.rename(
             {
                 'Sequence Id': 'EODMS RecordId',
@@ -142,8 +142,24 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
             'EODMS RecordId', 'SIP Size (MB)',
         ]
         float_cols = [
+            'Cloud Cover', 'Sun Azimuth Angle', 'Sun Elevation Angle'
+        ]
+    elif collection == 'NAPL':
+        df.rename(
+            {
+                'Sequence Id': 'EODMS RecordId',
+            },
+            axis=1,
+            inplace=True
+        )
+        date_cols = ['Start Date', 'End Date']
+        int_cols = [
+            'EODMS RecordId', 'Frame Start', 'Frame End', 'Line Number'
+        ]        
+        float_cols = [
+            'Overlap', 'Altitude', 'Scale', 'Film Size', 'Focal Length (mm)',
             'Incidence Angle (Low)', 'Incidence Angle (High)'
-        ]    
+        ]
     # convert strings to unsigned integer
     # necessary to do one-by-one because if we apply to dataframe, any "failure" fields 
     # will cause all "valid" fields to not be converted
