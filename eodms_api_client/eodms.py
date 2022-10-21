@@ -346,6 +346,14 @@ class EodmsAPI():
                     os.remove(local)
             # use streamed download so we can wrap nicely with tqdm
             with self._session.get(remote, stream=True) as stream:
+                # check content-length against expected filesize
+                if int(stream.headers['content-length']) < expected_size:
+                    LOGGER.error(
+                        'Remote filesize does not match manifest for item ' +\
+                        os.path.basename(remote) +\
+                        '. You may have to resubmit your order.'
+                    )
+                    continue
                 with open(local, 'wb') as pipe:
                     with tqdm.wrapattr(
                         pipe,
@@ -395,6 +403,10 @@ class EodmsAPI():
         for update_request in status_updates:
             r = self._session.get(update_request, params=extra_stuff)
             if r.ok:
+                # add check for API being down but still returning HTTP:200
+                if 'Thanks for your patience' in r.text:
+                    LOGGER.error('EODMS API appears to be down. Try again later.')
+                    return
                 # only retain items that belong to the wanted orderIds
                 items = [
                     item for item in r.json()['items'] 
@@ -436,8 +448,10 @@ class EodmsAPI():
                 's' if n_missing_but_ready != 1 else ''
             ))
             local_files = self._download_items(available_remote_files, to_download)
+            # account for any skipped-files-due-to-wrong-filesize
+            local_files = [f for f in local_files[:] if os.path.exists(f)]
             LOGGER.info('%d/%d items exist locally after latest download' % (
-                n_missing_but_ready + n_already_have,
+                len(local_files),
                 n_items
             ))
         else:
