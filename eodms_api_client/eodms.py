@@ -308,8 +308,12 @@ class EodmsAPI():
         # strip &file= from end of url
         # TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER
         url = url.split('&file=')[0]
-        # remote filesize
         manifest_key = list(item['manifest'].keys()).pop()
+        # check that url matches manifest 
+        # TODO: BANDAID FIX, REMOVE WHEN FIXED ON SERVER-SIDE
+        if not url[-len(manifest_key):] == manifest_key:
+            url = url[:-len(manifest_key)] + manifest_key
+        # remote filesize
         fsize = int(item['manifest'][manifest_key])
         return url, fsize
 
@@ -346,12 +350,12 @@ class EodmsAPI():
                     os.remove(local)
             # use streamed download so we can wrap nicely with tqdm
             with self._session.get(remote, stream=True) as stream:
-                # check content-length against expected filesize
-                if int(stream.headers['content-length']) < expected_size:
+                # use content-type to catch non-zipfiles
+                if stream.headers['content-type'] != 'application/zip':
                     LOGGER.error(
-                        'Remote filesize does not match manifest for item ' +\
-                        os.path.basename(remote) +\
-                        '. You may have to resubmit your order.'
+                        'Remote file %s does not appear to be a ' % os.path.basename(remote) +\
+                        'zipfile anymore (content-type: %s). ' % stream.headers['content-type'] +\
+                        'You may have to resubmit your order or contact EODMS support.'
                     )
                     continue
                 with open(local, 'wb') as pipe:
@@ -359,7 +363,7 @@ class EodmsAPI():
                         pipe,
                         method='write',
                         miniters=1,
-                        total=expected_size,
+                        total=int(stream.headers['content-length']),
                         desc=os.path.basename(local)
                     ) as file_out:
                         for chunk in stream.iter_content(chunk_size=1024):

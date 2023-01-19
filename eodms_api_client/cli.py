@@ -189,7 +189,7 @@ def print_version(ctx, param, value):
 @click.option(
     '--output-dir',
     '-o',
-    type=click.Path(exists=True),
+    type=click.Path(file_ok=False),
     default='.',
     help='Directory where query results and downloaded imagery will be saved',
     show_default=True
