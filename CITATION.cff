@@ -5,6 +5,6 @@ authors:
   given-names: "Mike"
   orcid: "https://orcid.org/0000-0001-8263-0951"
 title: "eodms-api-client"
-version: 1.2.8
+version: 1.2.9
 date-released: 2023-01-19
 url: "https://github.com/m9brady/eodms-api-client"

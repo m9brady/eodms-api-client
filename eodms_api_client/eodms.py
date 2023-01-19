@@ -309,10 +309,12 @@ class EodmsAPI():
         # TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER
         url = url.split('&file=')[0]
         manifest_key = list(item['manifest'].keys()).pop()
+        manifest_hash = manifest_key.split('/')[0]
         # check that url matches manifest 
         # TODO: BANDAID FIX, REMOVE WHEN FIXED ON SERVER-SIDE
-        if not url[-len(manifest_key):] == manifest_key:
-            url = url[:-len(manifest_key)] + manifest_key
+        split_url = url.split(manifest_hash)
+        if not f'{manifest_hash}{split_url[-1]}' == manifest_key:
+            url = f'{split_url[0]}{manifest_key}'
         # remote filesize
         fsize = int(item['manifest'][manifest_key])
         return url, fsize
