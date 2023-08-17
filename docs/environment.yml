@@ -6,5 +6,6 @@ dependencies:
   - pip
   - eodms-api-client
   - sphinx-copybutton
+  - python=3.10
   - pip:
     - furo
