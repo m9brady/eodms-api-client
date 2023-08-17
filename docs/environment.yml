@@ -1,11 +1,9 @@
 name: eodms-api-client-rtd
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - pip
   - eodms-api-client
-  - sphinx-copybutton
+  - sphinx-copybutton==0.5.2
   - python=3.10
-  - pip:
-    - furo
+  - sphinx=7.1
+  - furo==2023.7.26
