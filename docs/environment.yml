@@ -3,6 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - eodms-api-client
+  - pip=23.2
   - sphinx-copybutton==0.5.2
   - python=3.10
   - sphinx=7.1
