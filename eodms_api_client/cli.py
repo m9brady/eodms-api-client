@@ -54,7 +54,7 @@ def print_version(ctx, param, value):
     '-g',
     type=click.Path(exists=True),
     default=None,
-    help='File containing polygon used to constrain the query results to a spatial region'
+    help='File containing vector feature(s) used to constrain the query results to a spatial region'
 )
 @click.option(
     '--product-type',

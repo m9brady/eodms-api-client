@@ -5,7 +5,8 @@ import fiona
 import geopandas as gpd
 import pandas as pd
 from pyproj import CRS, Transformer
-from shapely.geometry import Polygon, shape
+from shapely.geometry import CAP_STYLE, Polygon, shape
+from shapely.ops import orient
 from shapely.wkt import dumps as to_wkt
 
 # add 'read' support for KML/KMZ - disabled by default
@@ -101,7 +102,7 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
         ]
         float_cols = [
             'Incidence Angle (Low)', 'Incidence Angle (High)', 'Spatial Resolution'
-        ]        
+        ]
     elif collection == 'Radarsat1':
         df.rename(
             {
@@ -127,7 +128,7 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
         ]
         float_cols = [
             'Incidence Angle (Low)', 'Incidence Angle (High)', 'Spatial Resolution'
-        ]         
+        ]
     elif collection == 'PlanetScope':
         df.rename(
             {
@@ -155,13 +156,13 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
         date_cols = ['Start Date', 'End Date']
         int_cols = [
             'EODMS RecordId', 'Frame Start', 'Frame End', 'Line Number'
-        ]        
+        ]
         float_cols = [
             'Overlap', 'Altitude', 'Scale', 'Film Size', 'Focal Length (mm)',
             'Incidence Angle (Low)', 'Incidence Angle (High)'
         ]
     # convert strings to unsigned integer
-    # necessary to do one-by-one because if we apply to dataframe, any "failure" fields 
+    # necessary to do one-by-one because if we apply to dataframe, any "failure" fields
     # will cause all "valid" fields to not be converted
     for int_col in int_cols:
         df[int_col] = pd.to_numeric(df[int_col], downcast='unsigned', errors='ignore')
@@ -195,20 +196,28 @@ def load_search_aoi(geofile):
     if df.crs != SRC_CRS:
         df = df.to_crs(SRC_CRS)
     geometry = df.unary_union
-    if geometry.type == 'MultiPolygon':
+    if geometry.geom_type == 'MultiPolygon':
         LOGGER.warning('Input geometry is a multipolygon - may have adverse effect on query')
         n_vertices = sum([
             len(poly.exterior.coords) - 1
             for poly in geometry.geoms
         ])
-    elif geometry.type == 'Polygon':
+    elif geometry.geom_type == 'Polygon':
+        n_vertices = len(geometry.exterior.coords) - 1
+    elif geometry.geom_type == 'Point':
+        LOGGER.warning('Input geometry is a point - Applying 0.001° buffer to convert to small polygon')
+        geometry = orient(geometry.buffer(0.001, resolution=4))
+        n_vertices = len(geometry.exterior.coords) - 1
+    elif geometry.geom_type == 'LineString':
+        LOGGER.warning('Input geometry is a line - Applying 0.001° buffer to convert to thin polygon')
+        geometry = orient(geometry.buffer(0.001, resolution=4, cap_style=CAP_STYLE.flat))
         n_vertices = len(geometry.exterior.coords) - 1
     else:
-        raise NotImplementedError('Search geometry must be a polygon/multipolygon')
+        raise NotImplementedError(f'Search geometry must be one of [Polygon/MultiPolygon/LineString/Point]: passed {geometry.geom_type!r}')
     if n_vertices > 100:
         LOGGER.warning('Search geometry is too complex (more than 100 vertices) - Simplifying with 0.01° tolerance')
         geometry = geometry.simplify(tolerance=0.01)
     # force 6-decimal precision (sub-meter at equator)
     # drop Z dimension if it exists - causes 500-errors with EODMS
-    wkt = to_wkt(geometry, rounding_precision=6, output_dimension=2) 
+    wkt = to_wkt(geometry, rounding_precision=6, output_dimension=2)
     return wkt

@@ -33,7 +33,7 @@ pip install eodms-api-client
 
 ### Use the CLI
 
-Given a geojson polygon, query (but do not order) the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
+Given a geojson file containing search geometry (Point, Line, Polygon), query - but do not order - the RCM collection for products in the last 24hrs and dump the results to a geojson file for inspection (`query_results.geojson`)
 
 ```console
 eodms -c RCM -g query_aoi.geojson --dump-results
@@ -61,7 +61,7 @@ eodms -c RCM --order-ids [path to text file containing integer Order IDs]
 
 Repeating the same query as the CLI example above in a Python REPL allows you to manually inspect the results and do all sorts of interesting things with the query result geodataframe. 
 
-For example, one may wish to inspect the image metadata to check approximate download sizes. One may also want to inspect the image footprints to ensure that they are ordering only the images which have most-optimal coverage of their `query_aoi.geojson` polygon.
+For example, one may wish to inspect the image metadata to check approximate download sizes. One may also want to inspect the image footprints to ensure that they are ordering only the images which have most-optimal coverage of their `query_aoi.geojson`.
 
 ```python
 >>> from eodms_api_client import EodmsAPI
@@ -92,7 +92,7 @@ Options:
   -e, --end TEXT                  End of acquisition time window (default to
                                   now)
 
-  -g, --geometry PATH             File containing polygon used to constrain
+  -g, --geometry PATH             File containing vector feature(s) used to constrain
                                   the query results to a spatial region
 
   -pt, --product-type TEXT        Limit results to a certain image product
