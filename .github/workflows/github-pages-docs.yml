@@ -13,7 +13,7 @@ jobs:
       - name: Setup build environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: '1.6.0'
+          micromamba-version: '1.5.1-1'
           environment-file: docs/environment.yml
           init-shell: bash
           cache-environment: true
