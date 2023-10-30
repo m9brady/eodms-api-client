@@ -2,7 +2,7 @@
 
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/eodms-api-client)](https://anaconda.org/conda-forge/eodms-api-client)
 [![PyPI](https://img.shields.io/pypi/v/eodms-api-client)](https://pypi.org/project/eodms-api-client)
-[![ReadTheDocs](https://readthedocs.org/projects/eodms-api-client/badge/?version=latest)](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)
+[![Documentation](https://github.com/m9brady/eodms-api-client/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)](https://m9brady.github.io/eodms-api-client/)
 
 A Python3 package for querying, ordering and downloading from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
@@ -10,7 +10,7 @@ Heavily influenced by the utterly fantastic `sentinelsat` package: https://githu
 
 ## Usage:
 
-Full documentation and real-world example on [ReadTheDocs](https://eodms-api-client.readthedocs.io/en/latest/?badge=latest)!
+Full documentation and real-world example on [GitHub Pages](https://m9brady.github.io/eodms-api-client/)!
 
 ## Quickstart:
 
