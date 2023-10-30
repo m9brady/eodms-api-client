@@ -2,10 +2,10 @@ name: eodms-api-client-rtd
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.9
   - pip=23.2
   - freetype==2.12.1
-  - pillow==9.2.0
+  - pillow>=9
   - eodms-api-client
   - sphinx-copybutton==0.5.2
   - sphinx=7.1

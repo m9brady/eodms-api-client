@@ -45,6 +45,18 @@ Same query as above, but this time submit an order for all products found by the
 eodms -c RCM -g query_aoi.geojson --submit-order
 ```
 
+After submitting an order, this package will return a list of Order IDs that users should take note of as these will be used to download the imagery once the order is complete:
+
+```console
+eodms -c RCM --order-id [integer Order ID]
+```
+
+If your order produced several Order IDs (e.g. more than 50 images ordered at once), you may wish to create a text file of line-separated Order IDs to feed to the package:
+
+```console
+eodms -c RCM --order-ids [path to text file containing integer Order IDs]
+```
+
 ### Use interactively in a Python REPL
 
 Repeating the same query as the CLI example above in a Python REPL allows you to manually inspect the results and do all sorts of interesting things with the query result geodataframe. 
