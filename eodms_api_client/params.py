@@ -57,7 +57,7 @@ def validate_query_args(args, collection):
             spatial_resolution = float(spatial_resolution)
         except ValueError:
             raise ValueError('Spatial resolution must be a number (integer or float): %r' % str(spatial_resolution))
-        query_args.append("SENSOR_BEAM.SPATIAL_RESOLUTION=%.1f" % float(spatial_resolution))
+        query_args.append("SENSOR_BEAM.SPATIAL_RESOLUTION=%.1f" % spatial_resolution)
     # RCM products
     if collection == 'RCMImageProducts':
         beam_mode = args.get('beam_mode', [None])
