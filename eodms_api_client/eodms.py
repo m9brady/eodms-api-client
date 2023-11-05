@@ -129,6 +129,11 @@ class EodmsAPI():
             sleep(3)
             return self._submit_search()
         if r.ok:
+            # add check for API being down but still returning HTTP:200
+            if 'Thanks for your patience' in r.text:
+                LOGGER.error('EODMS API appears to be down. Try again later.')
+                # dirty filthy not-good idea
+                return {'results': []}
             data = r.json()
             # the data['moreResults'] response is unreliable
             # thus, we submit another query if the number of results 
@@ -235,12 +240,12 @@ class EodmsAPI():
         '''
         if not isinstance(record_ids, (list, tuple)):
             record_ids = [record_ids]
-        if not priority.capitalize() in ['Low', 'Medium', 'High', 'Urgent']:
+        if priority.capitalize() not in ['Low', 'Medium', 'High', 'Urgent']:
             raise ValueError('Unrecognized priority: %s' % priority)
         n_records = len(record_ids)
         if n_records < 1:
             LOGGER.warning('No records passed to order submission')
-            return order_ids
+            return None
         if n_records > EODMS_SUBMIT_HARDLIMIT:
             LOGGER.warning('Number of requested images exceeds per-order limit (%d)' % EODMS_SUBMIT_HARDLIMIT)
             LOGGER.info('Submitting %d orders to accomodate %d items' % (

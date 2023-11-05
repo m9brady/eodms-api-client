@@ -50,6 +50,9 @@ def validate_query_args(args, collection):
         query_args.append("ARCHIVE_IMAGE.PRODUCT_TYPE=%s" % ','.join([
             f'{prod_type.upper()!r}' for prod_type in product_type
         ]))
+    spatial_resolution = args.get('spatial_resolution', None)
+    if spatial_resolution is not None: # Not multi-Select-compatible
+        query_args.append("SENSOR_BEAM.SPATIAL_RESOLUTION=%.1f" % float(spatial_resolution))
     # RCM products
     if collection == 'RCMImageProducts':
         beam_mode = args.get('beam_mode', [None])

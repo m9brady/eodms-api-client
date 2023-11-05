@@ -71,6 +71,12 @@ def print_version(ctx, param, value):
     help='Limit results to a certain image product format'
 )
 @click.option(
+    '--spatial-resolution',
+    '-sr',
+    default=None,
+    help='Limit results to the desired spatial resolution'
+)
+@click.option(
     '--relative-orbit',
     '-rel',
     default=[None],
@@ -262,6 +268,7 @@ def cli(
     geometry,
     product_type,
     product_format,
+    spatial_resolution,
     relative_orbit,
     absolute_orbit,
     incidence_angle,
@@ -318,11 +325,10 @@ def cli(
         LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))
         current.download(order_ids, output_dir)
     else:
-        # otherwise, run a query
         LOGGER.info('Querying EODMS API')
         current.query(
             start=start, end=end, geometry=geometry, product_type=product_type,
-            product_format=product_format, absolute_orbit=absolute_orbit,
+            product_format=product_format, absolute_orbit=absolute_orbit, spatial_resolution=spatial_resolution,
             relative_orbit=relative_orbit, incidence_angle=incidence_angle,
             incidence_angle_low=incidence_angle_low, incidence_angle_high=incidence_angle_high,
             beam_mode=radarsat_beam_mode, mnemonic=radarsat_beam_mnemonic, 
