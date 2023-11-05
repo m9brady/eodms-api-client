@@ -90,13 +90,15 @@ class EodmsAPI():
         '''
         if bool(kwargs.get('debug', False)):
             LOGGER.setLevel(logging.DEBUG)
+        else:
+            LOGGER.setLevel(logging.INFO)
         LOGGER.debug('Validate query args')
         prepped_query = validate_query_args(kwargs, self.collection)
         LOGGER.debug('Query args validated')
         self._search_url = EODMS_REST_SEARCH.format(
             collection=self.collection, query=prepped_query
         )
-        LOGGER.debug('Query sent')
+        LOGGER.debug('Query sent: %s' % self._search_url)
         search_response = self._submit_search()
         LOGGER.debug('Query response received')
         meta_keys = generate_meta_keys(self.collection)
