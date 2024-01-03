@@ -50,6 +50,14 @@ def validate_query_args(args, collection):
         query_args.append("ARCHIVE_IMAGE.PRODUCT_TYPE=%s" % ','.join([
             f'{prod_type.upper()!r}' for prod_type in product_type
         ]))
+    spatial_resolution = args.get('spatial_resolution', None)
+    if spatial_resolution is not None: # Not multi-Select-compatible
+        # verify we can convert to float
+        try:
+            spatial_resolution = float(spatial_resolution)
+        except ValueError:
+            raise ValueError('Spatial resolution must be a number (integer or float): %r' % str(spatial_resolution))
+        query_args.append("SENSOR_BEAM.SPATIAL_RESOLUTION=%.1f" % spatial_resolution)
     # RCM products
     if collection == 'RCMImageProducts':
         beam_mode = args.get('beam_mode', [None])
@@ -270,64 +278,65 @@ def available_query_args(collection):
     '''
     # general params
     params = {
-        'start': {'description': 'start time (UTC) of query temporal window', 'type': str},
-        'end': {'description': 'end time (UTC) of query temporal window', 'type': str},
-        'geometry': {'description': 'path to vector geometry file', 'type': str},
-        'product_type': {'description': 'product type (e.g. "SLC", "GRD")', 'type': str}
+        'start': {'description': 'start time (UTC) of query temporal window', 'type': 'str'},
+        'end': {'description': 'end time (UTC) of query temporal window', 'type': 'str'},
+        'geometry': {'description': 'path to vector geometry file', 'type': 'str'},
+        'product_type': {'description': 'product type (e.g. "SLC", "GRD")', 'type': 'str'},
+        'spatial_resolution': {'description': 'product spatial resolution (e.g. 50)', 'type': '(int, float)'}
     }
     # RCM products
     if collection == 'RCMImageProducts':
         params.update({
-            'beam_mode': {'description': 'SAR beam mode (e.g. "Low Resolution 100m")', 'type': str},
-            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SC100MA")', 'type': str},
-            'product_format': {'description': 'Data format (e.g. "GeoTIFF"', 'type': str},
-            'look_direction': {'description': 'Antenna look-direction (e.g. "Left", "Right")', 'type': str},
-            'polarization': {'description': 'SAR beam polarization (e.g. "HH", "HH/HV")', 'type': str},
-            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': float},
-            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': float},
-            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': float},
-            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': str},
-            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': int},
-            'relative_orbit': {'description': 'Relative Orbit ID number', 'type': int},
-            'downlink_segment': {'description': 'Specific RCM downlink segment', 'type': str}
+            'beam_mode': {'description': 'SAR beam mode (e.g. "Low Resolution 100m")', 'type': 'str'},
+            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SC100MA")', 'type': 'str'},
+            'product_format': {'description': 'Data format (e.g. "GeoTIFF"', 'type': 'str'},
+            'look_direction': {'description': 'Antenna look-direction (e.g. "Left", "Right")', 'type': 'str'},
+            'polarization': {'description': 'SAR beam polarization (e.g. "HH", "HH/HV")', 'type': 'str'},
+            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': 'float'},
+            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': 'float'},
+            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': 'float'},
+            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': 'str'},
+            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': 'int'},
+            'relative_orbit': {'description': 'Relative Orbit ID number', 'type': 'int'},
+            'downlink_segment': {'description': 'Specific RCM downlink segment', 'type': 'str'}
         })
 
     # Radarsat2 Products
     elif collection == 'Radarsat2':
         params.update({
-            'beam_mode': {'description': 'SAR beam mode (e.g. "ScanSAR Wide")', 'type': str},
-            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SCWA")', 'type': str},
-            'product_format': {'description': 'Data format (e.g. "GeoTIFF"', 'type': str},
-            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': float},
-            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': float},
-            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': float},
-            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': str},
-            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': int},
-            'relative_orbit': {'description': 'Relative Orbit ID number', 'type': int},
+            'beam_mode': {'description': 'SAR beam mode (e.g. "ScanSAR Wide")', 'type': 'str'},
+            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SCWA")', 'type': 'str'},
+            'product_format': {'description': 'Data format (e.g. "GeoTIFF"', 'type': 'str'},
+            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': 'float'},
+            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': 'float'},
+            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': 'float'},
+            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': 'str'},
+            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': 'int'},
+            'relative_orbit': {'description': 'Relative Orbit ID number', 'type': 'int'},
         })
     # Radarsat1 Products
     elif collection == 'Radarsat1':
         params.update({
-            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SCWA")', 'type': str},
-            'look_direction': {'description': 'Antenna look-direction (e.g. "Left", "Right")', 'type': str},
-            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': float},
-            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': float},
-            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': float},
-            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': str},
-            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': int},
+            'mnemonic': {'description': 'SAR beam mode mnemonic (e.g. "SCWA")', 'type': 'str'},
+            'look_direction': {'description': 'Antenna look-direction (e.g. "Left", "Right")', 'type': 'str'},
+            'incidence_angle': {'description': 'Exact SAR incidence angle', 'type': 'float'},
+            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': 'float'},
+            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': 'float'},
+            'orbit_direction': {'description': 'Type of orbit (e.g. "Ascending", "Descending"', 'type': 'str'},
+            'absolute_orbit': {'description': 'Specific Orbit ID number', 'type': 'int'},
         })
     # PlanetScope products
     elif collection == 'PlanetScope':
         params.update({
-            'cloud_cover': {'description': 'Maximum allowable percent cloud cover', 'type': float},
-            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': float},
-            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': float},
+            'cloud_cover': {'description': 'Maximum allowable percent cloud cover', 'type': 'float'},
+            'incidence_angle_low': {'description': 'Lower bound for SAR incidence angle', 'type': 'float'},
+            'incidence_angle_high': {'description': 'Upper bound for SAR incidence angle', 'type': 'float'},
         })
     # National Air Photo Library products
     elif collection == 'NAPL':
         params.update({
-            'roll_number': {'description': 'AirpPhoto Roll Number (e.g. "A28523")', 'type': str},
-            'photo_number': {'description': 'AirPhoto Number (e.g. "0016", "%%16")', 'type': str},
+            'roll_number': {'description': 'AirpPhoto Roll Number (e.g. "A28523")', 'type': 'str'},
+            'photo_number': {'description': 'AirPhoto Number (e.g. "0016", "%%16")', 'type': 'str'},
             #'napl_nocost': {'description': 'Whether or not to query for no-cost airphotos': 'type': bool}
         })
     else:

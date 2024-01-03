@@ -85,15 +85,16 @@ Options:
                                   be prompted)
 
   -c, --collection TEXT           EODMS collection to search  [required]
-  
+
   -s, --start TEXT                Beginning of acquisition time window
                                   (default to 1 day prior to now)
 
   -e, --end TEXT                  End of acquisition time window (default to
                                   now)
 
-  -g, --geometry PATH             File containing vector feature(s) used to constrain
-                                  the query results to a spatial region
+  -g, --geometry PATH             File containing vector feature(s) used to
+                                  constrain the query results to a spatial
+                                  region
 
   -pt, --product-type TEXT        Limit results to a certain image product
                                   type
@@ -101,6 +102,9 @@ Options:
   -pf, --product-format [GeoTIFF|NITF21]
                                   Limit results to a certain image product
                                   format
+
+  -sr, --spatial-resolution TEXT  Limit results to the desired spatial
+                                  resolution
 
   -rel, --relative-orbit TEXT     Limit results to the desired relative orbit
                                   Id
@@ -156,7 +160,7 @@ Options:
                                   What priority to use when submitting orders
                                   [default: Medium]
 
-  -o, --output-dir PATH           Directory where query results and downloaded
+  -o, --output-dir DIRECTORY      Directory where query results and downloaded
                                   imagery will be saved  [default: .]
 
   -dr, --dump-results             Whether or not to create a geojson dump
@@ -180,7 +184,9 @@ Options:
                                   from EODMS
 
   --verbose                       Use debug-level logging
+
   --version                       Show the package version
+
   -h, --help                      Show this message and exit.
 
 ```
