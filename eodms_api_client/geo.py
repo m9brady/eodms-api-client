@@ -165,10 +165,10 @@ def metadata_to_gdf(metadata, collection, target_crs=None):
     # necessary to do one-by-one because if we apply to dataframe, any "failure" fields
     # will cause all "valid" fields to not be converted
     for int_col in int_cols:
-        df[int_col] = pd.to_numeric(df[int_col], downcast='unsigned', errors='ignore')
+        df[int_col] = pd.to_numeric(df[int_col], downcast='unsigned')
     # convert strings to floats
     for float_col in float_cols:
-        df[float_col] = pd.to_numeric(df[float_col], downcast='float', errors='ignore')
+        df[float_col] = pd.to_numeric(df[float_col], downcast='float')
     # convert strings to datetimes
     df[date_cols] = df[date_cols].apply(pd.to_datetime, axis=1)
     # sort by RecordId
