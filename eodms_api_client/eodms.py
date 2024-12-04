@@ -7,10 +7,11 @@ from json import dumps
 from math import ceil
 from time import sleep
 
+from requests import get, head
 from requests.exceptions import ConnectionError, JSONDecodeError
 from tqdm.auto import tqdm
 
-from .auth import create_session
+from .auth import create_session, acquire_token
 from .geo import metadata_to_gdf, transform_metadata_geometry
 from .params import (available_query_args, generate_meta_keys,
                      validate_query_args)
@@ -22,6 +23,8 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '/search?collection={collection}&query={query}' + \
     '&maxResults=%d&format=json' % EODMS_DEFAULT_MAXRESULTS
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
+
+EODMS_DDS_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/dds/v1/item'
 
 EODMS_COLLECTIONS = [
     'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
@@ -44,6 +47,7 @@ class EodmsAPI():
         self.collection = collection
         self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
+        self._dds_access_token = None # initialize this to None since it's not needed unless we want to download
         # test the credentials
         r = self._session.get(f'{EODMS_REST_BASE}/collections/{self.collection}')
         if r.status_code == 401:
@@ -222,6 +226,12 @@ class EodmsAPI():
                     metadata[k] = [
                         f[1] for f in response['metadata'] if f[0] == k
                     ][0]
+            # UUIDs are for the DDS downloading system 
+            # Showerthought: is DDS just "Data Downloading System" :thinking:
+            metadata['uuid'] = [
+                item[1].split('/') for item in response['metadata']
+                if item[0] == 'Metadata Full Name'
+            ][0]
             metadata['thumbnailUrl'] = response['thumbnailUrl']
             metadata['geometry'] = transform_metadata_geometry(
                 response['geometry'],
@@ -473,6 +483,83 @@ class EodmsAPI():
             LOGGER.info('No further action taken')
             return
         return local_files
+
+    def _download_dds_items(self, uuids, output_directory):
+        local_items = []
+        for uuid in uuids:
+            url = f'{EODMS_DDS_BASE}/EODMS/{self.collection}/{uuid}'
+            header = {"Authorization": f"Bearer {self._dds_access_token}"}
+            # issue a GET to DDS to get the status of the wanted granule
+            # drives me nuts that we can't re-use the self._session for this!
+            # TODO: add bombproofing for when/if the token expires midway
+            uuid_req = get(url, headers=header)
+            uuid_resp = uuid_req.json()
+            while "download_url" not in uuid_resp.keys():
+                sleep(10)
+                uuid_req = get(url, headers=header)
+                uuid_resp = uuid_req.json()
+            download_url = uuid_resp["download_url"]
+            # retrieve granule name from url
+            granule = download_url.split("?")[0].split("/")[-1]
+            local = os.path.join(output_directory, granule)
+            # if exists, check filesize against remote and redownload if necessary
+            if os.path.exists(local):
+                expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
+                # if all-good, continue to next file
+                if os.stat(local).st_size == expected_size:
+                    LOGGER.debug('Local file exists: %s' % local)
+                    continue
+                # otherwise, delete the incomplete/malformed local file and redownload
+                else:
+                    LOGGER.warning(
+                        'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
+                    )
+                    os.remove(local)            
+            # download to local
+            with open(local, 'wb') as pipe:
+                with get(download_url, stream=True) as stream:
+                    with tqdm.wrapattr(
+                        pipe,
+                        method='write',
+                        miniters=1,
+                        total=int(stream.headers['content-length']),
+                        desc=os.path.basename(local)
+                    ) as file_out:
+                        for chunk in stream.iter_content(chunk_size=1024):
+                            file_out.write(chunk)
+            local_items.append(local)
+        return local_items
+
+    def download_dds(self, uuids, output_directory, n_workers=4):
+        '''
+        Function that uses the new EODMS DDS system for ordering/downloading data
+
+        Inputs:
+          - uuids: list/tuple of granule UUIDs to download (not RecordId!)
+          - output_directory: path to where downloads should go
+          - n_workers: how many concurrent threads to use when downloading (default: 4)
+
+        Outputs:
+          - local_files: list of local datasets downloaded from EODMS
+        '''
+        # first, ensure we have an up-to-date access_token
+        if self._dds_access_token is None:
+            self._dds_access_token = acquire_token(
+                self._session.auth.username, self._session.auth.password
+            )
+        # split uuids into roughly-equivalent-size batches for each worker to process
+        batches = [uuids[i::n_workers] for i in range(n_workers)]
+        # submit batches to threadpoolexecutor
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
+            results = list(executor.map(
+                self._download_dds_items,
+                batches,
+                [output_directory] * n_workers,
+            ))
+        # untangle list of lists
+        results = [item for group in results for item in group]
+        return results
+
 
 class EODMSHTMLFilter(HTMLParser):
     '''
