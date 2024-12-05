@@ -229,7 +229,7 @@ class EodmsAPI():
             # UUIDs are for the DDS downloading system 
             # Showerthought: is DDS just "Data Downloading System" :thinking:
             metadata['uuid'] = [
-                item[1].split('/') for item in response['metadata']
+                item[1].split('/')[-1] for item in response['metadata']
                 if item[0] == 'Metadata Full Name'
             ][0]
             metadata['thumbnailUrl'] = response['thumbnailUrl']
@@ -544,6 +544,7 @@ class EodmsAPI():
         '''
         # first, ensure we have an up-to-date access_token
         if self._dds_access_token is None:
+            LOGGER.debug("Acquiring DDS access token")
             self._dds_access_token = acquire_token(
                 self._session.auth.username, self._session.auth.password
             )

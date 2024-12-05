@@ -62,7 +62,7 @@ def create_session(username=None, password=None):
 
 def acquire_token(username=None, password=None):
     '''
-    Auth method for new system. If neither username/password is provided, attempt to use 
+    Auth method for new DDS system. If neither username/password is provided, attempt to use 
     the .netrc file and fallback to console entry as a last-resort
 
     Inputs:
@@ -73,13 +73,17 @@ def acquire_token(username=None, password=None):
       - access_token: valid API token for requesting granule downloads through EODMS DDS
     '''
     # if not provided, use the existing functions instead of copy-pasting code
-    if username is None or password is None:
+    if username is None and password is None:
         with create_session() as session:
             username = session.auth.username
             password = session.auth.password
+    elif username is None and password is not None:
+        username = input("Enter EODMS username: ")
+    elif username is not None and password is None:
+        password = getpass("Enter EODMS password: ")
     # token stuff
     # how I understand it:
-    # if local token exists, login with user/pass, if 429 then refresh tokens and save to local, if 200 then save tokens and return access_token
+    # if local token exists, login with user/pass, if 429 then refresh tokens and overwrite local, if 200 then overwrite local and return access_token
     # if no local token, login with user/pass, SHOULD BE 200 then save tokens to local and return access_token
     token_file = os.path.join(os.path.expanduser('~'), '.eodms', 'aaa_auth', 'login.json')
     if os.path.exists(token_file):
@@ -131,7 +135,7 @@ def acquire_token(username=None, password=None):
                 dump(refresh_resp, f)         
             access_token = refresh_resp['access_token']
     else:
-        print("Could not retrieve DDS access token from EODMS")
+        print("Could not retrieve DDS access token from EODMS: HTTP-%d %s" % (login_req.status_code, login_req.reason))
         return None
     # return just the access token since we don't appear to need the refresh
     # token outside regenerating access_tokens
