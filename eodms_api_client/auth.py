@@ -128,7 +128,7 @@ def acquire_token(username=None, password=None):
             try:
                 refresh_resp = refresh_req.json()
             except JSONDecodeError:
-                print("JSON Decode Error with response from POST:%r: %s" % (aaa_refresh_url, refresh_req.text))
+                print("JSON Decode Error with response from GET:%r: %s" % (aaa_refresh_url, refresh_req.text))
                 exit()
             # overwrite local file with new tokens
             with open(token_file, "w") as f:
