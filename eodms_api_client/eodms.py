@@ -104,7 +104,8 @@ class EodmsAPI():
         )
         LOGGER.debug('Query sent: %s' % self._search_url)
         search_response = self._submit_search()
-        LOGGER.debug('Query response received')
+        n_results = search_response['hitCount']
+        LOGGER.debug('Query response received (%d result%s)' % (n_results, '' if n_results == 1 else 's'))
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
         LOGGER.debug('Generate result dataframe')
