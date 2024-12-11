@@ -246,6 +246,24 @@ def print_version(ctx, param, value):
     help='File of line-separated Order Ids to download from EODMS'
 )
 @click.option(
+    '--uuid',
+    type=click.STRING,
+    default=None,
+    help='Specific UUID to order from the desired collection'    
+)
+@click.option(
+    '--uuid-list',
+    type=click.Path(exists=True),
+    default=None,
+    help='File of line-separated UUIDs to order from the desired collection'
+)
+@click.option(
+    '--n-dds-workers',
+    type=click.INT,
+    default=4,
+    help='Number of concurrent threads to use when downloading from DDS api'
+)
+@click.option(
     '--verbose',
     is_flag=True,
     default=False,
@@ -294,6 +312,9 @@ def cli(
     record_ids,
     order_id,
     order_ids,
+    uuid,
+    uuid_list,
+    n_dds_workers,
     verbose
 ):
     if verbose:
@@ -324,6 +345,17 @@ def cli(
             raise IOError('No order_ids detected in file: %s' % order_ids)
         LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))
         current.download(order_ids, output_dir)
+    # check for presence of supplied uuids, where we just skip ahead and download from DDS
+    elif uuid is not None:
+        LOGGER.info('Fast-downloading 1 granule from DDS')
+        current.download_dds((uuid), output_dir)
+    elif uuid_list is not None:
+        with open(uuid_list) as f:
+            uuids = [line for line in f.read().splitlines() if line != '']
+        if len(uuids) == 0:
+            raise IOError("No uuids detected in file: %s" % uuid_list)
+        LOGGER.info('Fast-downloading %d granules from DDS' % len(uuids))
+        current.download_dds(uuids, output_dir, n_dds_workers)
     else:
         LOGGER.info('Querying EODMS API')
         current.query(
