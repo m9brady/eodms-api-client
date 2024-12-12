@@ -17,6 +17,9 @@ It provides a command-line interface for querying, ordering, and downloading dat
 
 Vector geometry files for spatial subsetting can be anything supported by `Fiona`_ (GeoJSON, Esri Shapefile, OGC GeoPackage, KML/KMZ, etc.)
 
+.. tip::
+    As of ``v1.3.0`` there is a new RCM data downloading endpoint, accessible from the ``EodmsAPI.download_dds`` method. Read more about it under the examples page: :ref:`dds_example`
+
 .. toctree::
    :maxdepth: 3
    :caption: Contents:

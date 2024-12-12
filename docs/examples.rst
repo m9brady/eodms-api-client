@@ -99,6 +99,27 @@ Same as with the CLI example, we wait for the "Order Complete" email and provide
 
     >>> client.download(order_id)
 
+.. _dds_example:
+
+Downloading RCM data more quickly with the EODMS DDS
+------------------------------------------------------
+
+.. warning::
+    This method is still considered ``beta`` and may act unpredictably.
+
+For the RCM image collection, there is a new system for downloading requested datasets that involves using the ``uuid`` in the search results rather than the ``EODMS RecordId`` field.
+
+To use the new system, provide the ``uuid`` values for each granule you're interested in to the new ``EodmsAPI.download_dds`` function:
+
+.. code-block:: python
+
+    # using the same 'subset' variable from the prior example
+    >>> uuids = subset['uuid'].tolist()
+    # download the uuids to the current directory, using 6 parallel threads
+    >>> client.download_dds(uuids, output_directory=".", n_workers=6)
+
+The granules will be downloaded without the need to submit an order and wait for fulfillment notification.
+
 .. _geojson.io: https://geojson.io
 .. _Mapbox: https://mapbox.com
 .. _QGIS: https://qgis.org
