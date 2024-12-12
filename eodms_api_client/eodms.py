@@ -8,7 +8,7 @@ from math import ceil
 from time import sleep
 
 from requests import get, head
-from requests.exceptions import ConnectionError, JSONDecodeError
+from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
 from tqdm.auto import tqdm
 
 from .auth import create_session, acquire_token
@@ -486,6 +486,9 @@ class EodmsAPI():
         return local_files
 
     def _download_dds_items(self, uuids, output_directory):
+        """
+        subfunction used by download_dds to acquire datasets from EODMS DDS
+        """
         local_items = []
         for uuid in uuids:
             url = f'{EODMS_DDS_BASE}/EODMS/{self.collection}/{uuid}'
@@ -494,11 +497,16 @@ class EodmsAPI():
             # drives me nuts that we can't re-use the self._session for this!
             # TODO: add bombproofing for when/if the token expires midway
             uuid_req = get(url, headers=header)
+            if not uuid_req.ok:
+                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+            LOGGER.debug("Requesting UUID %r" % uuid)
             uuid_resp = uuid_req.json()
             while "download_url" not in uuid_resp.keys():
-                sleep(10)
+                LOGGER.debug("UUID %r pending" % uuid)
+                sleep(5)
                 uuid_req = get(url, headers=header)
                 uuid_resp = uuid_req.json()
+            LOGGER.info("UUID %r ready for download" % uuid)
             download_url = uuid_resp["download_url"]
             # retrieve granule name from url
             granule = download_url.split("?")[0].split("/")[-1]
@@ -543,7 +551,9 @@ class EodmsAPI():
         Outputs:
           - local_files: list of local datasets downloaded from EODMS
         '''
-        # first, ensure we have an up-to-date access_token
+        if self.collection != "RCMImageProducts":
+            raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
+        # ensure we have an up-to-date access_token
         if self._dds_access_token is None:
             LOGGER.debug("Acquiring DDS access token")
             self._dds_access_token = acquire_token(

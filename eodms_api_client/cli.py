@@ -6,7 +6,7 @@ import click
 from . import EodmsAPI
 from . import __version__ as eodms_version
 
-LOGGER = logging.getLogger('eodmsapi.cli')
+CLI_LOGGER = logging.getLogger('eodmsapi.cli')
 
 def print_version(ctx, param, value):
     '''stolen from Click documentation: https://click.palletsprojects.com/en/7.x/options/#callbacks-and-eager-options'''
@@ -318,46 +318,48 @@ def cli(
     verbose
 ):
     if verbose:
-        LOGGER.setLevel(logging.DEBUG)
-    LOGGER.debug('Connecting to EODMS')
+        from .eodms import LOGGER as EODMS_LOGGER
+        CLI_LOGGER.setLevel(logging.DEBUG)
+        EODMS_LOGGER.setLevel(logging.DEBUG)
+    CLI_LOGGER.debug('Connecting to EODMS')
     current = EodmsAPI(collection=collection, username=username, password=password)
-    LOGGER.debug('Connected to EODMS')
+    CLI_LOGGER.debug('Connected to EODMS')
     # check for presence of supplied record_ids, where we just skip ahead and order
     if record_id is not None:
-        LOGGER.info('Fast-ordering for single record')
+        CLI_LOGGER.info('Fast-ordering for single record')
         order_ids = current.order(record_id, priority=priority)
-        LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
+        CLI_LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
         exit()
     elif record_ids is not None:
         with open(record_ids) as f:
             records_to_order = [int(line) for line in f.read().splitlines() if line != '']
-        LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
+        CLI_LOGGER.info('Fast-ordering for %d record(s)' % len(records_to_order))
         order_ids = current.order(records_to_order, priority=priority)
-        LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
+        CLI_LOGGER.info('EODMS Order Ids for tracking progress: %s' % order_ids)
     # check for presence of supplied order_ids, where we just skip ahead and try to download
     elif order_id is not None:
-        LOGGER.info('Fast-downloading for 1 order')
+        CLI_LOGGER.info('Fast-downloading for 1 order')
         current.download(order_id, output_dir)
     elif order_ids is not None:
         with open(order_ids) as f:
             order_ids = [int(line) for line in f.read().splitlines() if line != '']
         if len(order_ids) == 0:
             raise IOError('No order_ids detected in file: %s' % order_ids)
-        LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))
+        CLI_LOGGER.info('Fast-downloading for %d order%s' % (len(order_ids), 's' if len(order_ids) != 1 else ''))
         current.download(order_ids, output_dir)
     # check for presence of supplied uuids, where we just skip ahead and download from DDS
     elif uuid is not None:
-        LOGGER.info('Fast-downloading 1 granule from DDS')
-        current.download_dds((uuid), output_dir)
+        CLI_LOGGER.info('Fast-downloading 1 granule from DDS')
+        current.download_dds([uuid], output_dir)
     elif uuid_list is not None:
         with open(uuid_list) as f:
             uuids = [line for line in f.read().splitlines() if line != '']
         if len(uuids) == 0:
             raise IOError("No uuids detected in file: %s" % uuid_list)
-        LOGGER.info('Fast-downloading %d granules from DDS' % len(uuids))
+        CLI_LOGGER.info('Fast-downloading %d granules from DDS' % len(uuids))
         current.download_dds(uuids, output_dir, n_dds_workers)
     else:
-        LOGGER.info('Querying EODMS API')
+        CLI_LOGGER.info('Querying EODMS API')
         current.query(
             start=start, end=end, geometry=geometry, product_type=product_type,
             product_format=product_format, absolute_orbit=absolute_orbit, spatial_resolution=spatial_resolution,
@@ -371,25 +373,25 @@ def cli(
             #napl_nocost=napl_nocost
         )
         n_results = len(current.results)
-        LOGGER.info('Finished query. %d result%s' % (
+        CLI_LOGGER.info('Finished query. %d result%s' % (
             n_results,
             's' if n_results != 1 else ''
         ))
     if dump_results:
         out_file = os.path.normpath(os.path.join(output_dir, f'{dump_filename}.geojson'))
-        LOGGER.info('Saving query result%s to file: %s' % (
+        CLI_LOGGER.info('Saving query result%s to file: %s' % (
             's' if n_results != 1 else '',
             out_file
         ))
         if len(current.results) > 0:
             current.results.to_file(out_file, driver='GeoJSON')
         else:
-            LOGGER.warning('No results found')
+            CLI_LOGGER.warning('No results found')
     if submit_order:
         if len(current.results) > 0:
-            LOGGER.info('Submitting order for %d records' % len(current.results))
+            CLI_LOGGER.info('Submitting order for %d records' % len(current.results))
             to_order = current.results['EODMS RecordId'].tolist()
             order_ids = current.order(to_order, priority=priority)
-            LOGGER.info('EODMS Order Ids for tracking status and downloading: %s' % order_ids)
+            CLI_LOGGER.info('EODMS Order Ids for tracking status and downloading: %s' % order_ids)
         else:
-            LOGGER.warning('No records to order')
+            CLI_LOGGER.warning('No records to order')
