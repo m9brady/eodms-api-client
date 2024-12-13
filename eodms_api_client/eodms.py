@@ -229,10 +229,12 @@ class EodmsAPI():
                     ][0]
             # UUIDs are for the DDS downloading system 
             # Showerthought: is DDS just "Data Downloading System" :thinking:
-            metadata['uuid'] = [
-                item[1].split('/')[-1] for item in response['metadata']
-                if item[0] == 'Metadata Full Name'
-            ][0]
+            # seems to only be valid for RCM
+            if self.collection == "RCMImageProducts":
+                metadata['uuid'] = [
+                    item[1].split('/')[-1] for item in response['metadata']
+                    if item[0] == 'Metadata Full Name'
+                ][0]
             metadata['thumbnailUrl'] = response['thumbnailUrl']
             metadata['geometry'] = transform_metadata_geometry(
                 response['geometry'],
