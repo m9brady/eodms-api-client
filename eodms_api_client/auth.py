@@ -6,6 +6,7 @@ from netrc import netrc
 from requests import Session, post, get
 from requests.adapters import HTTPAdapter
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import HTTPError
 from urllib3.util.retry import Retry
 
 # establish a retry strategy with backoff
@@ -93,7 +94,8 @@ def acquire_token(username=None, password=None):
             access_token = login_data['access_token']
             refresh_token = login_data['refresh_token']
         except (KeyError, JSONDecodeError):
-            pass #TODO: do something smart   
+            # if there is no access/refresh token in the local file, raise it to user's attention
+            raise ValueError("Contents of DDS authorization file %r are malformed/corrupt. Please review this file for errors." % token_file)
     else:
         os.makedirs(os.path.dirname(token_file), exist_ok=True)
     # regardless if local tokenfile exists or not, we need to login with user/pass (with a POST, interestingly)
@@ -112,8 +114,7 @@ def acquire_token(username=None, password=None):
         try:
             login_resp = login_req.json()
         except JSONDecodeError:
-            print("JSON Decode Error with response from POST:%r: %s" % (aaa_login_url, login_req.text))
-            exit()
+            raise HTTPError("JSON Decode Error with response from POST:%r: %s" % (aaa_login_url, login_req.text))
         with open(token_file, "w") as f:
             dump(login_resp, f)
         access_token = login_resp['access_token']
@@ -128,15 +129,15 @@ def acquire_token(username=None, password=None):
             try:
                 refresh_resp = refresh_req.json()
             except JSONDecodeError:
-                print("JSON Decode Error with response from GET:%r: %s" % (aaa_refresh_url, refresh_req.text))
-                exit()
+                raise HTTPError("JSON Decode Error with response from GET:%r: %s" % (aaa_refresh_url, refresh_req.text))
             # overwrite local file with new tokens
             with open(token_file, "w") as f:
                 dump(refresh_resp, f)         
             access_token = refresh_resp['access_token']
+        else:
+            raise HTTPError("Error refreshing DDS access token: HTTP-%d" % (refresh_req.status_code, refresh_req.reason))
     else:
-        print("Could not retrieve DDS access token from EODMS: HTTP-%d %s" % (login_req.status_code, login_req.reason))
-        return None
+        raise HTTPError("Could not retrieve DDS access token from EODMS: HTTP-%d %s" % (login_req.status_code, login_req.reason))
     # return just the access token since we don't appear to need the refresh
     # token outside regenerating access_tokens
     return access_token
