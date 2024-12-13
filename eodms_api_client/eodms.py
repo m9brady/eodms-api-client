@@ -515,6 +515,7 @@ class EodmsAPI():
         local = os.path.join(output_directory, granule)
         # if exists, check filesize against remote and redownload if necessary
         if os.path.exists(local):
+            # this is pretty cool, credit to Kevin Ballantyne https://github.com/eodms-sgdot/py-eodms-dds/blob/e392d9800449b26fa33b076bb2f583a897d058f4/eodms_dds/dds.py#L71
             expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
             # if all-good, continue to next file
             if os.stat(local).st_size == expected_size:
