@@ -1,7 +1,7 @@
 import logging
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from json import dumps
 from math import ceil
@@ -485,66 +485,67 @@ class EodmsAPI():
             return
         return local_files
 
-    def _download_dds_items(self, uuids, output_directory):
+    def _download_dds_item(self, uuid, output_directory):
         """
         subfunction used by download_dds to acquire datasets from EODMS DDS
+        while the logging messages are useful and I want them to be INFO level, they really mess up the
+        tqdm progress bars
         """
-        local_items = []
-        for uuid in uuids:
-            url = f'{EODMS_DDS_BASE}/EODMS/{self.collection}/{uuid}'
-            header = {"Authorization": f"Bearer {self._dds_access_token}"}
-            # issue a GET to DDS to get the status of the wanted granule
-            # drives me nuts that we can't re-use the self._session for this!
-            # TODO: add bombproofing for when/if the token expires midway
+        url = f'{EODMS_DDS_BASE}/EODMS/{self.collection}/{uuid}'
+        header = {"Authorization": f"Bearer {self._dds_access_token}"}
+        # issue a GET to DDS to get the status of the wanted granule
+        # drives me nuts that we can't re-use the self._session for this!
+        # TODO: add bombproofing for when/if the token expires midway
+        LOGGER.debug("Requesting UUID %r" % uuid)
+        uuid_req = get(url, headers=header)
+        if not uuid_req.ok:
+            raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+        uuid_resp = uuid_req.json()
+        while "download_url" not in uuid_resp.keys():
+            LOGGER.debug("UUID %r pending" % uuid)
+            sleep(5)
             uuid_req = get(url, headers=header)
-            if not uuid_req.ok:
-                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
-            LOGGER.debug("Requesting UUID %r" % uuid)
             uuid_resp = uuid_req.json()
-            while "download_url" not in uuid_resp.keys():
-                LOGGER.debug("UUID %r pending" % uuid)
-                sleep(5)
-                uuid_req = get(url, headers=header)
-                uuid_resp = uuid_req.json()
-            LOGGER.info("UUID %r ready for download" % uuid)
-            download_url = uuid_resp["download_url"]
-            # retrieve granule name from url
-            granule = download_url.split("?")[0].split("/")[-1]
-            local = os.path.join(output_directory, granule)
-            # if exists, check filesize against remote and redownload if necessary
-            if os.path.exists(local):
-                expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
-                # if all-good, continue to next file
-                if os.stat(local).st_size == expected_size:
-                    LOGGER.debug('Local file exists: %s' % local)
-                    continue
-                # otherwise, delete the incomplete/malformed local file and redownload
-                else:
-                    LOGGER.warning(
-                        'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
-                    )
-                    os.remove(local)            
-            # download to local
-            with open(local, 'wb') as pipe:
-                with get(download_url, stream=True) as stream:
-                    with tqdm.wrapattr(
-                        pipe,
-                        method='write',
-                        miniters=1,
-                        total=int(stream.headers['content-length']),
-                        desc=os.path.basename(local)
-                    ) as file_out:
-                        for chunk in stream.iter_content(chunk_size=1024):
-                            file_out.write(chunk)
-            local_items.append(local)
-        return local_items
+        LOGGER.debug("UUID %r ready for download" % uuid)
+        download_url = uuid_resp["download_url"]
+        # retrieve granule name from url
+        granule = download_url.split("?")[0].split("/")[-1]
+        local = os.path.join(output_directory, granule)
+        # if exists, check filesize against remote and redownload if necessary
+        if os.path.exists(local):
+            expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
+            # if all-good, continue to next file
+            if os.stat(local).st_size == expected_size:
+                LOGGER.debug('Local file exists: %s' % local)
+                return local
+            # otherwise, delete the incomplete/malformed local file and redownload
+            else:
+                LOGGER.warning(
+                    'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
+                )
+                os.remove(local)
+        # download to local
+        os.makedirs(os.path.dirname(local), exist_ok=True)
+        with open(local, 'wb') as pipe:
+            with get(download_url, stream=True) as stream:
+                with tqdm.wrapattr(
+                    pipe,
+                    method='write',
+                    leave=False, # get rid of the progressbar once finished
+                    miniters=1,
+                    total=int(stream.headers['content-length']),
+                    desc=os.path.basename(local)
+                ) as file_out:
+                    for chunk in stream.iter_content(chunk_size=1024):
+                        file_out.write(chunk)
+        return local
 
     def download_dds(self, uuids, output_directory, n_workers=4):
         '''
         Function that uses the new EODMS DDS system for ordering/downloading data
 
         Inputs:
-          - uuids: list/tuple of granule UUIDs to download (not RecordId!)
+          - uuids: list of granule UUIDs to download (not RecordId!)
           - output_directory: path to where downloads should go
           - n_workers: how many concurrent threads to use when downloading (default: 4)
 
@@ -559,17 +560,24 @@ class EodmsAPI():
             self._dds_access_token = acquire_token(
                 self._session.auth.username, self._session.auth.password
             )
-        # split uuids into roughly-equivalent-size batches for each worker to process
-        batches = [uuids[i::n_workers] for i in range(n_workers)]
-        # submit batches to threadpoolexecutor
+        # distribute download tasks to threadpool
+        LOGGER.info("Attempting download of %d granules across %d threads" % (len(uuids), n_workers))
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
-            results = list(executor.map(
-                self._download_dds_items,
-                batches,
-                [output_directory] * n_workers,
-            ))
-        # untangle list of lists
-        results = [item for group in results for item in group]
+            # use a top-level progressbar to indicate total progress
+            with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:
+                # per-download progressbars disappear once finished since they get really cluttered
+                futures = [
+                    executor.submit(
+                        self._download_dds_item,
+                        uuid,
+                        output_directory
+                    )
+                    for uuid in uuids
+                ]
+                results = []
+                for future in as_completed(futures):
+                    pbar.update(1) # update persistent progressbar
+                    results.append(future.result())
         return results
 
 
