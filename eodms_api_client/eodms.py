@@ -497,17 +497,34 @@ class EodmsAPI():
         header = {"Authorization": f"Bearer {self._dds_access_token}"}
         # issue a GET to DDS to get the status of the wanted granule
         # drives me nuts that we can't re-use the self._session for this!
-        # TODO: add bombproofing for when/if the token expires midway
+        # TODO: add bombproofing
         LOGGER.debug("Requesting UUID %r" % uuid)
         uuid_req = get(url, headers=header)
         if not uuid_req.ok:
+            # if our token has expired, get a new one
+            # TODO: race-condition if concurrent downloads do this at the same time?
+            if uuid_req.status_code == 401:
+                self._dds_access_token = acquire_token(
+                    self._session.auth.username,
+                    self._session.auth.password
+                )
+                header = {"Authorization": f"Bearer {self._dds_access_token}"}
+                uuid_req = get(url, headers=header)
             raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
-        uuid_resp = uuid_req.json()
+        try:
+            uuid_resp = uuid_req.json()
+        except JSONDecodeError:
+            raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
         while "download_url" not in uuid_resp.keys():
             LOGGER.debug("UUID %r pending" % uuid)
             sleep(5)
             uuid_req = get(url, headers=header)
-            uuid_resp = uuid_req.json()
+            if not uuid_req.ok:
+                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+            try:
+                uuid_resp = uuid_req.json()
+            except JSONDecodeError:
+                raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
         LOGGER.debug("UUID %r ready for download" % uuid)
         download_url = uuid_resp["download_url"]
         # retrieve granule name from url

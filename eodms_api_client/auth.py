@@ -86,7 +86,7 @@ def acquire_token(username=None, password=None):
     # how I understand it:
     # if local token exists, login with user/pass, if 429 then refresh tokens and overwrite local, if 200 then overwrite local and return access_token
     # if no local token, login with user/pass, SHOULD BE 200 then save tokens to local and return access_token
-    token_file = os.path.join(os.path.expanduser('~'), '.eodms', 'aaa_auth', 'login.json')
+    token_file = os.path.join(os.path.expanduser('~'), '.eodms', 'aaa_creds.json')
     if os.path.exists(token_file):
         try:
             with open(token_file) as login_json:
@@ -135,7 +135,7 @@ def acquire_token(username=None, password=None):
                 dump(refresh_resp, f)         
             access_token = refresh_resp['access_token']
         else:
-            raise HTTPError("Error refreshing DDS access token: HTTP-%d" % (refresh_req.status_code, refresh_req.reason))
+            raise HTTPError("Error refreshing DDS access token: HTTP-%d %s" % (refresh_req.status_code, refresh_req.reason))
     else:
         raise HTTPError("Could not retrieve DDS access token from EODMS: HTTP-%d %s" % (login_req.status_code, login_req.reason))
     # return just the access token since we don't appear to need the refresh
