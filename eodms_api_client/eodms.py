@@ -510,7 +510,6 @@ class EodmsAPI():
                 )
                 header = {"Authorization": f"Bearer {self._dds_access_token}"}
                 uuid_req = get(url, headers=header)
-            raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
         try:
             uuid_resp = uuid_req.json()
         except JSONDecodeError:
