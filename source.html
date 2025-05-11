@@ -1,0 +1,521 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Example Usage" href="examples.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+        <title>Source-Code Docstrings - eodms-api-client</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">eodms-api-client</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">eodms-api-client</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Usage</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Source-Code Docstrings</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/m9brady/eodms-api-client">Github Repository</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="source-code-docstrings">
+<h1>Source-Code Docstrings<a class="headerlink" href="#source-code-docstrings" title="Permalink to this heading">#</a></h1>
+<section id="module-eodms_api_client.eodms">
+<span id="main-client"></span><h2>Main Client<a class="headerlink" href="#module-eodms_api_client.eodms" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EodmsAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eodms_api_client.eodms.</span></span><span class="sig-name descname"><span class="pre">EodmsAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EodmsAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EodmsAPI" title="Permalink to this definition">#</a></dt>
+<dd><p>Entry-point for accessing the EODMS REST API</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>collection: The EODMS Collection to which queries and orders will be sent</p></li>
+<li><p>username: EODMS account username, leave blank to use .netrc (if available)</p></li>
+<li><p>password: EODMS account password, leave blank to use .netrc (if available)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EodmsAPI.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EodmsAPI.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EodmsAPI.query" title="Permalink to this definition">#</a></dt>
+<dd><p>Submit a query to EODMS and save the results as a geodataframe in a class
+attribute</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>kwargs: Any number of keyword arguments that will be validated based on
+the EODMS collection being queried</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>self.results: A class attribute containing a geodataframe with
+the returned query results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EodmsAPI.order">
+<span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Medium'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EodmsAPI.order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EodmsAPI.order" title="Permalink to this definition">#</a></dt>
+<dd><p>Submit an order to EODMS using record ID numbers retrieved from a search query</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>record_ids: list of record ID numbers to order</p></li>
+<li><p>priority: Order submission priority. Must be one of [‘Low’, ‘Medium’, ‘High’, ‘Urgent’] Default: ‘Medium’</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>order_ids: list of EODMS ordering system ID numbers for later downloading</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EodmsAPI.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EodmsAPI.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EodmsAPI.download" title="Permalink to this definition">#</a></dt>
+<dd><p>Appears that the endpoint has a hard limit of 100 results, so need to be fancy if more
+than 100 items are given for an orderId</p>
+<p>order_ids: list of integer order numbers
+output_location: where the downloaded products will be saved to (will be created if doesn’t exist yet)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EodmsAPI.download_dds">
+<span class="sig-name descname"><span class="pre">download_dds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EodmsAPI.download_dds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EodmsAPI.download_dds" title="Permalink to this definition">#</a></dt>
+<dd><p>Function that uses the new EODMS DDS system for ordering/downloading data</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>uuids: list of granule UUIDs to download (not RecordId!)</p></li>
+<li><p>output_directory: path to where downloads should go</p></li>
+<li><p>n_workers: how many concurrent threads to use when downloading (default: 4)</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>local_files: list of local datasets downloaded from EODMS</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eodms_api_client.eodms.EODMSHTMLFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eodms_api_client.eodms.</span></span><span class="sig-name descname"><span class="pre">EODMSHTMLFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_charrefs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/eodms.html#EODMSHTMLFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.eodms.EODMSHTMLFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Custom HTML parser for EODMS API item status responses</p>
+<p>Stolen from stackoverflow user FrBrGeorge: <a class="reference external" href="https://stackoverflow.com/a/55825140">https://stackoverflow.com/a/55825140</a></p>
+</dd></dl>
+
+</section>
+<section id="module-eodms_api_client.params">
+<span id="eodms-collection-parameter-validation"></span><h2>EODMS Collection Parameter Validation<a class="headerlink" href="#module-eodms_api_client.params" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.params.validate_query_args">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.params.</span></span><span class="sig-name descname"><span class="pre">validate_query_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/params.html#validate_query_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.params.validate_query_args" title="Permalink to this definition">#</a></dt>
+<dd><p>Try to validate as many keyword arguments as possible for the given
+EODMS collection</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>args: dictionary of keyword arguments provided by the user</p></li>
+<li><p>collection: EODMS collection to validate arguments against</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>query: a properly-escaped query string ready to be sent to
+EODMS API</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.params.generate_meta_keys">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.params.</span></span><span class="sig-name descname"><span class="pre">generate_meta_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/params.html#generate_meta_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.params.generate_meta_keys" title="Permalink to this definition">#</a></dt>
+<dd><p>For the given collection, return the various keys that will be used to pull image metadata
+from EODMS</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.params.available_query_args">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.params.</span></span><span class="sig-name descname"><span class="pre">available_query_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/params.html#available_query_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.params.available_query_args" title="Permalink to this definition">#</a></dt>
+<dd><p>For a given EODMS collection, produce a dictionary of available query parameters for use in EodmsAPI.query calls</p>
+</dd></dl>
+
+</section>
+<section id="module-eodms_api_client.geo">
+<span id="geographic-functions"></span><h2>Geographic Functions<a class="headerlink" href="#module-eodms_api_client.geo" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.geo.transform_metadata_geometry">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.geo.</span></span><span class="sig-name descname"><span class="pre">transform_metadata_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta_geom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/geo.html#transform_metadata_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.geo.transform_metadata_geometry" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform a given image footprint geometry from WGS84 to the desired crs</p>
+<p>EODMS always returns geometries in WGS84, so we provide the option to transform
+into something more useful through the use of a CLI flag (–t_srs)</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>meta_geom: the footprint geometry as a shapely.geometry object</p></li>
+<li><p>target_crs: either a pyproj.CRS or properly-formatted string for the desired projection</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>if target_crs is not supplied, simply return the passed geometry</p></li>
+<li><p>if target_crs is supplied, return the transformed geometry</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.geo.metadata_to_gdf">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.geo.</span></span><span class="sig-name descname"><span class="pre">metadata_to_gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/geo.html#metadata_to_gdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.geo.metadata_to_gdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Instead of a jumbled JSON-looking dictionary, create a geopandas.GeoDataFrame from the
+EODMS search query response</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>metadata: dictionary of EODMS search query and image metadata response</p></li>
+<li><p>collection: string of EODMS Collection ID - used for column name standardization</p></li>
+<li><p>target_crs: pyproj.CRS instance or properly-formatted string for the desired projection</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>df: geopandas.GeoDataFrame containing &lt;metadata&gt; projected to &lt;target_crs&gt;</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.geo.load_search_aoi">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.geo.</span></span><span class="sig-name descname"><span class="pre">load_search_aoi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geofile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/geo.html#load_search_aoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.geo.load_search_aoi" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a file, attempt to parse it as a set of vector features to be sent as part
+of a request to the EODMS REST API. If the features are not already in WGS84, they
+are transformed by this function.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>geofile: A file containing vector data (SHP, GEOJSON, GPKG, etc.)</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>wkt: The Well-Known Text representation of the features within &lt;geofile&gt;</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-eodms_api_client.auth">
+<span id="authentication-functions"></span><h2>Authentication Functions<a class="headerlink" href="#module-eodms_api_client.auth" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.auth.create_session">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.auth.</span></span><span class="sig-name descname"><span class="pre">create_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/auth.html#create_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.auth.create_session" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a persistent session object for the EODMS REST API using the given username and
+password. If neither is provided, attempt to use the .netrc file and fallback to console
+entry as a last-resort</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>username: EODMS username</p></li>
+<li><p>password: EODMS password</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>session: requests.Session object for the EODMS REST API</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eodms_api_client.auth.acquire_token">
+<span class="sig-prename descclassname"><span class="pre">eodms_api_client.auth.</span></span><span class="sig-name descname"><span class="pre">acquire_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eodms_api_client/auth.html#acquire_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eodms_api_client.auth.acquire_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Auth method for new DDS system. If neither username/password is provided, attempt to use
+the .netrc file and fallback to console entry as a last-resort</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>username: EODMS username</p></li>
+<li><p>password: EODMS password</p></li>
+</ul>
+</dd>
+<dt>Outputs:</dt><dd><ul class="simple">
+<li><p>access_token: valid API token for requesting granule downloads through EODMS DDS</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="examples.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Example Usage</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020 - 2025, Mike Brady
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Source-Code Docstrings</a><ul>
+<li><a class="reference internal" href="#module-eodms_api_client.eodms">Main Client</a><ul>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EodmsAPI"><code class="docutils literal notranslate"><span class="pre">EodmsAPI</span></code></a><ul>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EodmsAPI.query"><code class="docutils literal notranslate"><span class="pre">EodmsAPI.query()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EodmsAPI.order"><code class="docutils literal notranslate"><span class="pre">EodmsAPI.order()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EodmsAPI.download"><code class="docutils literal notranslate"><span class="pre">EodmsAPI.download()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EodmsAPI.download_dds"><code class="docutils literal notranslate"><span class="pre">EodmsAPI.download_dds()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eodms_api_client.eodms.EODMSHTMLFilter"><code class="docutils literal notranslate"><span class="pre">EODMSHTMLFilter</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-eodms_api_client.params">EODMS Collection Parameter Validation</a><ul>
+<li><a class="reference internal" href="#eodms_api_client.params.validate_query_args"><code class="docutils literal notranslate"><span class="pre">validate_query_args()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.params.generate_meta_keys"><code class="docutils literal notranslate"><span class="pre">generate_meta_keys()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.params.available_query_args"><code class="docutils literal notranslate"><span class="pre">available_query_args()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-eodms_api_client.geo">Geographic Functions</a><ul>
+<li><a class="reference internal" href="#eodms_api_client.geo.transform_metadata_geometry"><code class="docutils literal notranslate"><span class="pre">transform_metadata_geometry()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.geo.metadata_to_gdf"><code class="docutils literal notranslate"><span class="pre">metadata_to_gdf()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.geo.load_search_aoi"><code class="docutils literal notranslate"><span class="pre">load_search_aoi()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-eodms_api_client.auth">Authentication Functions</a><ul>
+<li><a class="reference internal" href="#eodms_api_client.auth.create_session"><code class="docutils literal notranslate"><span class="pre">create_session()</span></code></a></li>
+<li><a class="reference internal" href="#eodms_api_client.auth.acquire_token"><code class="docutils literal notranslate"><span class="pre">acquire_token()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=3d533f9b"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=30646c52"></script>
+    </body>
+</html>

@@ -1,0 +1,850 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+        <title>eodms_api_client.eodms - eodms-api-client</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">eodms-api-client</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">eodms-api-client</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">How to Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source.html">Source-Code Docstrings</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/m9brady/eodms-api-client">Github Repository</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for eodms_api_client.eodms</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTMLParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">dumps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">ceil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">head</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">HTTPError</span><span class="p">,</span> <span class="n">JSONDecodeError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span><span class="p">,</span> <span class="n">acquire_token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.geo</span><span class="w"> </span><span class="kn">import</span> <span class="n">metadata_to_gdf</span><span class="p">,</span> <span class="n">transform_metadata_geometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.params</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">available_query_args</span><span class="p">,</span> <span class="n">generate_meta_keys</span><span class="p">,</span>
+                     <span class="n">validate_query_args</span><span class="p">)</span>
+
+<span class="n">EODMS_DEFAULT_MAXRESULTS</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">EODMS_SUBMIT_HARDLIMIT</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">EODMS_REST_BASE</span> <span class="o">=</span> <span class="s1">&#39;https://www.eodms-sgdot.nrcan-rncan.gc.ca/wes/rapi&#39;</span>
+<span class="n">EODMS_REST_SEARCH</span> <span class="o">=</span> <span class="n">EODMS_REST_BASE</span> <span class="o">+</span> \
+    <span class="s1">&#39;/search?collection=</span><span class="si">{collection}</span><span class="s1">&amp;query=</span><span class="si">{query}</span><span class="s1">&#39;</span> <span class="o">+</span> \
+    <span class="s1">&#39;&amp;maxResults=</span><span class="si">%d</span><span class="s1">&amp;format=json&#39;</span> <span class="o">%</span> <span class="n">EODMS_DEFAULT_MAXRESULTS</span>
+<span class="n">EODMS_REST_ORDER</span> <span class="o">=</span> <span class="n">EODMS_REST_BASE</span> <span class="o">+</span> <span class="s1">&#39;/order&#39;</span>
+
+<span class="n">EODMS_DDS_BASE</span> <span class="o">=</span> <span class="s1">&#39;https://www.eodms-sgdot.nrcan-rncan.gc.ca/dds/v1/item&#39;</span>
+
+<span class="n">EODMS_COLLECTIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Radarsat1&#39;</span><span class="p">,</span> <span class="s1">&#39;Radarsat2&#39;</span><span class="p">,</span> <span class="s1">&#39;RCMImageProducts&#39;</span><span class="p">,</span> <span class="s1">&#39;NAPL&#39;</span><span class="p">,</span> <span class="s1">&#39;PlanetScope&#39;</span>
+<span class="p">]</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;eodmsapi.main&#39;</span><span class="p">)</span>
+<span class="c1"># suppress urllib3 warnings</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;urllib3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EodmsAPI"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EodmsAPI">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EodmsAPI</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Entry-point for accessing the EODMS REST API</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">        - collection: The EODMS Collection to which queries and orders will be sent</span>
+<span class="sd">        - username: EODMS account username, leave blank to use .netrc (if available)</span>
+<span class="sd">        - password: EODMS account password, leave blank to use .netrc (if available)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_params</span> <span class="o">=</span> <span class="n">available_query_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># initialize this to None since it&#39;s not needed unless we want to download</span>
+        <span class="c1"># test the credentials</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">EODMS_REST_BASE</span><span class="si">}</span><span class="s1">/collections/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Insufficient access privileges or incorrect username and/or password&#39;</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span>
+
+    <span class="nd">@collection</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">collection</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EODMS_COLLECTIONS</span><span class="p">:</span>
+            <span class="c1"># try to be a bit more flexible</span>
+            <span class="k">if</span> <span class="n">collection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;RCM&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span> <span class="o">=</span> <span class="s1">&#39;RCMImageProducts&#39;</span>
+            <span class="k">elif</span> <span class="n">collection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;RS1&#39;</span><span class="p">,</span> <span class="s1">&#39;RADARSAT&#39;</span><span class="p">,</span> <span class="s1">&#39;RADARSAT-1&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span> <span class="o">=</span> <span class="s1">&#39;Radarsat1&#39;</span>
+            <span class="k">elif</span> <span class="n">collection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;RS2&#39;</span><span class="p">,</span> <span class="s1">&#39;RADARSAT-2&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span> <span class="o">=</span> <span class="s1">&#39;Radarsat2&#39;</span>
+            <span class="k">elif</span> <span class="n">collection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;PLANET&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span> <span class="o">=</span> <span class="s1">&#39;PlanetScope&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized EODMS collection: &quot;</span><span class="si">%s</span><span class="s1">&quot; - Must be one of [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">collection</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EODMS_COLLECTIONS</span><span class="p">)</span>
+                <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="c1"># reset the available params based on new collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_params</span> <span class="o">=</span> <span class="n">available_query_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__collection</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="EodmsAPI.query"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EodmsAPI.query">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Submit a query to EODMS and save the results as a geodataframe in a class </span>
+<span class="sd">        attribute</span>
+<span class="sd">        </span>
+<span class="sd">        Inputs:</span>
+<span class="sd">          - kwargs: Any number of keyword arguments that will be validated based on</span>
+<span class="sd">            the EODMS collection being queried</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - self.results: A class attribute containing a geodataframe with</span>
+<span class="sd">            the returned query results</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Validate query args&#39;</span><span class="p">)</span>
+        <span class="n">prepped_query</span> <span class="o">=</span> <span class="n">validate_query_args</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Query args validated&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span> <span class="o">=</span> <span class="n">EODMS_REST_SEARCH</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">prepped_query</span>
+        <span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Query sent: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span><span class="p">)</span>
+        <span class="n">search_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_submit_search</span><span class="p">()</span>
+        <span class="n">n_results</span> <span class="o">=</span> <span class="n">search_response</span><span class="p">[</span><span class="s1">&#39;hitCount&#39;</span><span class="p">]</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Query response received (</span><span class="si">%d</span><span class="s1"> result</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_results</span><span class="p">,</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">n_results</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;s&#39;</span><span class="p">))</span>
+        <span class="n">meta_keys</span> <span class="o">=</span> <span class="n">generate_meta_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+        <span class="n">target_crs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target_crs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Generate result dataframe&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_metadata</span><span class="p">(</span><span class="n">search_response</span><span class="p">,</span> <span class="n">meta_keys</span><span class="p">,</span> <span class="n">target_crs</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Result dataframe ready&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_submit_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Submit a search query to the desired EODMS collection</span>
+
+<span class="sd">        Since there may be instances where the default maxResults is greater than 150,</span>
+<span class="sd">        this method should recursively call itself until the correct number of results</span>
+<span class="sd">        is retrieved</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - None: this method uses the self._search_url attribute</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - data: the search-query response JSON from the EODMS REST API</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">old_maxResults</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&amp;maxResults=([\d*]+)&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span><span class="p">)</span>
+        <span class="c1"># some GETs are returning 104 ECONNRESET</span>
+        <span class="c1"># - possibly due to geometry vertex count (failed with 734 but 73 was fine)</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;ConnectionError Encountered! Retrying in 3 seconds...&#39;</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_submit_search</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="c1"># add check for API being down but still returning HTTP:200</span>
+            <span class="k">if</span> <span class="s1">&#39;Thanks for your patience&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;EODMS API appears to be down. Try again later.&#39;</span><span class="p">)</span>
+                <span class="c1"># dirty filthy not-good idea</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="c1"># the data[&#39;moreResults&#39;] response is unreliable</span>
+            <span class="c1"># thus, we submit another query if the number of results </span>
+            <span class="c1"># matches our query&#39;s maxResults value</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;totalResults&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">old_maxResults</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Number of search results (</span><span class="si">%d</span><span class="s1">) equals query limit (</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;totalResults&#39;</span><span class="p">],</span> <span class="n">old_maxResults</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">new_maxResults</span> <span class="o">=</span> <span class="n">old_maxResults</span> <span class="o">+</span> <span class="n">EODMS_DEFAULT_MAXRESULTS</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Increasing query limit to </span><span class="si">%d</span><span class="s1"> and requerying...&#39;</span> <span class="o">%</span> <span class="n">new_maxResults</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s1">&#39;&amp;maxResults=</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">old_maxResults</span><span class="p">,</span>
+                    <span class="s1">&#39;&amp;maxResults=</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">new_maxResults</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_submit_search</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_response</span><span class="p">,</span> <span class="n">metadata_fields</span><span class="p">,</span>
+                        <span class="n">target_crs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">len_timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Since the search-query response from the EODMS REST API does not return</span>
+<span class="sd">        much useful metadata about imagery, we have to submit some more requests</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - query_response: the response JSON from _submit_search()</span>
+<span class="sd">          - metadata_fields: the metadata that will be scraped for each record. Is partially</span>
+<span class="sd">            dependent on the collection being queried</span>
+<span class="sd">          - target_crs: the desired projection of the image footprint polygons (default: WGS84)</span>
+<span class="sd">          - max_workers: the number of threads to use in the metadata fetching method (default: 4)</span>
+<span class="sd">          - len_timeout: how long each metadata fetch should wait before timing out </span>
+<span class="sd">            (default: 20 seconds)</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - geodataframe containing the scraped metadata_fields and polygon geometries</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_response</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No results found&#39;</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_fields</span><span class="p">}</span>
+            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">meta_urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;thisRecordUrl&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">query_response</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]]</span>
+            <span class="n">n_urls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">meta_urls</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="n">tqdm</span><span class="p">(</span>
+                        <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_single_record_metadata</span><span class="p">,</span>
+                            <span class="n">meta_urls</span><span class="p">,</span>
+                            <span class="p">[</span><span class="n">metadata_fields</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_urls</span><span class="p">,</span>
+                            <span class="p">[</span><span class="n">target_crs</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_urls</span><span class="p">,</span>
+                            <span class="p">[</span><span class="n">len_timeout</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_urls</span>
+                        <span class="p">),</span>
+                        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Fetching result metadata&#39;</span><span class="p">,</span>
+                        <span class="n">total</span><span class="o">=</span><span class="n">n_urls</span><span class="p">,</span>
+                        <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;item&#39;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">metadata_to_gdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span> <span class="n">target_crs</span><span class="o">=</span><span class="n">target_crs</span><span class="p">)</span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_single_record_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">target_crs</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetch a single image&#39;s metadata</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - url: the given image&#39;s metadata url taken from the search-api response</span>
+<span class="sd">          - keys: which metadata fields to scrape from the fetched response</span>
+<span class="sd">          - target_crs: the desired projection for the footprint geometry (default: WGS84)</span>
+<span class="sd">          - timeout: the time in seconds to wait before timing out</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - metadata: dictionary containing the keys and geometry metadata for the given</span>
+<span class="sd">            image</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">k</span>
+                    <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># UUIDs are for the DDS downloading system </span>
+            <span class="c1"># Showerthought: is DDS just &quot;Data Downloading System&quot; :thinking:</span>
+            <span class="c1"># seems to only be valid for RCM</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">==</span> <span class="s2">&quot;RCMImageProducts&quot;</span><span class="p">:</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Metadata Full Name&#39;</span>
+                <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;thumbnailUrl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;thumbnailUrl&#39;</span><span class="p">]</span>
+            <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform_metadata_geometry</span><span class="p">(</span>
+                <span class="n">response</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">],</span>
+                <span class="n">target_crs</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">metadata</span>
+
+<div class="viewcode-block" id="EodmsAPI.order"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EodmsAPI.order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_ids</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s1">&#39;Medium&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Submit an order to EODMS using record ID numbers retrieved from a search query</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - record_ids: list of record ID numbers to order</span>
+<span class="sd">          - priority: Order submission priority. Must be one of [&#39;Low&#39;, &#39;Medium&#39;, &#39;High&#39;, &#39;Urgent&#39;] Default: &#39;Medium&#39;</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - order_ids: list of EODMS ordering system ID numbers for later downloading</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record_ids</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">record_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">record_ids</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">priority</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Low&#39;</span><span class="p">,</span> <span class="s1">&#39;Medium&#39;</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">,</span> <span class="s1">&#39;Urgent&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized priority: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">priority</span><span class="p">)</span>
+        <span class="n">n_records</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_records</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No records passed to order submission&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">n_records</span> <span class="o">&gt;</span> <span class="n">EODMS_SUBMIT_HARDLIMIT</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Number of requested images exceeds per-order limit (</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">EODMS_SUBMIT_HARDLIMIT</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Submitting </span><span class="si">%d</span><span class="s1"> orders to accomodate </span><span class="si">%d</span><span class="s1"> items&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">ceil</span><span class="p">(</span><span class="n">n_records</span> <span class="o">/</span> <span class="n">EODMS_SUBMIT_HARDLIMIT</span><span class="p">),</span> <span class="n">n_records</span>
+            <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Submitting order for </span><span class="si">%d</span><span class="s1"> item</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">n_records</span><span class="p">,</span>
+                <span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="n">n_records</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="p">))</span>
+        <span class="n">order_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">n_records</span><span class="p">:</span>
+            <span class="c1"># only submit 50 items per order</span>
+            <span class="n">record_subset</span> <span class="o">=</span> <span class="n">record_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span><span class="o">+</span><span class="n">EODMS_SUBMIT_HARDLIMIT</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">({</span>
+                <span class="s1">&#39;destinations&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;items&#39;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s1">&#39;collectionId&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span>
+                        <span class="s1">&#39;recordId&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">record_id</span><span class="p">),</span>
+                        <span class="s1">&#39;priority&#39;</span><span class="p">:</span> <span class="n">priority</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span>
+                        <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s1">&#39;NOTIFICATION_EMAIL_ADDRESS&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                            <span class="s1">&#39;packagingFormat&#39;</span><span class="p">:</span> <span class="s1">&#39;ZIP&#39;</span><span class="p">,</span>
+
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="k">for</span> <span class="n">record_id</span> <span class="ow">in</span> <span class="n">record_subset</span>
+                <span class="p">]</span>
+            <span class="p">})</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">EODMS_REST_ORDER</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> priority order accepted by EODMS for </span><span class="si">%d</span><span class="s1"> item</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">priority</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_subset</span><span class="p">),</span> <span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_subset</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                    <span class="n">order_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;orderId&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]])))</span>
+                <span class="k">except</span> <span class="n">JSONDecodeError</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;An unexpected response has been received from EODMS API - double-check that your order has been submitted via the web interface&#39;</span><span class="p">)</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;You will likely need to get your Order ID from the EODMS Web Interface or the order-completion email&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Problem submitting order - HTTP-</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">reason</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s1">&#39;Problem submitting order - HTTP-</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">reason</span><span class="p">))</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="n">EODMS_SUBMIT_HARDLIMIT</span>
+        <span class="k">return</span> <span class="n">order_ids</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_download_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Because the download link in the response from EODMS is HTML-encoded, we have to parse out</span>
+<span class="sd">        the actual download URL and the filesize</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - item: JSON (dict) of item metadata from EODMS</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - url: remote file URL</span>
+<span class="sd">          - fsize: remote filesize in bytes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># download url</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">EODMSHTMLFilter</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;destinations&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;stringValue&#39;</span><span class="p">])</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1"># strip &amp;file= from end of url</span>
+        <span class="c1"># TODO: THIS IS A BANDAID FIX THAT WILL PROBABLY HAVE TO BE REMOVED LATER</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&amp;file=&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">manifest_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">manifest_hash</span> <span class="o">=</span> <span class="n">manifest_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># check that url matches manifest </span>
+        <span class="c1"># TODO: BANDAID FIX, REMOVE WHEN FIXED ON SERVER-SIDE</span>
+        <span class="n">split_url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">manifest_hash</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">manifest_hash</span><span class="si">}{</span><span class="n">split_url</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">==</span> <span class="n">manifest_key</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">split_url</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="n">manifest_key</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="c1"># remote filesize</span>
+        <span class="n">fsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="n">manifest_key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">url</span><span class="p">,</span> <span class="n">fsize</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_download_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_items</span><span class="p">,</span> <span class="n">local_items</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Given a list of remote and local items, download the remote data if it is not already</span>
+<span class="sd">        found locally</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - remote_items: list of tuples containing (remote url, remote filesize)</span>
+<span class="sd">          - local_items: list of local paths where data will be saved</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - local_items: same as input </span>
+
+<span class="sd">        Assumptions:</span>
+<span class="sd">          - length of remote_items and local_items must match</span>
+<span class="sd">          - filenames in remote_items and local_items must be in sequence</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">remote_items</span><span class="p">]</span>
+        <span class="n">remote_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span>  <span class="n">remote_items</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">remote</span><span class="p">,</span> <span class="n">expected_size</span><span class="p">,</span> <span class="n">local</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">remote_urls</span><span class="p">,</span> <span class="n">remote_sizes</span><span class="p">,</span> <span class="n">local_items</span><span class="p">):</span>
+            <span class="c1"># if we have an existing local file, check the filesize against the manifest</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+                <span class="c1"># if all-good, continue to next file</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">local</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">expected_size</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Local file exists: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">local</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="c1"># otherwise, delete the incomplete/malformed local file and redownload</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s1">&#39;Filesize mismatch with </span><span class="si">%s</span><span class="s1">. Re-downloading...&#39;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+            <span class="c1"># use streamed download so we can wrap nicely with tqdm</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                <span class="c1"># use content-type to catch non-zipfiles</span>
+                <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;application/zip&#39;</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s1">&#39;Remote file </span><span class="si">%s</span><span class="s1"> does not appear to be a &#39;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span> <span class="o">+</span>\
+                        <span class="s1">&#39;zipfile anymore (content-type: </span><span class="si">%s</span><span class="s1">). &#39;</span> <span class="o">%</span> <span class="n">stream</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-type&#39;</span><span class="p">]</span> <span class="o">+</span>\
+                        <span class="s1">&#39;You may have to resubmit your order or contact EODMS support.&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">wrapattr</span><span class="p">(</span>
+                        <span class="n">pipe</span><span class="p">,</span>
+                        <span class="n">method</span><span class="o">=</span><span class="s1">&#39;write&#39;</span><span class="p">,</span>
+                        <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">total</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-length&#39;</span><span class="p">]),</span>
+                        <span class="n">desc</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">file_out</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+                            <span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local_items</span>
+
+<div class="viewcode-block" id="EodmsAPI.download"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EodmsAPI.download">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_ids</span><span class="p">,</span> <span class="n">output_location</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Appears that the endpoint has a hard limit of 100 results, so need to be fancy if more</span>
+<span class="sd">        than 100 items are given for an orderId</span>
+
+<span class="sd">        order_ids: list of integer order numbers</span>
+<span class="sd">        output_location: where the downloaded products will be saved to (will be created if doesn&#39;t exist yet)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">local_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saving to </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">output_location</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_location</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order_ids</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">order_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">order_ids</span><span class="p">]</span>
+        <span class="n">n_orders</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">order_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_orders</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No order_ids provided - no action taken&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">local_files</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Checking status</span><span class="si">%s</span><span class="s1"> of </span><span class="si">%d</span><span class="s1"> order</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="s1">&#39;es&#39;</span> <span class="k">if</span> <span class="n">n_orders</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">n_orders</span><span class="p">,</span>
+            <span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="n">n_orders</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="p">))</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;items&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        <span class="n">extra_stuff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;maxOrders&#39;</span><span class="p">:</span> <span class="n">EODMS_DEFAULT_MAXRESULTS</span><span class="p">,</span>
+            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span>
+        <span class="p">}</span>
+        <span class="c1"># need to submit 1 API request per orderId to check downloadable status</span>
+        <span class="n">status_updates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">EODMS_REST_ORDER</span> <span class="o">+</span> <span class="s1">&#39;?orderId=</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">orderId</span> <span class="k">for</span> <span class="n">orderId</span>
+            <span class="ow">in</span> <span class="n">order_ids</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">update_request</span> <span class="ow">in</span> <span class="n">status_updates</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">update_request</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">extra_stuff</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="c1"># add check for API being down but still returning HTTP:200</span>
+                <span class="k">if</span> <span class="s1">&#39;Thanks for your patience&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;EODMS API appears to be down. Try again later.&#39;</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="c1"># only retain items that belong to the wanted orderIds</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> 
+                    <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;orderId&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">order_ids</span> <span class="ow">and</span> 
+                    <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span>
+                <span class="p">]</span>
+                <span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Problem getting item statuses - HTTP-</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="c1"># Get a list of the ready-to-download items with their filesizes</span>
+        <span class="n">n_items</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">])</span>
+        <span class="n">available_remote_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extract_download_metadata</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> 
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;AVAILABLE_FOR_DOWNLOAD&#39;</span>
+        <span class="p">]</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1"> items ready for download&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">available_remote_files</span><span class="p">),</span>
+            <span class="n">n_items</span>
+        <span class="p">))</span>
+        <span class="n">to_download</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_location</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">available_remote_files</span>
+        <span class="p">]</span>
+        <span class="c1"># Establish what we already have      </span>
+        <span class="n">already_have</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">to_download</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+        <span class="n">n_already_have</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">already_have</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1"> items exist locally&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">n_already_have</span><span class="p">,</span>
+            <span class="n">n_items</span>
+        <span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_already_have</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_remote_files</span><span class="p">):</span>
+            <span class="c1"># Download any available-on-remote-but-missing-from-local</span>
+            <span class="n">n_missing_but_ready</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_remote_files</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_already_have</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading </span><span class="si">%d</span><span class="s1"> remote item</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">n_missing_but_ready</span><span class="p">,</span>
+                <span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="n">n_missing_but_ready</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="p">))</span>
+            <span class="n">local_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download_items</span><span class="p">(</span><span class="n">available_remote_files</span><span class="p">,</span> <span class="n">to_download</span><span class="p">)</span>
+            <span class="c1"># account for any skipped-files-due-to-wrong-filesize</span>
+            <span class="n">local_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">local_files</span><span class="p">[:]</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1"> items exist locally after latest download&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">local_files</span><span class="p">),</span>
+                <span class="n">n_items</span>
+            <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If we already have everything, do nothing</span>
+            <span class="n">local_files</span> <span class="o">=</span> <span class="n">to_download</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No further action taken&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">return</span> <span class="n">local_files</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_download_dds_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        subfunction used by download_dds to acquire datasets from EODMS DDS</span>
+<span class="sd">        while the logging messages are useful and I want them to be INFO level, they really mess up the</span>
+<span class="sd">        tqdm progress bars</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">EODMS_DDS_BASE</span><span class="si">}</span><span class="s1">/EODMS/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="c1"># issue a GET to DDS to get the status of the wanted granule</span>
+        <span class="c1"># drives me nuts that we can&#39;t re-use the self._session for this!</span>
+        <span class="c1"># TODO: add bombproofing</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Requesting UUID </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="n">uuid_req</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="c1"># if our token has expired, get a new one</span>
+            <span class="c1"># TODO: race-condition if concurrent downloads do this at the same time?</span>
+            <span class="k">if</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span> <span class="o">=</span> <span class="n">acquire_token</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">password</span>
+                <span class="p">)</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+                <span class="n">uuid_req</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">uuid_resp</span> <span class="o">=</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span><span class="s2">&quot;JSONDecodeError with UUID </span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">while</span> <span class="s2">&quot;download_url&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uuid_resp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;UUID </span><span class="si">%r</span><span class="s2"> pending&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">uuid_req</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span><span class="s2">&quot;Problem with UUID </span><span class="si">%r</span><span class="s2">: HTTP-</span><span class="si">%d</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">reason</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">uuid_resp</span> <span class="o">=</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span><span class="s2">&quot;JSONDecodeError with UUID </span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">uuid_req</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;UUID </span><span class="si">%r</span><span class="s2"> ready for download&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="n">download_url</span> <span class="o">=</span> <span class="n">uuid_resp</span><span class="p">[</span><span class="s2">&quot;download_url&quot;</span><span class="p">]</span>
+        <span class="c1"># retrieve granule name from url</span>
+        <span class="n">granule</span> <span class="o">=</span> <span class="n">download_url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">local</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">granule</span><span class="p">)</span>
+        <span class="c1"># if exists, check filesize against remote and redownload if necessary</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+            <span class="c1"># this is pretty cool, credit to Kevin Ballantyne https://github.com/eodms-sgdot/py-eodms-dds/blob/e392d9800449b26fa33b076bb2f583a897d058f4/eodms_dds/dds.py#L71</span>
+            <span class="n">expected_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">head</span><span class="p">(</span><span class="n">download_url</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">))</span>
+            <span class="c1"># if all-good, continue to next file</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">local</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">expected_size</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Local file exists: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">local</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">local</span>
+            <span class="c1"># otherwise, delete the incomplete/malformed local file and redownload</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s1">&#39;Filesize mismatch with </span><span class="si">%s</span><span class="s1">. Re-downloading...&#39;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+        <span class="c1"># download to local</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">local</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">get</span><span class="p">(</span><span class="n">download_url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">wrapattr</span><span class="p">(</span>
+                    <span class="n">pipe</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;write&#39;</span><span class="p">,</span>
+                    <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># get rid of the progressbar once finished</span>
+                    <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">total</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-length&#39;</span><span class="p">]),</span>
+                    <span class="n">desc</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">local</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">file_out</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+                        <span class="n">file_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local</span>
+
+<div class="viewcode-block" id="EodmsAPI.download_dds"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EodmsAPI.download_dds">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">download_dds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">n_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function that uses the new EODMS DDS system for ordering/downloading data</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">          - uuids: list of granule UUIDs to download (not RecordId!)</span>
+<span class="sd">          - output_directory: path to where downloads should go</span>
+<span class="sd">          - n_workers: how many concurrent threads to use when downloading (default: 4)</span>
+
+<span class="sd">        Outputs:</span>
+<span class="sd">          - local_files: list of local datasets downloaded from EODMS</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">!=</span> <span class="s2">&quot;RCMImageProducts&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only RCM data is currently supported with the DDS. Current collection: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+        <span class="c1"># ensure we have an up-to-date access_token</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Acquiring DDS access token&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dds_access_token</span> <span class="o">=</span> <span class="n">acquire_token</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">password</span>
+            <span class="p">)</span>
+        <span class="c1"># distribute download tasks to threadpool</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Attempting download of </span><span class="si">%d</span><span class="s2"> granules across </span><span class="si">%d</span><span class="s2"> threads&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uuids</span><span class="p">),</span> <span class="n">n_workers</span><span class="p">))</span>
+        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">n_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="c1"># use a top-level progressbar to indicate total progress</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">uuids</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;granule&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Downloading&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="c1"># per-download progressbars disappear once finished since they get really cluttered</span>
+                <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_download_dds_item</span><span class="p">,</span>
+                        <span class="n">uuid</span><span class="p">,</span>
+                        <span class="n">output_directory</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="n">uuids</span>
+                <span class="p">]</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># update persistent progressbar</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+
+<div class="viewcode-block" id="EODMSHTMLFilter"><a class="viewcode-back" href="../../source.html#eodms_api_client.eodms.EODMSHTMLFilter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EODMSHTMLFilter</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Custom HTML parser for EODMS API item status responses</span>
+
+<span class="sd">    Stolen from stackoverflow user FrBrGeorge: https://stackoverflow.com/a/55825140</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">data</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020 - 2025, Mike Brady
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3d533f9b"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    </body>
+</html>
