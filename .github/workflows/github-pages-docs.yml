@@ -1,7 +1,8 @@
 name: github-pages-docs
 
 on:
-  release: published
+  release: 
+    types: [published]
 
 permissions:
   contents: write
