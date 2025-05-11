@@ -183,6 +183,15 @@ Options:
   --order-ids PATH                File of line-separated Order Ids to download
                                   from EODMS
 
+  --uuid TEXT                     Specific UUID to order from the desired
+                                  collection
+
+  --uuid-list PATH                File of line-separated UUIDs to order from
+                                  the desired collection
+                                  
+  --n-dds-workers INTEGER         Number of concurrent threads to use when
+                                  downloading from DDS api
+
   --verbose                       Use debug-level logging
 
   --version                       Show the package version

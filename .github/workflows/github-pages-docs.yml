@@ -1,6 +1,7 @@
 name: github-pages-docs
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  release: published
 
 permissions:
   contents: write
@@ -11,16 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup build environment
-        uses: mamba-org/setup-micromamba@v1.9.0
+        uses: mamba-org/setup-micromamba@v2.0.4
         with:
-          micromamba-version: '1.5.8-0'
+          micromamba-version: '2.0.5-0'
           environment-file: docs/environment.yml
           init-shell: bash
           cache-environment: true
           post-cleanup: 'all'
       - name: Sphinx build
         run: |
-          micromamba run -n eodms-api-client-rtd sphinx-build docs docs/_build
+          micromamba run -n eodms-api-client-sphinxdocs sphinx-build docs docs/_build
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -30,5 +31,5 @@ jobs:
           publish_dir: docs/_build
           commit_message: ${{ github.event.head_commit.message }}
           user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'          
+          user_email: 'github-actions[bot]@users.noreply.github.com'
           force_orphan: true

@@ -39,6 +39,7 @@ def validate_query_args(args, collection):
             end = parse(end)
     else:
         end = datetime.today()
+    # TODO: fix this so that it matches exactly what the user wants instead of jumping ahead by 1 day
     query_args.append("CATALOG_IMAGE.STOP_DATETIME<='%s'" % (end + timedelta(days=1)).isoformat())
     geometry = args.get('geometry', None)
     if geometry is not None:

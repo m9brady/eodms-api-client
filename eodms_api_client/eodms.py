@@ -1,16 +1,17 @@
 import logging
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from json import dumps
 from math import ceil
 from time import sleep
 
-from requests.exceptions import ConnectionError, JSONDecodeError
+from requests import get, head
+from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
 from tqdm.auto import tqdm
 
-from .auth import create_session
+from .auth import create_session, acquire_token
 from .geo import metadata_to_gdf, transform_metadata_geometry
 from .params import (available_query_args, generate_meta_keys,
                      validate_query_args)
@@ -22,6 +23,8 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
     '/search?collection={collection}&query={query}' + \
     '&maxResults=%d&format=json' % EODMS_DEFAULT_MAXRESULTS
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
+
+EODMS_DDS_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/dds/v1/item'
 
 EODMS_COLLECTIONS = [
     'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
@@ -44,6 +47,7 @@ class EodmsAPI():
         self.collection = collection
         self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
+        self._dds_access_token = None # initialize this to None since it's not needed unless we want to download
         # test the credentials
         r = self._session.get(f'{EODMS_REST_BASE}/collections/{self.collection}')
         if r.status_code == 401:
@@ -100,7 +104,8 @@ class EodmsAPI():
         )
         LOGGER.debug('Query sent: %s' % self._search_url)
         search_response = self._submit_search()
-        LOGGER.debug('Query response received')
+        n_results = search_response['hitCount']
+        LOGGER.debug('Query response received (%d result%s)' % (n_results, '' if n_results == 1 else 's'))
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
         LOGGER.debug('Generate result dataframe')
@@ -222,6 +227,14 @@ class EodmsAPI():
                     metadata[k] = [
                         f[1] for f in response['metadata'] if f[0] == k
                     ][0]
+            # UUIDs are for the DDS downloading system 
+            # Showerthought: is DDS just "Data Downloading System" :thinking:
+            # seems to only be valid for RCM
+            if self.collection == "RCMImageProducts":
+                metadata['uuid'] = [
+                    item[1].split('/')[-1] for item in response['metadata']
+                    if item[0] == 'Metadata Full Name'
+                ][0]
             metadata['thumbnailUrl'] = response['thumbnailUrl']
             metadata['geometry'] = transform_metadata_geometry(
                 response['geometry'],
@@ -473,6 +486,119 @@ class EodmsAPI():
             LOGGER.info('No further action taken')
             return
         return local_files
+
+    def _download_dds_item(self, uuid, output_directory):
+        """
+        subfunction used by download_dds to acquire datasets from EODMS DDS
+        while the logging messages are useful and I want them to be INFO level, they really mess up the
+        tqdm progress bars
+        """
+        url = f'{EODMS_DDS_BASE}/EODMS/{self.collection}/{uuid}'
+        header = {"Authorization": f"Bearer {self._dds_access_token}"}
+        # issue a GET to DDS to get the status of the wanted granule
+        # drives me nuts that we can't re-use the self._session for this!
+        # TODO: add bombproofing
+        LOGGER.debug("Requesting UUID %r" % uuid)
+        uuid_req = get(url, headers=header)
+        if not uuid_req.ok:
+            # if our token has expired, get a new one
+            # TODO: race-condition if concurrent downloads do this at the same time?
+            if uuid_req.status_code == 401:
+                self._dds_access_token = acquire_token(
+                    self._session.auth.username,
+                    self._session.auth.password
+                )
+                header = {"Authorization": f"Bearer {self._dds_access_token}"}
+                uuid_req = get(url, headers=header)
+        try:
+            uuid_resp = uuid_req.json()
+        except JSONDecodeError:
+            raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
+        while "download_url" not in uuid_resp.keys():
+            LOGGER.debug("UUID %r pending" % uuid)
+            sleep(5)
+            uuid_req = get(url, headers=header)
+            if not uuid_req.ok:
+                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+            try:
+                uuid_resp = uuid_req.json()
+            except JSONDecodeError:
+                raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
+        LOGGER.debug("UUID %r ready for download" % uuid)
+        download_url = uuid_resp["download_url"]
+        # retrieve granule name from url
+        granule = download_url.split("?")[0].split("/")[-1]
+        local = os.path.join(output_directory, granule)
+        # if exists, check filesize against remote and redownload if necessary
+        if os.path.exists(local):
+            # this is pretty cool, credit to Kevin Ballantyne https://github.com/eodms-sgdot/py-eodms-dds/blob/e392d9800449b26fa33b076bb2f583a897d058f4/eodms_dds/dds.py#L71
+            expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
+            # if all-good, continue to next file
+            if os.stat(local).st_size == expected_size:
+                LOGGER.debug('Local file exists: %s' % local)
+                return local
+            # otherwise, delete the incomplete/malformed local file and redownload
+            else:
+                LOGGER.warning(
+                    'Filesize mismatch with %s. Re-downloading...' % os.path.basename(local)
+                )
+                os.remove(local)
+        # download to local
+        os.makedirs(os.path.dirname(local), exist_ok=True)
+        with open(local, 'wb') as pipe:
+            with get(download_url, stream=True) as stream:
+                with tqdm.wrapattr(
+                    pipe,
+                    method='write',
+                    leave=False, # get rid of the progressbar once finished
+                    miniters=1,
+                    total=int(stream.headers['content-length']),
+                    desc=os.path.basename(local)
+                ) as file_out:
+                    for chunk in stream.iter_content(chunk_size=1024):
+                        file_out.write(chunk)
+        return local
+
+    def download_dds(self, uuids, output_directory, n_workers=4):
+        '''
+        Function that uses the new EODMS DDS system for ordering/downloading data
+
+        Inputs:
+          - uuids: list of granule UUIDs to download (not RecordId!)
+          - output_directory: path to where downloads should go
+          - n_workers: how many concurrent threads to use when downloading (default: 4)
+
+        Outputs:
+          - local_files: list of local datasets downloaded from EODMS
+        '''
+        if self.collection != "RCMImageProducts":
+            raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
+        # ensure we have an up-to-date access_token
+        if self._dds_access_token is None:
+            LOGGER.debug("Acquiring DDS access token")
+            self._dds_access_token = acquire_token(
+                self._session.auth.username, self._session.auth.password
+            )
+        # distribute download tasks to threadpool
+        LOGGER.info("Attempting download of %d granules across %d threads" % (len(uuids), n_workers))
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
+            # use a top-level progressbar to indicate total progress
+            with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:
+                # per-download progressbars disappear once finished since they get really cluttered
+                futures = [
+                    executor.submit(
+                        self._download_dds_item,
+                        uuid,
+                        output_directory
+                    )
+                    for uuid in uuids
+                ]
+                results = []
+                for future in as_completed(futures):
+                    pbar.update(1) # update persistent progressbar
+                    results.append(future.result())
+        return results
+
 
 class EODMSHTMLFilter(HTMLParser):
     '''
