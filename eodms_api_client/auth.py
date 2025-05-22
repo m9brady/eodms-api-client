@@ -112,7 +112,7 @@ def acquire_token(username=None, password=None):
         os.makedirs(os.path.dirname(token_file), exist_ok=True)
         # need to use login api
         login_req = session.post(
-        aaa_login_url,
+            aaa_login_url,
             json={
                 "grant_type": "password",
                 "username": username,
