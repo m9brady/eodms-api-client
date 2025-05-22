@@ -4,7 +4,7 @@ from getpass import getpass
 from json import JSONDecodeError, dump, load
 from netrc import netrc
 
-from requests import Session, get, post
+from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
@@ -88,6 +88,9 @@ def acquire_token(username=None, password=None):
     aaa_refresh_url = f"{EODMS_DDS_HOSTNAME}/aaa/v1/refresh"
     # TODO: Find out if EODMS DDS token system uses UTC or local time
     now = datetime.now()
+    # create a "clean" requests session that shouldn't inherit any weird runtime env gremlins
+    session = init_clean_session()
+    # check for pre-existing token data
     token_file = os.path.join(os.path.expanduser('~'), '.eodms', 'aaa_creds.json')
     if os.path.exists(token_file):
         try:
@@ -108,8 +111,8 @@ def acquire_token(username=None, password=None):
         # Scenario A: no existing login credentials
         os.makedirs(os.path.dirname(token_file), exist_ok=True)
         # need to use login api
-        login_req = post(
-           aaa_login_url,
+        login_req = session.post(
+        aaa_login_url,
             json={
                 "grant_type": "password",
                 "username": username,
@@ -135,7 +138,7 @@ def acquire_token(username=None, password=None):
     # since the token file exists locally, we check if the access token and refresh token have expired
     # Scenario B: Access token expired but Refresh token valid, we use the refresh api
     if access_expiry <= now and refresh_expiry > now:
-        refresh_req = get(
+        refresh_req = session.get(
             aaa_refresh_url,
             headers={"Authorization": f"Bearer {refresh_token}"}
         )
@@ -155,7 +158,7 @@ def acquire_token(username=None, password=None):
             raise HTTPError("Error refreshing DDS access token: HTTP-%d %s" % (refresh_req.status_code, refresh_req.reason))
     # Scenario C: both tokens expired, we use the login api
     elif access_expiry <= now and refresh_expiry <= now:
-        login_req = post(
+        login_req = session.post(
            aaa_login_url,
             json={
                 "grant_type": "password",
@@ -184,3 +187,16 @@ def acquire_token(username=None, password=None):
         return access_token
     else:
         raise UnboundLocalError("I have no idea how you hit this error. Best of luck - thoughts and prayers")
+
+def init_clean_session():
+    """
+    Seems to be some users who have issues interacting with DDS API possibly due to 
+    proxy-related shenanigans. Old thread here: https://github.com/psf/requests/issues/879#issuecomment-10472633
+    Related docs: https://docs.python-requests.org/en/latest/api/#requests.Session.trust_env   
+    Related Official NRCan Package Issue here: https://github.com/eodms-sgdot/py-eodms-dds/issues/17
+
+    NB: I (Mike Brady) was not able to reproduce the problem and relied on user reports (thank you)
+    """
+    session = Session()
+    session.trust_env = False
+    return session

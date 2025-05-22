@@ -7,14 +7,12 @@ from json import dumps
 from math import ceil
 from time import sleep
 
-from requests import get, head
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
 from tqdm.auto import tqdm
 
-from .auth import create_session, acquire_token
+from .auth import acquire_token, create_session, init_clean_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
-from .params import (available_query_args, generate_meta_keys,
-                     validate_query_args)
+from .params import available_query_args, generate_meta_keys, validate_query_args
 
 EODMS_DEFAULT_MAXRESULTS = 1000
 EODMS_SUBMIT_HARDLIMIT = 50
@@ -498,8 +496,10 @@ class EodmsAPI():
         # issue a GET to DDS to get the status of the wanted granule
         # drives me nuts that we can't re-use the self._session for this!
         # TODO: add bombproofing
+        LOGGER.debug("Acquiring clean session")
+        session = init_clean_session()
         LOGGER.debug("Requesting UUID %r" % uuid)
-        uuid_req = get(url, headers=header)
+        uuid_req = session.get(url, headers=header)
         if not uuid_req.ok:
             # if our token has expired, get a new one
             # TODO: race-condition if concurrent downloads do this at the same time?
@@ -509,7 +509,7 @@ class EodmsAPI():
                     self._session.auth.password
                 )
                 header = {"Authorization": f"Bearer {self._dds_access_token}"}
-                uuid_req = get(url, headers=header)
+                uuid_req = session.get(url, headers=header)
         try:
             uuid_resp = uuid_req.json()
         except JSONDecodeError:
@@ -517,7 +517,7 @@ class EodmsAPI():
         while "download_url" not in uuid_resp.keys():
             LOGGER.debug("UUID %r pending" % uuid)
             sleep(5)
-            uuid_req = get(url, headers=header)
+            uuid_req = session.get(url, headers=header)
             if not uuid_req.ok:
                 raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
             try:
@@ -532,7 +532,7 @@ class EodmsAPI():
         # if exists, check filesize against remote and redownload if necessary
         if os.path.exists(local):
             # this is pretty cool, credit to Kevin Ballantyne https://github.com/eodms-sgdot/py-eodms-dds/blob/e392d9800449b26fa33b076bb2f583a897d058f4/eodms_dds/dds.py#L71
-            expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
+            expected_size = int(session.head(download_url, allow_redirects=True).headers.get("Content-Length"))
             # if all-good, continue to next file
             if os.stat(local).st_size == expected_size:
                 LOGGER.debug('Local file exists: %s' % local)
@@ -546,7 +546,7 @@ class EodmsAPI():
         # download to local
         os.makedirs(os.path.dirname(local), exist_ok=True)
         with open(local, 'wb') as pipe:
-            with get(download_url, stream=True) as stream:
+            with session.get(download_url, stream=True) as stream:
                 with tqdm.wrapattr(
                     pipe,
                     method='write',
