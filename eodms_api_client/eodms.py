@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from json import dumps
 from math import ceil
+from random import randint
 from time import sleep
 
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
@@ -135,7 +136,7 @@ class EodmsAPI():
             return self._submit_search()
         if r.ok:
             # add check for API being down but still returning HTTP:200
-            if 'Thanks for your patience' in r.text:
+            if '<HTML>' in r.text:
                 LOGGER.error('EODMS API appears to be down. Try again later.')
                 # dirty filthy not-good idea
                 return {'results': []}
@@ -500,16 +501,30 @@ class EodmsAPI():
         session = init_clean_session()
         LOGGER.debug("Requesting UUID %r" % uuid)
         uuid_req = session.get(url, headers=header)
-        if not uuid_req.ok:
+        attempts = 1
+        while not uuid_req.ok:
+            if attempts > 5:
+                raise HTTPError("Maximum request attempt count (5) exceeded for uuid %r" % uuid)
             # if our token has expired, get a new one
             # TODO: race-condition if concurrent downloads do this at the same time?
             if uuid_req.status_code == 401:
+                LOGGER.debug("Access token reauth attempt %d for uuid %s" % (attempts, uuid))
+                # try to reduce the changes of concurrent downloads refreshing the token too many times
+                sleep(randint(3, 8))
                 self._dds_access_token = acquire_token(
                     self._session.auth.username,
                     self._session.auth.password
                 )
                 header = {"Authorization": f"Bearer {self._dds_access_token}"}
                 uuid_req = session.get(url, headers=header)
+            else:
+                raise HTTPError("HTTP:%d %r attempting to download uuid %r" % (
+                    uuid_req.status_code, uuid_req.reason, uuid
+                ))
+            attempts += 1
+        # check for HTTP-200 OK but response body is HTML
+        if '<HTML>' in uuid_req.text:
+            raise RuntimeError('EODMS API appears to be down. Try again later.')
         try:
             uuid_resp = uuid_req.json()
         except JSONDecodeError:
