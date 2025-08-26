@@ -103,7 +103,10 @@ class EodmsAPI():
         )
         LOGGER.debug('Query sent: %s' % self._search_url)
         search_response = self._submit_search()
-        n_results = search_response['hitCount']
+        n_results = search_response.get('hitCount')
+        # in cases where EODMS returns HTTP-200 but an HTML response, we get an almost empty dict
+        if n_results is None:
+            raise HTTPError("Null result from EODMS")
         LOGGER.debug('Query response received (%d result%s)' % (n_results, '' if n_results == 1 else 's'))
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
