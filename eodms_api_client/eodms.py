@@ -504,14 +504,14 @@ class EodmsAPI():
         session = init_clean_session()
         LOGGER.debug("Requesting UUID %r" % uuid)
         uuid_req = session.get(url, headers=header)
-        attempts = 1
+        request_attempts = 1
         while not uuid_req.ok:
-            if attempts > 5:
+            if request_attempts > 5:
                 raise HTTPError("Maximum request attempt count (5) exceeded for uuid %r" % uuid)
             # if our token has expired, get a new one
             # TODO: race-condition if concurrent downloads do this at the same time?
             if uuid_req.status_code == 401:
-                LOGGER.debug("Access token reauth attempt %d for uuid %s" % (attempts, uuid))
+                LOGGER.debug("Access token reauth attempt %d for uuid %s" % (request_attempts, uuid))
                 # try to reduce the changes of concurrent downloads refreshing the token too many times
                 sleep(randint(3, 8))
                 self._dds_access_token = acquire_token(
@@ -524,7 +524,7 @@ class EodmsAPI():
                 raise HTTPError("HTTP:%d %r attempting to download uuid %r" % (
                     uuid_req.status_code, uuid_req.reason, uuid
                 ))
-            attempts += 1
+            request_attempts += 1
         # check for HTTP-200 OK but response body is HTML
         if '<HTML>' in uuid_req.text:
             raise RuntimeError('EODMS API appears to be down. Try again later.')
@@ -532,12 +532,32 @@ class EodmsAPI():
             uuid_resp = uuid_req.json()
         except JSONDecodeError:
             raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
+        # assuming we get past the order-request acceptance stage, we have to keep pinging
+        # the same url in order to check on restoration status
+        download_attempts = 0
         while "download_url" not in uuid_resp.keys():
+            if download_attempts > 20:
+                raise HTTPError("Maximum download attempts exceeded (20) for uuid: %r" % (uuid))
             LOGGER.debug("UUID %r pending" % uuid)
             sleep(5)
             uuid_req = session.get(url, headers=header)
+            download_attempts += 1
             if not uuid_req.ok:
-                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+                # if our token has expired (e.g. more than 10 minutes passed between acceptance and restoration), get a new one
+                # TODO: race-condition if concurrent downloads do this at the same time?
+                if uuid_req.status_code == 400: # this should probably be 401 unauthorized due to bad token but here we are
+                    LOGGER.debug("Access token reauth needed post-acceptance for uuid %s" % (uuid))
+                    # try to reduce the changes of concurrent downloads refreshing the token too many times
+                    sleep(randint(6, 10))
+                    self._dds_access_token = acquire_token(
+                        self._session.auth.username,
+                        self._session.auth.password
+                    )
+                    header = {"Authorization": f"Bearer {self._dds_access_token}"}
+                    uuid_req = session.get(url, headers=header)
+                    download_attempts += 1
+                else:
+                    raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
             try:
                 uuid_resp = uuid_req.json()
             except JSONDecodeError:
@@ -577,14 +597,14 @@ class EodmsAPI():
                         file_out.write(chunk)
         return local
 
-    def download_dds(self, uuids, output_directory, n_workers=4):
+    def download_dds(self, uuids, output_directory, n_workers=2):
         '''
         Function that uses the new EODMS DDS system for ordering/downloading data
 
         Inputs:
           - uuids: list of granule UUIDs to download (not RecordId!)
           - output_directory: path to where downloads should go
-          - n_workers: how many concurrent threads to use when downloading (default: 4)
+          - n_workers: how many concurrent threads to use when downloading (default: 2)
 
         Outputs:
           - local_files: list of local datasets downloaded from EODMS
@@ -598,7 +618,8 @@ class EodmsAPI():
                 self._session.auth.username, self._session.auth.password
             )
         # distribute download tasks to threadpool
-        LOGGER.info("Attempting download of %d granules across %d threads" % (len(uuids), n_workers))
+        plural_indicator = "s" if len(uuids) != 1 else ""
+        LOGGER.info("Attempting download of %d granule%s across %d thread%s" % (len(uuids), plural_indicator, n_workers, plural_indicator))
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
             # use a top-level progressbar to indicate total progress
             with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:

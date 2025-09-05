@@ -154,6 +154,9 @@ def acquire_token(username=None, password=None):
             with open(token_file, "w") as f:
                 dump(refresh_resp, f)
             access_token = refresh_resp['access_token']
+            # return just the access token since we don't appear to need the refresh
+            # token outside regenerating access_tokens
+            return access_token
         else:
             raise HTTPError("Error refreshing DDS access token: HTTP-%d %s" % (refresh_req.status_code, refresh_req.reason))
     # Scenario C: both tokens expired, we use the login api
