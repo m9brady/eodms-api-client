@@ -260,7 +260,8 @@ def print_version(ctx, param, value):
 @click.option(
     '--n-dds-workers',
     type=click.INT,
-    default=4,
+    default=2,
+    show_default=True,
     help='Number of concurrent threads to use when downloading from DDS api'
 )
 @click.option(
@@ -350,7 +351,7 @@ def cli(
     # check for presence of supplied uuids, where we just skip ahead and download from DDS
     elif uuid is not None:
         CLI_LOGGER.info('Fast-downloading 1 granule from DDS')
-        current.download_dds([uuid], output_dir)
+        current.download_dds([uuid], output_dir, 1)
     elif uuid_list is not None:
         with open(uuid_list) as f:
             uuids = [line for line in f.read().splitlines() if line != '']

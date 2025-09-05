@@ -611,6 +611,8 @@ class EodmsAPI():
         '''
         if self.collection != "RCMImageProducts":
             raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
+        if n_workers <= 0:
+            raise ValueError("You gotta have workers to do work")
         # ensure we have an up-to-date access_token
         if self._dds_access_token is None:
             LOGGER.debug("Acquiring DDS access token")
@@ -618,8 +620,9 @@ class EodmsAPI():
                 self._session.auth.username, self._session.auth.password
             )
         # distribute download tasks to threadpool
-        plural_indicator = "s" if len(uuids) != 1 else ""
-        LOGGER.info("Attempting download of %d granule%s across %d thread%s" % (len(uuids), plural_indicator, n_workers, plural_indicator))
+        plural_indicator_uuids = "s" if len(uuids) != 1 else ""
+        plural_indicator_workers = "s" if n_workers != 1 else ""
+        LOGGER.info("Attempting download of %d granule%s across %d thread%s" % (len(uuids), plural_indicator_uuids, n_workers, plural_indicator_workers))
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
             # use a top-level progressbar to indicate total progress
             with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:
