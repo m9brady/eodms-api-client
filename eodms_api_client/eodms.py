@@ -24,6 +24,8 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
 
 EODMS_DDS_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/dds/v1/item'
+EODMS_DDS_ORDER_MAX_ATTEMPTS = 5
+EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS = 20
 
 EODMS_COLLECTIONS = [
     'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
@@ -506,8 +508,8 @@ class EodmsAPI():
         uuid_req = session.get(url, headers=header)
         request_attempts = 1
         while not uuid_req.ok:
-            if request_attempts > 5:
-                raise HTTPError("Maximum request attempt count (5) exceeded for uuid %r" % uuid)
+            if request_attempts > EODMS_DDS_ORDER_MAX_ATTEMPTS:
+                raise HTTPError("Maximum request attempt count (%d) exceeded for uuid %r" % (EODMS_DDS_ORDER_MAX_ATTEMPTS, uuid))
             # if our token has expired, get a new one
             # TODO: race-condition if concurrent downloads do this at the same time?
             if uuid_req.status_code == 401:
@@ -536,8 +538,8 @@ class EodmsAPI():
         # the same url in order to check on restoration status
         download_attempts = 0
         while "download_url" not in uuid_resp.keys():
-            if download_attempts > 20:
-                raise HTTPError("Maximum download attempts exceeded (20) for uuid: %r" % (uuid))
+            if download_attempts > EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS:
+                raise HTTPError("Maximum download attempts (%d) exceeded for uuid: %r" % (EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS, uuid))
             LOGGER.debug("UUID %r pending" % uuid)
             sleep(5)
             uuid_req = session.get(url, headers=header)
