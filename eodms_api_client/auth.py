@@ -158,7 +158,13 @@ def acquire_token(username=None, password=None):
             # token outside regenerating access_tokens
             return access_token
         else:
-            raise HTTPError("Error refreshing DDS access token: HTTP-%d %s" % (refresh_req.status_code, refresh_req.reason))
+            # a refresh token mismatch sometimes happens when the same account is used on different machines
+            if refresh_req.status_code == 401 and refresh_req.reason == "Unauthorized":
+                # delete the token file and start fresh
+                os.remove(token_file)
+                return acquire_token(username, password)
+            else:
+                raise HTTPError("Error refreshing DDS access token: HTTP-%d %s" % (refresh_req.status_code, refresh_req.reason))
     # Scenario C: both tokens expired, we use the login api
     elif access_expiry <= now and refresh_expiry <= now:
         login_req = session.post(

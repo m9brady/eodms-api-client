@@ -546,7 +546,9 @@ class EodmsAPI():
         download_attempts = 0
         while "download_url" not in uuid_resp.keys():
             if download_attempts > EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS:
-                raise HTTPError("Maximum download attempts (%d) exceeded for uuid: %r" % (EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS, uuid))
+                raise HTTPError("Maximum download attempts (%d) exceeded for uuid: %r (server response status: %s suggested wait time: %d seconds)" % (
+                    EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS, uuid, uuid_resp["status"], uuid_resp["suggested_retry_interval"]
+                ))
             LOGGER.debug("UUID %r status: %s" % (uuid, uuid_resp.get('status')))
             sleep(5)
             uuid_req = session.get(url, headers=header)
@@ -620,6 +622,8 @@ class EodmsAPI():
         '''
         if self.collection != "RCMImageProducts":
             raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
+        if not isinstance(uuids, (list, tuple)):
+            raise ValueError("uuids parameter must be a list or tuple")
         if len(uuids) == 0:
             raise ValueError("Zero-length list of EODMS RCM uuids passed. You must supply a list of valid RCM uuids from EODMS")
         if not 0 <= n_workers <= 4:
