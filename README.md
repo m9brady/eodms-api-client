@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/eodms-api-client)](https://pypi.org/project/eodms-api-client)
 [![Documentation](https://github.com/m9brady/eodms-api-client/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)](https://m9brady.github.io/eodms-api-client/)
 
-A Python3 package for querying, ordering and downloading from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
+An **unofficial** Python3 package for querying, ordering and downloading from the REST API provided by Natural Resources Canada's [Earth Observation Data Management System (EODMS)](https://www.eodms-sgdot.nrcan-rncan.gc.ca/index_en.jsp).
 
 Heavily influenced by the utterly fantastic `sentinelsat` package: https://github.com/sentinelsat/sentinelsat
 
@@ -190,7 +190,7 @@ Options:
                                   the desired collection
                                   
   --n-dds-workers INTEGER         Number of concurrent threads to use when
-                                  downloading from DDS api
+                                  downloading from DDS api  [default: 2]
 
   --verbose                       Use debug-level logging
 

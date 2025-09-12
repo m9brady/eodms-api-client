@@ -11,6 +11,7 @@ from time import sleep
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
 from tqdm.auto import tqdm
 
+from . import __version__ as eodms_api_client_version
 from .auth import acquire_token, create_session, init_clean_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
 from .params import available_query_args, generate_meta_keys, validate_query_args
@@ -48,6 +49,10 @@ class EodmsAPI():
         self.collection = collection
         self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
+        # modify the user agent to indicate which package is being used
+        self._session.headers.update({
+            'User-Agent': f'{self._session.headers.get("User-Agent")} eodms-api-client/{eodms_api_client_version}'
+        })
         self._dds_access_token = None # initialize this to None since it's not needed unless we want to download
         # test the credentials
         r = self._session.get(f'{EODMS_REST_BASE}/collections/{self.collection}')
@@ -504,6 +509,8 @@ class EodmsAPI():
         # TODO: add bombproofing
         LOGGER.debug("Acquiring clean session")
         session = init_clean_session()
+        # modify the user agent to indicate which package is being used
+        session.headers.update({'User-Agent': self._session.headers.get("User-Agent")})
         LOGGER.debug("Requesting UUID %r" % uuid)
         uuid_req = session.get(url, headers=header)
         request_attempts = 1
@@ -540,7 +547,7 @@ class EodmsAPI():
         while "download_url" not in uuid_resp.keys():
             if download_attempts > EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS:
                 raise HTTPError("Maximum download attempts (%d) exceeded for uuid: %r" % (EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS, uuid))
-            LOGGER.debug("UUID %r pending" % uuid)
+            LOGGER.debug("UUID %r status: %s" % (uuid, uuid_resp.get('status')))
             sleep(5)
             uuid_req = session.get(url, headers=header)
             download_attempts += 1
@@ -613,22 +620,28 @@ class EodmsAPI():
         '''
         if self.collection != "RCMImageProducts":
             raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
-        if n_workers <= 0:
-            raise ValueError("You gotta have workers to do work")
+        if len(uuids) == 0:
+            raise ValueError("Zero-length list of EODMS RCM uuids passed. You must supply a list of valid RCM uuids from EODMS")
+        if 0 <= n_workers <= 4:
+            raise ValueError("Invalid value for number of concurrent downloaders. Select a value between 1 and 4")
         # ensure we have an up-to-date access_token
         if self._dds_access_token is None:
             LOGGER.debug("Acquiring DDS access token")
             self._dds_access_token = acquire_token(
                 self._session.auth.username, self._session.auth.password
             )
-        # distribute download tasks to threadpool
-        plural_indicator_uuids = "s" if len(uuids) != 1 else ""
-        plural_indicator_workers = "s" if n_workers != 1 else ""
-        LOGGER.info("Attempting download of %d granule%s across %d thread%s" % (len(uuids), plural_indicator_uuids, n_workers, plural_indicator_workers))
+        # distribute download tasks to threadpool, or not
+        if len(uuids) > 1 and n_workers != 1:
+            log_message = f"{len(uuids)} granules across {n_workers} threads"
+        elif len(uuids) > 1 and n_workers == 1:
+            log_message = f"{len(uuids)} granules on 1 thread"
+        else:
+            log_message = f"{len(uuids)} granule on 1 thread"
+        LOGGER.info("Attempting download of %s" % log_message)
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
             # use a top-level progressbar to indicate total progress
             with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:
-                # per-download progressbars disappear once finished since they get really cluttered
+                # per-download progressbars disappear once finished since they get really cluttered for large orders
                 futures = [
                     executor.submit(
                         self._download_dds_item,
