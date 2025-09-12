@@ -622,7 +622,7 @@ class EodmsAPI():
             raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
         if len(uuids) == 0:
             raise ValueError("Zero-length list of EODMS RCM uuids passed. You must supply a list of valid RCM uuids from EODMS")
-        if 0 <= n_workers <= 4:
+        if not 0 <= n_workers <= 4:
             raise ValueError("Invalid value for number of concurrent downloaders. Select a value between 1 and 4")
         # ensure we have an up-to-date access_token
         if self._dds_access_token is None:
