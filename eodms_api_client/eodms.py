@@ -5,16 +5,16 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from json import dumps
 from math import ceil
+from random import randint
 from time import sleep
 
-from requests import get, head
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError
 from tqdm.auto import tqdm
 
-from .auth import create_session, acquire_token
+from . import __version__ as eodms_api_client_version
+from .auth import acquire_token, create_session, init_clean_session
 from .geo import metadata_to_gdf, transform_metadata_geometry
-from .params import (available_query_args, generate_meta_keys,
-                     validate_query_args)
+from .params import available_query_args, generate_meta_keys, validate_query_args
 
 EODMS_DEFAULT_MAXRESULTS = 1000
 EODMS_SUBMIT_HARDLIMIT = 50
@@ -25,6 +25,8 @@ EODMS_REST_SEARCH = EODMS_REST_BASE + \
 EODMS_REST_ORDER = EODMS_REST_BASE + '/order'
 
 EODMS_DDS_BASE = 'https://www.eodms-sgdot.nrcan-rncan.gc.ca/dds/v1/item'
+EODMS_DDS_ORDER_MAX_ATTEMPTS = 5
+EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS = 20
 
 EODMS_COLLECTIONS = [
     'Radarsat1', 'Radarsat2', 'RCMImageProducts', 'NAPL', 'PlanetScope'
@@ -47,6 +49,10 @@ class EodmsAPI():
         self.collection = collection
         self.available_params = available_query_args(self.collection)
         self._session = create_session(username, password)
+        # modify the user agent to indicate which package is being used
+        self._session.headers.update({
+            'User-Agent': f'{self._session.headers.get("User-Agent")} eodms-api-client/{eodms_api_client_version}'
+        })
         self._dds_access_token = None # initialize this to None since it's not needed unless we want to download
         # test the credentials
         r = self._session.get(f'{EODMS_REST_BASE}/collections/{self.collection}')
@@ -104,7 +110,10 @@ class EodmsAPI():
         )
         LOGGER.debug('Query sent: %s' % self._search_url)
         search_response = self._submit_search()
-        n_results = search_response['hitCount']
+        n_results = search_response.get('hitCount')
+        # in cases where EODMS returns HTTP-200 but an HTML response, we get an almost empty dict
+        if n_results is None:
+            raise HTTPError("Null result from EODMS")
         LOGGER.debug('Query response received (%d result%s)' % (n_results, '' if n_results == 1 else 's'))
         meta_keys = generate_meta_keys(self.collection)
         target_crs = kwargs.get('target_crs', None)
@@ -137,7 +146,7 @@ class EodmsAPI():
             return self._submit_search()
         if r.ok:
             # add check for API being down but still returning HTTP:200
-            if 'Thanks for your patience' in r.text:
+            if '<HTML>' in r.text:
                 LOGGER.error('EODMS API appears to be down. Try again later.')
                 # dirty filthy not-good idea
                 return {'results': []}
@@ -498,28 +507,68 @@ class EodmsAPI():
         # issue a GET to DDS to get the status of the wanted granule
         # drives me nuts that we can't re-use the self._session for this!
         # TODO: add bombproofing
+        LOGGER.debug("Acquiring clean session")
+        session = init_clean_session()
+        # modify the user agent to indicate which package is being used
+        session.headers.update({'User-Agent': self._session.headers.get("User-Agent")})
         LOGGER.debug("Requesting UUID %r" % uuid)
-        uuid_req = get(url, headers=header)
-        if not uuid_req.ok:
+        uuid_req = session.get(url, headers=header)
+        request_attempts = 1
+        while not uuid_req.ok:
+            if request_attempts > EODMS_DDS_ORDER_MAX_ATTEMPTS:
+                raise HTTPError("Maximum request attempt count (%d) exceeded for uuid %r" % (EODMS_DDS_ORDER_MAX_ATTEMPTS, uuid))
             # if our token has expired, get a new one
             # TODO: race-condition if concurrent downloads do this at the same time?
             if uuid_req.status_code == 401:
+                LOGGER.debug("Access token reauth attempt %d for uuid %s" % (request_attempts, uuid))
+                # try to reduce the changes of concurrent downloads refreshing the token too many times
+                sleep(randint(3, 8))
                 self._dds_access_token = acquire_token(
                     self._session.auth.username,
                     self._session.auth.password
                 )
                 header = {"Authorization": f"Bearer {self._dds_access_token}"}
-                uuid_req = get(url, headers=header)
+                uuid_req = session.get(url, headers=header)
+            else:
+                raise HTTPError("HTTP:%d %r attempting to download uuid %r" % (
+                    uuid_req.status_code, uuid_req.reason, uuid
+                ))
+            request_attempts += 1
+        # check for HTTP-200 OK but response body is HTML
+        if '<HTML>' in uuid_req.text:
+            raise RuntimeError('EODMS API appears to be down. Try again later.')
         try:
             uuid_resp = uuid_req.json()
         except JSONDecodeError:
             raise HTTPError("JSONDecodeError with UUID %r: %s" % (uuid, uuid_req.text))
+        # assuming we get past the order-request acceptance stage, we have to keep pinging
+        # the same url in order to check on restoration status
+        download_attempts = 0
         while "download_url" not in uuid_resp.keys():
-            LOGGER.debug("UUID %r pending" % uuid)
+            if download_attempts > EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS:
+                raise HTTPError("Maximum download attempts (%d) exceeded for uuid: %r (server response status: %s suggested wait time: %d seconds)" % (
+                    EODMS_DDS_DOWNLOAD_MAX_ATTEMPTS, uuid, uuid_resp["status"], uuid_resp["suggested_retry_interval"]
+                ))
+            LOGGER.debug("UUID %r status: %s" % (uuid, uuid_resp.get('status')))
             sleep(5)
-            uuid_req = get(url, headers=header)
+            uuid_req = session.get(url, headers=header)
+            download_attempts += 1
             if not uuid_req.ok:
-                raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
+                # if our token has expired (e.g. more than 10 minutes passed between acceptance and restoration), get a new one
+                # TODO: race-condition if concurrent downloads do this at the same time?
+                if uuid_req.status_code == 400: # this should probably be 401 unauthorized due to bad token but here we are
+                    LOGGER.debug("Access token reauth needed post-acceptance for uuid %s" % (uuid))
+                    # try to reduce the changes of concurrent downloads refreshing the token too many times
+                    sleep(randint(6, 10))
+                    self._dds_access_token = acquire_token(
+                        self._session.auth.username,
+                        self._session.auth.password
+                    )
+                    header = {"Authorization": f"Bearer {self._dds_access_token}"}
+                    uuid_req = session.get(url, headers=header)
+                    download_attempts += 1
+                else:
+                    raise HTTPError("Problem with UUID %r: HTTP-%d (%s)" % (uuid, uuid_req.status_code, uuid_req.reason))
             try:
                 uuid_resp = uuid_req.json()
             except JSONDecodeError:
@@ -532,7 +581,7 @@ class EodmsAPI():
         # if exists, check filesize against remote and redownload if necessary
         if os.path.exists(local):
             # this is pretty cool, credit to Kevin Ballantyne https://github.com/eodms-sgdot/py-eodms-dds/blob/e392d9800449b26fa33b076bb2f583a897d058f4/eodms_dds/dds.py#L71
-            expected_size = int(head(download_url, allow_redirects=True).headers.get("Content-Length"))
+            expected_size = int(session.head(download_url, allow_redirects=True).headers.get("Content-Length"))
             # if all-good, continue to next file
             if os.stat(local).st_size == expected_size:
                 LOGGER.debug('Local file exists: %s' % local)
@@ -546,7 +595,7 @@ class EodmsAPI():
         # download to local
         os.makedirs(os.path.dirname(local), exist_ok=True)
         with open(local, 'wb') as pipe:
-            with get(download_url, stream=True) as stream:
+            with session.get(download_url, stream=True) as stream:
                 with tqdm.wrapattr(
                     pipe,
                     method='write',
@@ -559,32 +608,44 @@ class EodmsAPI():
                         file_out.write(chunk)
         return local
 
-    def download_dds(self, uuids, output_directory, n_workers=4):
+    def download_dds(self, uuids, output_directory, n_workers=2):
         '''
         Function that uses the new EODMS DDS system for ordering/downloading data
 
         Inputs:
           - uuids: list of granule UUIDs to download (not RecordId!)
           - output_directory: path to where downloads should go
-          - n_workers: how many concurrent threads to use when downloading (default: 4)
+          - n_workers: how many concurrent threads to use when downloading (default: 2)
 
         Outputs:
           - local_files: list of local datasets downloaded from EODMS
         '''
         if self.collection != "RCMImageProducts":
             raise NotImplementedError("Only RCM data is currently supported with the DDS. Current collection: %r" % self.collection)
+        if not isinstance(uuids, (list, tuple)):
+            raise ValueError("uuids parameter must be a list or tuple")
+        if len(uuids) == 0:
+            raise ValueError("Zero-length list of EODMS RCM uuids passed. You must supply a list of valid RCM uuids from EODMS")
+        if not 0 <= n_workers <= 4:
+            raise ValueError("Invalid value for number of concurrent downloaders. Select a value between 1 and 4")
         # ensure we have an up-to-date access_token
         if self._dds_access_token is None:
             LOGGER.debug("Acquiring DDS access token")
             self._dds_access_token = acquire_token(
                 self._session.auth.username, self._session.auth.password
             )
-        # distribute download tasks to threadpool
-        LOGGER.info("Attempting download of %d granules across %d threads" % (len(uuids), n_workers))
+        # distribute download tasks to threadpool, or not
+        if len(uuids) > 1 and n_workers != 1:
+            log_message = f"{len(uuids)} granules across {n_workers} threads"
+        elif len(uuids) > 1 and n_workers == 1:
+            log_message = f"{len(uuids)} granules on 1 thread"
+        else:
+            log_message = f"{len(uuids)} granule on 1 thread"
+        LOGGER.info("Attempting download of %s" % log_message)
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
             # use a top-level progressbar to indicate total progress
             with tqdm(position=0, total=len(uuids), unit='granule', desc='Downloading') as pbar:
-                # per-download progressbars disappear once finished since they get really cluttered
+                # per-download progressbars disappear once finished since they get really cluttered for large orders
                 futures = [
                     executor.submit(
                         self._download_dds_item,
