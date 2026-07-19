@@ -1,5 +1,8 @@
 # EODMS API Client
 
+> [!important]
+> Archived in favour of NRCan's official packages [`eodms-py`](https://github.com/eodms-sgdot/eodms-py) and [`eodms-cli`](https://github.com/eodms-sgdot/eodms-cli)
+
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/eodms-api-client)](https://anaconda.org/conda-forge/eodms-api-client)
 [![PyPI](https://img.shields.io/pypi/v/eodms-api-client)](https://pypi.org/project/eodms-api-client)
 [![Documentation](https://github.com/m9brady/eodms-api-client/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)](https://m9brady.github.io/eodms-api-client/)
